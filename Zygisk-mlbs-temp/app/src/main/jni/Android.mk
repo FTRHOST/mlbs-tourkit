@@ -46,6 +46,8 @@ main.cpp \
 IpcServer.cpp \
 PathManager.cpp \
 GameLogic.cpp \
+utils_safe.cpp \
+DynamicOffsets.cpp \
 include/Utils/Unity/ByNameModding/Tools.cpp
 
 LOCAL_STATIC_LIBRARIES  := libdobby
