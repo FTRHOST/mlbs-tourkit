@@ -1,32 +1,58 @@
 import net from 'net';
 
 export class GameListener {
-    private server: net.Server;
+    private client: net.Socket;
     private port: number = 12345;
+    private host: string = '127.0.0.1';
     private buffer: string = '';
+    private reconnectInterval: number = 1000;
+    private isConnected: boolean = false;
 
     constructor() {
-        this.server = net.createServer((socket) => {
-            console.log('Game Client Connected');
+        this.client = new net.Socket();
 
-            socket.on('data', (data: Buffer) => {
-                this.handleData(data);
-            });
+        this.client.on('data', (data: Buffer) => {
+            this.handleData(data);
+        });
 
-            socket.on('end', () => {
-                console.log('Game Client Disconnected');
-            });
+        this.client.on('connect', () => {
+            console.log('Connected to Game (via ADB Forward)');
+            this.isConnected = true;
+        });
 
-            socket.on('error', (err) => {
+        this.client.on('close', () => {
+            if (this.isConnected) {
+                console.log('Game Connection Closed. Reconnecting...');
+            }
+            this.isConnected = false;
+            this.scheduleReconnect();
+        });
+
+        this.client.on('error', (err: any) => {
+            if (err.code === 'ECONNREFUSED') {
+                // Squelch this specific error as it's expected when polling
+            } else {
                 console.error('Socket Error:', err.message);
-            });
+            }
+            this.isConnected = false;
+            // 'close' event is usually emitted after 'error', so reconnect logic is there.
+            // But just in case 'close' doesn't fire on some errors:
+            // We rely on 'close' to trigger reconnect to avoid double timers.
         });
     }
 
     public start(): void {
-        this.server.listen(this.port, () => {
-            console.log(`TCP Game Listener started on port ${this.port}`);
-        });
+        this.connect();
+    }
+
+    private connect(): void {
+        this.client.connect(this.port, this.host);
+    }
+
+    private scheduleReconnect(): void {
+        setTimeout(() => {
+            this.connect();
+        }, this.reconnectInterval);
     }
 
     private handleData(data: Buffer): void {
@@ -45,25 +71,11 @@ export class GameListener {
 
         try {
             const json = JSON.parse(message);
-            // Assuming the structure matches what GameLogic.cpp sends.
-            // Example logging: [GAME DATA] Gold: ..., KDA: ...
-
-            // Adjust property access based on actual JSON structure from GameLogic.cpp
-            // Based on previous context (GameLogic.cpp):
-            // "logic_players": [{"m_ID":..., "totalGold":..., "_TripleKillTimes":..., ...}]
-            // "battle_stats": {"m_iCampAKill":..., "m_iCampBKill":...}
-
-            // NOTE: The C++ code in Step 1 sends:
-            // {"type":"heartbeat", "data": { "room_info": ..., "logic_players": [...], "battle_stats": ... }}
 
             if (json.data && json.data.logic_players && Array.isArray(json.data.logic_players)) {
-                // Just log the first player's stats or similar as a proof of concept
                 const player = json.data.logic_players[0];
                 if (player) {
                      const gold = player.totalGold;
-                     // KDA might need calculation or checking other fields if not explicitly passed as KDA
-                     // m_iCampAKill etc are in battle_stats
-
                      console.log(`[GAME DATA] Gold: ${gold}`);
                 } else {
                     console.log('[GAME DATA] Received data (No player details)');
@@ -74,7 +86,7 @@ export class GameListener {
 
         } catch (e) {
             console.error('Failed to parse JSON:', e);
-            console.error('Raw message:', message);
+            // console.error('Raw message:', message); // Optional: reduce noise
         }
     }
 }
