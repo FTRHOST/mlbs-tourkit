@@ -43,38 +43,38 @@ public:
 #define BattleManager_m_dicMonsterShow (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", OBFUSCATE("m_dicMonsterShow"))
 
 //Class BattleBridge
-#define BattleBridge_bStartBattle (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleBridge", "bStartBattle")
+#define BattleBridge_bStartBattle OFF_BattleBridge_bStartBattle
 
-#define BattleManager_m_LocalShowPlayers (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("BattleManager"), OBFUSCATE("m_LocalShowPlayers"))
-#define ShowPlayer_m_bInBattle (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("ShowPlayer"), OBFUSCATE("m_bInBattle"))
+#define BattleManager_m_LocalShowPlayers OFF_BattleManager_m_LocalShowPlayers
+#define ShowPlayer_m_bInBattle OFF_ShowPlayer_m_bInBattle
 
 //Class ShowEntity
 #define ShowEntity_get_InTransformation (uintptr_t) Il2CppGetMethodOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("get_InTransformation"))
-#define ShowEntity__Position (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_vCachePosition"))
-#define ShowEntity_bShowEntityLayer (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("bShowEntityLayer"))
-#define ShowEntity_m_OwnSkillComp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_OwnSkillComp"))
-#define ShowEntity_m_RoleName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_RoleName"))
-#define ShowEntity__MoveDir (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("_MoveDir"))
+#define ShowEntity__Position OFF_ShowEntity__Position
+#define ShowEntity_bShowEntityLayer OFF_ShowEntity_bShowEntityLayer
+#define ShowEntity_m_OwnSkillComp OFF_ShowEntity_m_OwnSkillComp
+#define ShowEntity_m_RoleName OFF_ShowEntity_m_RoleName
+#define ShowEntity__MoveDir OFF_ShowEntity__MoveDir
 
 //Class EntityBase
-#define EntityBase_bMove (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", "EntityBase", OBFUSCATE("bMove"))
-#define EntityBase_m_ID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_ID"))
-#define EntityBase_m_Level (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_Level"))
-#define EntityBase_m_bDeath (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_bDeath"))
-#define EntityBase_m_IsDeathProgress (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_IsDeathProgress"))
-#define EntityBase_m_bSameCampType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_bSameCampType"))
-#define EntityBase_m_Hp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_Hp"))
-#define EntityBase_m_HpMax (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_HpMax"))
-#define EntityBase_m_EntityCampType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_EntityCampType"))
-#define EntityBase_m_iType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_iType"))
-#define EntityBase_canSight (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("canSight"))
-#define EntityBase_m_uGuid (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", OBFUSCATE("m_uGuid"))
+#define EntityBase_bMove OFF_EntityBase_bMove
+#define EntityBase_m_ID OFF_EntityBase_m_ID
+#define EntityBase_m_Level OFF_EntityBase_m_Level
+#define EntityBase_m_bDeath OFF_EntityBase_m_bDeath
+#define EntityBase_m_IsDeathProgress OFF_EntityBase_m_IsDeathProgress
+#define EntityBase_m_bSameCampType OFF_EntityBase_m_bSameCampType
+#define EntityBase_m_Hp OFF_EntityBase_m_Hp
+#define EntityBase_m_HpMax OFF_EntityBase_m_HpMax
+#define EntityBase_m_EntityCampType OFF_EntityBase_m_EntityCampType
+#define EntityBase_m_iType OFF_EntityBase_m_iType
+#define EntityBase_canSight OFF_EntityBase_canSight
+#define EntityBase_m_uGuid OFF_EntityBase_m_uGuid
 
 //Class ShowPlayer
-#define ShowPlayer_m_HeroName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowPlayer", OBFUSCATE("m_HeroName"))
+#define ShowPlayer_m_HeroName OFF_ShowPlayer_m_HeroName
 
 //Class LogicFighter
-#define LogicFighter_m_SkillComp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", OBFUSCATE("LogicFighter"), OBFUSCATE("m_SkillComp"))
+#define LogicFighter_m_SkillComp OFF_LogicFighter_m_SkillComp
 
 #define LogicBattleManager_GetBattleState (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("LogicBattleManager"), OBFUSCATE("GetBattleState"))
 
@@ -86,155 +86,155 @@ int GetBattleState(void* instance) {
 #define SystemData_GetBattlePlayerInfo (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("SystemData"), OBFUSCATE("GetBattlePlayerInfo"))
 
 //Class SystemData.RoomData 
-#define SystemData_RoomData_bAutoConditionNew (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bAutoConditionNew")
-#define SystemData_RoomData_bShowSeasonAchieve (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bShowSeasonAchieve")
-#define SystemData_RoomData_iStyleBoardId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iStyleBoardId")
-#define SystemData_RoomData_iMatchEffectId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMatchEffectId")
-#define SystemData_RoomData_iDayBreakNo1Count (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iDayBreakNo1Count")
-#define SystemData_RoomData_lUid (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "lUid")
-#define SystemData_RoomData_bUid (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bUid")
-#define SystemData_RoomData_iCamp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iCamp")
-#define SystemData_RoomData_iPos (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iPos")
-#define SystemData_RoomData_bAutoReadySelect (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bAutoReadySelect")
-#define SystemData_RoomData__sName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "_sName")
-#define SystemData_RoomData_bRobot (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bRobot")
-#define SystemData_RoomData_heroid (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "heroid")
-#define SystemData_RoomData_heroskin (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "heroskin")
-#define SystemData_RoomData_headID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "headID")
-#define SystemData_RoomData_uiSex (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiSex")
-#define SystemData_RoomData_country (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "country")
-#define SystemData_RoomData_uiZoneId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiZoneId")
-#define SystemData_RoomData_summonSkillId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "summonSkillId")
-#define SystemData_RoomData_runeId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "runeId")
-#define SystemData_RoomData_mapTalentTree (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mapTalentTree")
-#define SystemData_RoomData_mRuneSkill2023 (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mRuneSkill2023")
-#define SystemData_RoomData_runeLv (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "runeLv")
-#define SystemData_RoomData_skinlist (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "skinlist")
-#define SystemData_RoomData_facePath (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "facePath")
-#define SystemData_RoomData_faceBorder (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "faceBorder")
-#define SystemData_RoomData_bStarVip (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bStarVip")
-#define SystemData_RoomData_bMCStarVip (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bMCStarVip")
-#define SystemData_RoomData_bMCStarVipPlus (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bMCStarVipPlus")
-#define SystemData_RoomData_ulRoomID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "ulRoomID")
-#define SystemData_RoomData_iConBlackRoomId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iConBlackRoomId")
-#define SystemData_RoomData_banHero (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "banHero")
-#define SystemData_RoomData_vCanSelectHero (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vCanSelectHero")
-#define SystemData_RoomData_vCanPickHero (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vCanPickHero")
-#define SystemData_RoomData_uiBattlePlayerType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiBattlePlayerType")
-#define SystemData_RoomData_sThisLoginCountry (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sThisLoginCountry")
-#define SystemData_RoomData_sCreateRoleCountry (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sCreateRoleCountry")
-#define SystemData_RoomData_uiLanguage (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiLanguage")
-#define SystemData_RoomData_bIsOpenLive (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bIsOpenLive")
-#define SystemData_RoomData_iTeamId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iTeamId")
-#define SystemData_RoomData_iTeamNationId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iTeamNationId")
-#define SystemData_RoomData__steamName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "_steamName")
-#define SystemData_RoomData__steamSimpleName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "_steamSimpleName")
-#define SystemData_RoomData_iCertify (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iCertify")
-#define SystemData_RoomData_lsEffectSkins (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "lsEffectSkins")
-#define SystemData_RoomData_lsComEffSkins (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "lsComEffSkins")
-#define SystemData_RoomData_vMissions (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vMissions")
-#define SystemData_RoomData_uiRankLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiRankLevel")
-#define SystemData_RoomData_uiPVPRank (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiPVPRank")
-#define SystemData_RoomData_bRankReview (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bRankReview")
-#define SystemData_RoomData_iElo (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iElo")
-#define SystemData_RoomData_uiRoleLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiRoleLevel")
-#define SystemData_RoomData_bNewPlayer (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bNewPlayer")
-#define SystemData_RoomData_iRoad (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iRoad")
-#define SystemData_RoomData_uiSkinSource (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiSkinSource")
-#define SystemData_RoomData_iFighterType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iFighterType")
-#define SystemData_RoomData_iWorldCupSupportCountry (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iWorldCupSupportCountry")
-#define SystemData_RoomData_iHeroLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iHeroLevel")
-#define SystemData_RoomData_iHeroSubLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iHeroSubLevel")
-#define SystemData_RoomData_iHeroPowerLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iHeroPowerLevel")
-#define SystemData_RoomData_iActCamp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iActCamp")
-#define SystemData_RoomData_vTitle (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vTitle")
-#define SystemData_RoomData_mHeroMission (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mHeroMission")
-#define SystemData_RoomData_vEmoji (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vEmoji")
-#define SystemData_RoomData_vItemBuff (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vItemBuff")
-#define SystemData_RoomData_vMapPaint (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vMapPaint")
-#define SystemData_RoomData_mSkinPaint (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mSkinPaint")
-#define SystemData_RoomData_sClientVersion (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sClientVersion")
-#define SystemData_RoomData_uiHolyStatue (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiHolyStatue")
-#define SystemData_RoomData_uiKamon (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiKamon")
-#define SystemData_RoomData_uiUserMapID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiUserMapID")
-#define SystemData_RoomData_iSurviveRank (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iSurviveRank")
-#define SystemData_RoomData_iDefenceRankID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iDefenceRankID")
-#define SystemData_RoomData_iLeagueWCNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iLeagueWCNum")
-#define SystemData_RoomData_iLeagueFCNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iLeagueFCNum")
-#define SystemData_RoomData_iMPLCertifyTime (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMPLCertifyTime")
-#define SystemData_RoomData_iMPLCertifyID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMPLCertifyID")
-#define SystemData_RoomData_mapBattleAttr (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mapBattleAttr")
-#define SystemData_RoomData_iHeroUseCount (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iHeroUseCount")
-#define SystemData_RoomData_iMythPoint (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMythPoint")
-#define SystemData_RoomData_bMythEvaled (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bMythEvaled")
-#define SystemData_RoomData_iDefenceFlag (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iDefenceFlag")
-#define SystemData_RoomData_iDefenPoint (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iDefenPoint")
-#define SystemData_RoomData_iDefenceMap (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iDefenceMap")
-#define SystemData_RoomData_iAIType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iAIType")
-#define SystemData_RoomData_iAISeed (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iAISeed")
-#define SystemData_RoomData_sAiName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sAiName")
-#define SystemData_RoomData_iWarmValue (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iWarmValue")
-#define SystemData_RoomData_uiAircraftIDChooose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiAircraftIDChooose")
-#define SystemData_RoomData_uiHeroIDChoose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiHeroIDChoose")
-#define SystemData_RoomData_uiHeroSkinIDChoose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiHeroSkinIDChoose")
-#define SystemData_RoomData_uiMapIDChoose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiMapIDChoose")
-#define SystemData_RoomData_uiMapSkinIDChoose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiMapSkinIDChoose")
-#define SystemData_RoomData_uiDefenceRankScore (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiDefenceRankScore")
-#define SystemData_RoomData_bBanChat (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bBanChat")
-#define SystemData_RoomData_iChatBanFinishTime (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iChatBanFinishTime")
-#define SystemData_RoomData_iChatBanBattleNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iChatBanBattleNum")
-#define SystemData_RoomData_vFastChat (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vFastChat")
-#define SystemData_RoomData_vWantSelectHero (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vWantSelectHero")
-#define SystemData_RoomData_bForbidUseFaceName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bForbidUseFaceName")
-#define SystemData_RoomData_sClientIp (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sClientIp")
-#define SystemData_RoomData_iRoomOrder (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iRoomOrder")
-#define SystemData_RoomData_vRougeTotalSkill (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vRougeTotalSkill")
-#define SystemData_RoomData_vRougeOMGSkill (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vRougeOMGSkill")
-#define SystemData_RoomData_vRecommendEquipList (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vRecommendEquipList")
-#define SystemData_RoomData_sRecommendEquipVersion (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sRecommendEquipVersion")
-#define SystemData_RoomData_vPingParamDetail (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vPingParamDetail")
-#define SystemData_RoomData_uiPlayerPing (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiPlayerPing")
-#define SystemData_RoomData_mSkinRankSeasonTag (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mSkinRankSeasonTag")
-#define SystemData_RoomData_mSkinNumTag (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mSkinNumTag")
-#define SystemData_RoomData_bFullSkillaber (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bFullSkillaber")
-#define SystemData_RoomData_uiCommanderSkinAttackEffect (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiCommanderSkinAttackEffect")
-#define SystemData_RoomData_uiDailyFreeRandomNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiDailyFreeRandomNum")
-#define SystemData_RoomData_bIllustrateCornerEffectClose (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bIllustrateCornerEffectClose")
-#define SystemData_RoomData_bTagedBackOf2022 (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bTagedBackOf2022")
-#define SystemData_RoomData_iTapConflictTipNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iTapConflictTipNum")
-#define SystemData_RoomData_iNameShowType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iNameShowType")
-#define SystemData_RoomData_bOpenHighLight (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bOpenHighLight")
-#define SystemData_RoomData_mMCBanPickCommander (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mMCBanPickCommander")
-#define SystemData_RoomData_vForbidBanCommander (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vForbidBanCommander")
-#define SystemData_RoomData_iTeamLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iTeamLevel")
-#define SystemData_RoomData_vAdditionalHero (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vAdditionalHero")
-#define SystemData_RoomData_uiDisorderPublicHeroScore (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiDisorderPublicHeroScore")
-#define SystemData_RoomData_bPlayerBirthdayToday (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bPlayerBirthdayToday")
-#define SystemData_RoomData_iTeamHeadId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iTeamHeadId")
-#define SystemData_RoomData_mapHeroBattleNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "mapHeroBattleNum")
-#define SystemData_RoomData_vCurSeasonRealRoadInfo (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vCurSeasonRealRoadInfo")
-#define SystemData_RoomData_vCultivateRoadShow (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "vCultivateRoadShow")
-#define SystemData_RoomData_uiCommanderLevel (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "uiCommanderLevel")
-#define SystemData_RoomData_bOpenSubRankID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bOpenSubRankID")
-#define SystemData_RoomData_iSubRankID (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iSubRankID")
-#define SystemData_RoomData_iSingleLv (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iSingleLv")
-#define SystemData_RoomData_stArenaMatchBattleInfo (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "stArenaMatchBattleInfo")
-#define SystemData_RoomData_stArenaMatchShowInfo (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "stArenaMatchShowInfo")
-#define SystemData_RoomData_stSkinAttach (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "stSkinAttach")
-#define SystemData_RoomData_iMatchTeamId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMatchTeamId")
-#define SystemData_RoomData_iFlowBackTYpe (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iFlowBackTYpe")
-#define SystemData_RoomData_bRoadAdditionCover (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "bRoadAdditionCover")
-#define SystemData_RoomData_iRoadAdditionCoverTimes (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iRoadAdditionCoverTimes")
-#define SystemData_RoomData_iRoomPos (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iRoomPos")
-#define SystemData_RoomData_stEasterEggInfo (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "stEasterEggInfo")
-#define SystemData_RoomData_sMatchTeamName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "sMatchTeamName")
-#define SystemData_RoomData_iMatchTeamFaceId (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "SystemData/RoomData", "iMatchTeamFaceId")
+#define SystemData_RoomData_bAutoConditionNew OFF_SystemData_RoomData_bAutoConditionNew
+#define SystemData_RoomData_bShowSeasonAchieve OFF_SystemData_RoomData_bShowSeasonAchieve
+#define SystemData_RoomData_iStyleBoardId OFF_SystemData_RoomData_iStyleBoardId
+#define SystemData_RoomData_iMatchEffectId OFF_SystemData_RoomData_iMatchEffectId
+#define SystemData_RoomData_iDayBreakNo1Count OFF_SystemData_RoomData_iDayBreakNo1Count
+#define SystemData_RoomData_lUid OFF_SystemData_RoomData_lUid
+#define SystemData_RoomData_bUid OFF_SystemData_RoomData_bUid
+#define SystemData_RoomData_iCamp OFF_SystemData_RoomData_iCamp
+#define SystemData_RoomData_iPos OFF_SystemData_RoomData_iPos
+#define SystemData_RoomData_bAutoReadySelect OFF_SystemData_RoomData_bAutoReadySelect
+#define SystemData_RoomData__sName OFF_SystemData_RoomData__sName
+#define SystemData_RoomData_bRobot OFF_SystemData_RoomData_bRobot
+#define SystemData_RoomData_heroid OFF_SystemData_RoomData_heroid
+#define SystemData_RoomData_heroskin OFF_SystemData_RoomData_heroskin
+#define SystemData_RoomData_headID OFF_SystemData_RoomData_headID
+#define SystemData_RoomData_uiSex OFF_SystemData_RoomData_uiSex
+#define SystemData_RoomData_country OFF_SystemData_RoomData_country
+#define SystemData_RoomData_uiZoneId OFF_SystemData_RoomData_uiZoneId
+#define SystemData_RoomData_summonSkillId OFF_SystemData_RoomData_summonSkillId
+#define SystemData_RoomData_runeId OFF_SystemData_RoomData_runeId
+#define SystemData_RoomData_mapTalentTree OFF_SystemData_RoomData_mapTalentTree
+#define SystemData_RoomData_mRuneSkill2023 OFF_SystemData_RoomData_mRuneSkill2023
+#define SystemData_RoomData_runeLv OFF_SystemData_RoomData_runeLv
+#define SystemData_RoomData_skinlist OFF_SystemData_RoomData_skinlist
+#define SystemData_RoomData_facePath OFF_SystemData_RoomData_facePath
+#define SystemData_RoomData_faceBorder OFF_SystemData_RoomData_faceBorder
+#define SystemData_RoomData_bStarVip OFF_SystemData_RoomData_bStarVip
+#define SystemData_RoomData_bMCStarVip OFF_SystemData_RoomData_bMCStarVip
+#define SystemData_RoomData_bMCStarVipPlus OFF_SystemData_RoomData_bMCStarVipPlus
+#define SystemData_RoomData_ulRoomID OFF_SystemData_RoomData_ulRoomID
+#define SystemData_RoomData_iConBlackRoomId OFF_SystemData_RoomData_iConBlackRoomId
+#define SystemData_RoomData_banHero OFF_SystemData_RoomData_banHero
+#define SystemData_RoomData_vCanSelectHero OFF_SystemData_RoomData_vCanSelectHero
+#define SystemData_RoomData_vCanPickHero OFF_SystemData_RoomData_vCanPickHero
+#define SystemData_RoomData_uiBattlePlayerType OFF_SystemData_RoomData_uiBattlePlayerType
+#define SystemData_RoomData_sThisLoginCountry OFF_SystemData_RoomData_sThisLoginCountry
+#define SystemData_RoomData_sCreateRoleCountry OFF_SystemData_RoomData_sCreateRoleCountry
+#define SystemData_RoomData_uiLanguage OFF_SystemData_RoomData_uiLanguage
+#define SystemData_RoomData_bIsOpenLive OFF_SystemData_RoomData_bIsOpenLive
+#define SystemData_RoomData_iTeamId OFF_SystemData_RoomData_iTeamId
+#define SystemData_RoomData_iTeamNationId OFF_SystemData_RoomData_iTeamNationId
+#define SystemData_RoomData__steamName OFF_SystemData_RoomData__steamName
+#define SystemData_RoomData__steamSimpleName OFF_SystemData_RoomData__steamSimpleName
+#define SystemData_RoomData_iCertify OFF_SystemData_RoomData_iCertify
+#define SystemData_RoomData_lsEffectSkins OFF_SystemData_RoomData_lsEffectSkins
+#define SystemData_RoomData_lsComEffSkins OFF_SystemData_RoomData_lsComEffSkins
+#define SystemData_RoomData_vMissions OFF_SystemData_RoomData_vMissions
+#define SystemData_RoomData_uiRankLevel OFF_SystemData_RoomData_uiRankLevel
+#define SystemData_RoomData_uiPVPRank OFF_SystemData_RoomData_uiPVPRank
+#define SystemData_RoomData_bRankReview OFF_SystemData_RoomData_bRankReview
+#define SystemData_RoomData_iElo OFF_SystemData_RoomData_iElo
+#define SystemData_RoomData_uiRoleLevel OFF_SystemData_RoomData_uiRoleLevel
+#define SystemData_RoomData_bNewPlayer OFF_SystemData_RoomData_bNewPlayer
+#define SystemData_RoomData_iRoad OFF_SystemData_RoomData_iRoad
+#define SystemData_RoomData_uiSkinSource OFF_SystemData_RoomData_uiSkinSource
+#define SystemData_RoomData_iFighterType OFF_SystemData_RoomData_iFighterType
+#define SystemData_RoomData_iWorldCupSupportCountry OFF_SystemData_RoomData_iWorldCupSupportCountry
+#define SystemData_RoomData_iHeroLevel OFF_SystemData_RoomData_iHeroLevel
+#define SystemData_RoomData_iHeroSubLevel OFF_SystemData_RoomData_iHeroSubLevel
+#define SystemData_RoomData_iHeroPowerLevel OFF_SystemData_RoomData_iHeroPowerLevel
+#define SystemData_RoomData_iActCamp OFF_SystemData_RoomData_iActCamp
+#define SystemData_RoomData_vTitle OFF_SystemData_RoomData_vTitle
+#define SystemData_RoomData_mHeroMission OFF_SystemData_RoomData_mHeroMission
+#define SystemData_RoomData_vEmoji OFF_SystemData_RoomData_vEmoji
+#define SystemData_RoomData_vItemBuff OFF_SystemData_RoomData_vItemBuff
+#define SystemData_RoomData_vMapPaint OFF_SystemData_RoomData_vMapPaint
+#define SystemData_RoomData_mSkinPaint OFF_SystemData_RoomData_mSkinPaint
+#define SystemData_RoomData_sClientVersion OFF_SystemData_RoomData_sClientVersion
+#define SystemData_RoomData_uiHolyStatue OFF_SystemData_RoomData_uiHolyStatue
+#define SystemData_RoomData_uiKamon OFF_SystemData_RoomData_uiKamon
+#define SystemData_RoomData_uiUserMapID OFF_SystemData_RoomData_uiUserMapID
+#define SystemData_RoomData_iSurviveRank OFF_SystemData_RoomData_iSurviveRank
+#define SystemData_RoomData_iDefenceRankID OFF_SystemData_RoomData_iDefenceRankID
+#define SystemData_RoomData_iLeagueWCNum OFF_SystemData_RoomData_iLeagueWCNum
+#define SystemData_RoomData_iLeagueFCNum OFF_SystemData_RoomData_iLeagueFCNum
+#define SystemData_RoomData_iMPLCertifyTime OFF_SystemData_RoomData_iMPLCertifyTime
+#define SystemData_RoomData_iMPLCertifyID OFF_SystemData_RoomData_iMPLCertifyID
+#define SystemData_RoomData_mapBattleAttr OFF_SystemData_RoomData_mapBattleAttr
+#define SystemData_RoomData_iHeroUseCount OFF_SystemData_RoomData_iHeroUseCount
+#define SystemData_RoomData_iMythPoint OFF_SystemData_RoomData_iMythPoint
+#define SystemData_RoomData_bMythEvaled OFF_SystemData_RoomData_bMythEvaled
+#define SystemData_RoomData_iDefenceFlag OFF_SystemData_RoomData_iDefenceFlag
+#define SystemData_RoomData_iDefenPoint OFF_SystemData_RoomData_iDefenPoint
+#define SystemData_RoomData_iDefenceMap OFF_SystemData_RoomData_iDefenceMap
+#define SystemData_RoomData_iAIType OFF_SystemData_RoomData_iAIType
+#define SystemData_RoomData_iAISeed OFF_SystemData_RoomData_iAISeed
+#define SystemData_RoomData_sAiName OFF_SystemData_RoomData_sAiName
+#define SystemData_RoomData_iWarmValue OFF_SystemData_RoomData_iWarmValue
+#define SystemData_RoomData_uiAircraftIDChooose OFF_SystemData_RoomData_uiAircraftIDChooose
+#define SystemData_RoomData_uiHeroIDChoose OFF_SystemData_RoomData_uiHeroIDChoose
+#define SystemData_RoomData_uiHeroSkinIDChoose OFF_SystemData_RoomData_uiHeroSkinIDChoose
+#define SystemData_RoomData_uiMapIDChoose OFF_SystemData_RoomData_uiMapIDChoose
+#define SystemData_RoomData_uiMapSkinIDChoose OFF_SystemData_RoomData_uiMapSkinIDChoose
+#define SystemData_RoomData_uiDefenceRankScore OFF_SystemData_RoomData_uiDefenceRankScore
+#define SystemData_RoomData_bBanChat OFF_SystemData_RoomData_bBanChat
+#define SystemData_RoomData_iChatBanFinishTime OFF_SystemData_RoomData_iChatBanFinishTime
+#define SystemData_RoomData_iChatBanBattleNum OFF_SystemData_RoomData_iChatBanBattleNum
+#define SystemData_RoomData_vFastChat OFF_SystemData_RoomData_vFastChat
+#define SystemData_RoomData_vWantSelectHero OFF_SystemData_RoomData_vWantSelectHero
+#define SystemData_RoomData_bForbidUseFaceName OFF_SystemData_RoomData_bForbidUseFaceName
+#define SystemData_RoomData_sClientIp OFF_SystemData_RoomData_sClientIp
+#define SystemData_RoomData_iRoomOrder OFF_SystemData_RoomData_iRoomOrder
+#define SystemData_RoomData_vRougeTotalSkill OFF_SystemData_RoomData_vRougeTotalSkill
+#define SystemData_RoomData_vRougeOMGSkill OFF_SystemData_RoomData_vRougeOMGSkill
+#define SystemData_RoomData_vRecommendEquipList OFF_SystemData_RoomData_vRecommendEquipList
+#define SystemData_RoomData_sRecommendEquipVersion OFF_SystemData_RoomData_sRecommendEquipVersion
+#define SystemData_RoomData_vPingParamDetail OFF_SystemData_RoomData_vPingParamDetail
+#define SystemData_RoomData_uiPlayerPing OFF_SystemData_RoomData_uiPlayerPing
+#define SystemData_RoomData_mSkinRankSeasonTag OFF_SystemData_RoomData_mSkinRankSeasonTag
+#define SystemData_RoomData_mSkinNumTag OFF_SystemData_RoomData_mSkinNumTag
+#define SystemData_RoomData_bFullSkillaber OFF_SystemData_RoomData_bFullSkillaber
+#define SystemData_RoomData_uiCommanderSkinAttackEffect OFF_SystemData_RoomData_uiCommanderSkinAttackEffect
+#define SystemData_RoomData_uiDailyFreeRandomNum OFF_SystemData_RoomData_uiDailyFreeRandomNum
+#define SystemData_RoomData_bIllustrateCornerEffectClose OFF_SystemData_RoomData_bIllustrateCornerEffectClose
+#define SystemData_RoomData_bTagedBackOf2022 OFF_SystemData_RoomData_bTagedBackOf2022
+#define SystemData_RoomData_iTapConflictTipNum OFF_SystemData_RoomData_iTapConflictTipNum
+#define SystemData_RoomData_iNameShowType OFF_SystemData_RoomData_iNameShowType
+#define SystemData_RoomData_bOpenHighLight OFF_SystemData_RoomData_bOpenHighLight
+#define SystemData_RoomData_mMCBanPickCommander OFF_SystemData_RoomData_mMCBanPickCommander
+#define SystemData_RoomData_vForbidBanCommander OFF_SystemData_RoomData_vForbidBanCommander
+#define SystemData_RoomData_iTeamLevel OFF_SystemData_RoomData_iTeamLevel
+#define SystemData_RoomData_vAdditionalHero OFF_SystemData_RoomData_vAdditionalHero
+#define SystemData_RoomData_uiDisorderPublicHeroScore OFF_SystemData_RoomData_uiDisorderPublicHeroScore
+#define SystemData_RoomData_bPlayerBirthdayToday OFF_SystemData_RoomData_bPlayerBirthdayToday
+#define SystemData_RoomData_iTeamHeadId OFF_SystemData_RoomData_iTeamHeadId
+#define SystemData_RoomData_mapHeroBattleNum OFF_SystemData_RoomData_mapHeroBattleNum
+#define SystemData_RoomData_vCurSeasonRealRoadInfo OFF_SystemData_RoomData_vCurSeasonRealRoadInfo
+#define SystemData_RoomData_vCultivateRoadShow OFF_SystemData_RoomData_vCultivateRoadShow
+#define SystemData_RoomData_uiCommanderLevel OFF_SystemData_RoomData_uiCommanderLevel
+#define SystemData_RoomData_bOpenSubRankID OFF_SystemData_RoomData_bOpenSubRankID
+#define SystemData_RoomData_iSubRankID OFF_SystemData_RoomData_iSubRankID
+#define SystemData_RoomData_iSingleLv OFF_SystemData_RoomData_iSingleLv
+#define SystemData_RoomData_stArenaMatchBattleInfo OFF_SystemData_RoomData_stArenaMatchBattleInfo
+#define SystemData_RoomData_stArenaMatchShowInfo OFF_SystemData_RoomData_stArenaMatchShowInfo
+#define SystemData_RoomData_stSkinAttach OFF_SystemData_RoomData_stSkinAttach
+#define SystemData_RoomData_iMatchTeamId OFF_SystemData_RoomData_iMatchTeamId
+#define SystemData_RoomData_iFlowBackTYpe OFF_SystemData_RoomData_iFlowBackTYpe
+#define SystemData_RoomData_bRoadAdditionCover OFF_SystemData_RoomData_bRoadAdditionCover
+#define SystemData_RoomData_iRoadAdditionCoverTimes OFF_SystemData_RoomData_iRoadAdditionCoverTimes
+#define SystemData_RoomData_iRoomPos OFF_SystemData_RoomData_iRoomPos
+#define SystemData_RoomData_stEasterEggInfo OFF_SystemData_RoomData_stEasterEggInfo
+#define SystemData_RoomData_sMatchTeamName OFF_SystemData_RoomData_sMatchTeamName
+#define SystemData_RoomData_iMatchTeamFaceId OFF_SystemData_RoomData_iMatchTeamFaceId
 
 // Added SystemData_StopCheckMD5 Definition to resolve undefined identifier error
 #define SystemData_StopCheckMD5 (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("SystemData"), OBFUSCATE("StopCheckMD5"), 0)
 
 //class SystemData
-#define SystemData_m_uiID (uintptr_t) Il2CppGetStaticFieldOffset("Assembly-CSharp.dll","","SystemData", OBFUSCATE("m_uiID"))
+#define SystemData_m_uiID OFF_SystemData_m_uiID
 
 monoList<uintptr_t> *GetBattlePlayerInfo() {
     return reinterpret_cast<monoList<uintptr_t> *(*)(void *)>(SystemData_GetBattlePlayerInfo)(nullptr);
@@ -246,12 +246,12 @@ void StopMD5Check(){
 
 //Unlock Skin -> Mencoba
 //Class UIRankHero.ChangeShow
-#define UIRankHero_ChangeShow_iSelfHero (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero/ChangeShow"), OBFUSCATE("iSelfHero"))
+#define UIRankHero_ChangeShow_iSelfHero OFF_UIRankHero_ChangeShow_iSelfHero
 
 //Class BattlePlayerInfo
-#define BattlePlayerInfo_lUid (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("lUid"))
-#define BattlePlayerInfo_uiSelHero (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("uiSelHero"))
-#define BattlePlayerInfo_uiSkinId (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("uiSkinId"))
+#define BattlePlayerInfo_lUid OFF_BattlePlayerInfo_lUid
+#define BattlePlayerInfo_uiSelHero OFF_BattlePlayerInfo_uiSelHero
+#define BattlePlayerInfo_uiSkinId OFF_BattlePlayerInfo_uiSkinId
 
 //Class CmdHeroSkin
 #define CmdHeroSkin__ctor (uintptr_t) (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("CmdHeroSkin"), OBFUSCATE(".ctor"))
@@ -294,28 +294,28 @@ void StopMD5Check(){
 #define UIRankHero_RefreshHeroSkinShow (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero/RankingHeroShow"), OBFUSCATE("RefreshHeroSkinShow"), 3)
 
 // UIRankHero BanPick Offsets
-#define UIRankHero_banList (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("banList"))
-#define UIRankHero_pickList (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("pickList"))
-#define UIRankHero_banOrder (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("banOrder"))
-#define UIRankHero_pickOrder (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("pickOrder"))
-#define UIRankHero__startBanTime (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("_startBanTime"))
-#define UIRankHero__startSelectTime (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("_startSelectTime"))
-#define UIRankHero_iBanTimeSpan (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("iBanTimeSpan"))
-#define UIRankHero_iPickTimeSpan (uintptr_t) Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero"), OBFUSCATE("iPickTimeSpan"))
+#define UIRankHero_banList OFF_UIRankHero_banList
+#define UIRankHero_pickList OFF_UIRankHero_pickList
+#define UIRankHero_banOrder OFF_UIRankHero_banOrder
+#define UIRankHero_pickOrder OFF_UIRankHero_pickOrder
+#define UIRankHero__startBanTime OFF_UIRankHero__startBanTime
+#define UIRankHero__startSelectTime OFF_UIRankHero__startSelectTime
+#define UIRankHero_iBanTimeSpan OFF_UIRankHero_iBanTimeSpan
+#define UIRankHero_iPickTimeSpan OFF_UIRankHero_iPickTimeSpan
 
 // Battle Stats
 #define BattleStaticInit_GetTime (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("BattleStaticInit"), OBFUSCATE("GetTime"))
 
 // BattleData & FightHeroInfo (For infobattle)
-#define BattleData_heroInfoList (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleData", "heroInfoList")
-#define FightHeroInfo_m_KillNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_KillNum")
-#define FightHeroInfo_m_DeadNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_DeadNum")
-#define FightHeroInfo_m_AssistNum (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_AssistNum")
-#define FightHeroInfo_m_Gold (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_Gold")
-#define FightHeroInfo_m_TotalGold (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_TotalGold")
-#define FightHeroInfo_m_PlayerName (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_PlayerName")
-#define FightHeroInfo_m_uGuid (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_uGuid")
-#define FightHeroInfo_m_CampType (uintptr_t) Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "FightHeroInfo", "m_CampType")
+#define BattleData_heroInfoList OFF_BattleData_heroInfoList
+#define FightHeroInfo_m_KillNum OFF_FightHeroInfo_m_KillNum
+#define FightHeroInfo_m_DeadNum OFF_FightHeroInfo_m_DeadNum
+#define FightHeroInfo_m_AssistNum OFF_FightHeroInfo_m_AssistNum
+#define FightHeroInfo_m_Gold OFF_FightHeroInfo_m_Gold
+#define FightHeroInfo_m_TotalGold OFF_FightHeroInfo_m_TotalGold
+#define FightHeroInfo_m_PlayerName OFF_FightHeroInfo_m_PlayerName
+#define FightHeroInfo_m_uGuid OFF_FightHeroInfo_m_uGuid
+#define FightHeroInfo_m_CampType OFF_FightHeroInfo_m_CampType
 
 //Class UIRankHero.ChangeShow
 #define UIRankHero_ChangeShow_TrySendUseSkin (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE(""), OBFUSCATE("UIRankHero/ChangeShow"), OBFUSCATE("TrySendUseSkin"), 2)

@@ -13,6 +13,8 @@
 
 #include "Include.h"
 #include "utils.h"
+#include "utils_safe.h"
+#include "DynamicOffsets.h"
 #include "Il2Cpp/il2cpp_dump.h"
 #include "feature/GameClass.h"
 #include "feature/ToString.h"
@@ -37,11 +39,11 @@ void* g_BattleData_Instance = nullptr;
 std::string SafeReadString(uintptr_t monoStringPtr) {
     if (monoStringPtr == 0) return "";
     int32_t length = 0;
-    if (!utils::read_address((void*)(monoStringPtr + 0x10), &length, sizeof(length))) return "";
+    if (!read_memory_safe((void*)(monoStringPtr + 0x10), &length, sizeof(length))) return "";
     if (length <= 0 || length > 1024) return "";
     std::u16string u16;
     u16.resize(length);
-    if (!utils::read_address((void*)(monoStringPtr + 0x14), &u16[0], length * sizeof(char16_t))) return "";
+    if (!read_memory_safe((void*)(monoStringPtr + 0x14), &u16[0], length * sizeof(char16_t))) return "";
     std::string utf8;
     utf8.reserve(length);
     for (char16_t c : u16) {
@@ -53,20 +55,20 @@ std::string SafeReadString(uintptr_t monoStringPtr) {
 
 #define READ_FIELD(target, type, offset) \
     if(offset > 0) { \
-        utils::read_address((void*)((uintptr_t)pawn + offset), &target, sizeof(type)); \
+        read_memory_safe((void*)((uintptr_t)pawn + offset), &target, sizeof(type)); \
     }
 
 #define READ_STRING(target, offset) \
     if(offset > 0) { \
         uintptr_t strPtr = 0; \
-        if (utils::read_address((void*)((uintptr_t)pawn + offset), &strPtr, sizeof(strPtr)) && strPtr != 0) { \
+        if (read_memory_safe((void*)((uintptr_t)pawn + offset), &strPtr, sizeof(strPtr)) && strPtr != 0) { \
             target = SafeReadString(strPtr); \
         } \
     }
 
 #define READ_PTR(target, offset) \
     if(offset > 0) { \
-        utils::read_address((void*)((uintptr_t)pawn + offset), &target, sizeof(uintptr_t)); \
+        read_memory_safe((void*)((uintptr_t)pawn + offset), &target, sizeof(uintptr_t)); \
     }
 
 BattleStats GetBattleStats() {
@@ -74,37 +76,37 @@ BattleStats GetBattleStats() {
     void* showFightDataInstance = nullptr;
     Il2CppGetStaticFieldValue(OBFUSCATE("Assembly-CSharp.dll"), "", OBFUSCATE("ShowFightData"), OBFUSCATE("Instance"), &showFightDataInstance);
     if (showFightDataInstance) {
-        auto* pData = static_cast<ShowFightDataTiny_Layout*>(showFightDataInstance);
-        stats.m_levelOnSixMin = pData->m_levelOnSixMin;
-        stats.m_LevelOnTwelveMin = pData->m_LevelOnTwelveMin;
-        stats.m_KillNumCrossTower = pData->m_KillNumCrossTower;
-        stats.m_RevengeKillNum = pData->m_RevengeKillNum;
-        stats.m_ExtremeBackHomeNum = pData->m_ExtremeBackHomeNum;
-        stats.bLockGuidChanged = pData->bLockGuidChanged;
-        stats.m_BackHomeCount = pData->m_BackHomeCount;
-        stats.m_RecoverSuccessfullyCount = pData->m_RecoverSuccessfullyCount;
-        stats.m_BuyEquipCount = pData->m_BuyEquipCount;
-        stats.m_BuyEquipTime = pData->m_BuyEquipTime;
-        stats.m_uSurvivalCount = pData->m_uSurvivalCount;
-        stats.m_uPlayerCount = pData->m_uPlayerCount;
-        stats.m_iCampAKill = pData->m_iCampAKill;
-        stats.m_iCampBKill = pData->m_iCampBKill;
-        stats.m_CampAGold = pData->m_CampAGold;
-        stats.m_CampBGold = pData->m_CampBGold;
-        stats.m_CampAExp = pData->m_CampAExp;
-        stats.m_CampBExp = pData->m_CampBExp;
-        stats.m_CampAKillTower = pData->m_CampAKillTower;
-        stats.m_CampBKillTower = pData->m_CampBKillTower;
-        stats.m_CampAKillLingZhu = pData->m_CampAKillLingZhu;
-        stats.m_CampBKillLingZhu = pData->m_CampBKillLingZhu;
-        stats.m_CampAKillShenGui = pData->m_CampAKillShenGui;
-        stats.m_CampBKillShenGui = pData->m_CampBKillShenGui;
-        stats.m_CampAKillLingzhuOnSuperior = pData->m_CampAKillLingzhuOnSuperior;
-        stats.m_CampBKillLingzhuOnSuperior = pData->m_CampBKillLingzhuOnSuperior;
-        stats.m_CampASuperiorTime = pData->m_CampASuperiorTime;
-        stats.m_CampBSuperiorTime = pData->m_CampBSuperiorTime;
-        stats.m_iFirstBldTime = pData->m_iFirstBldTime;
-        stats.m_iFirstBldKiller = pData->m_iFirstBldKiller;
+        uintptr_t pawn = (uintptr_t)showFightDataInstance;
+        READ_FIELD(stats.m_levelOnSixMin, uint32_t, OFF_ShowFightDataTiny_m_levelOnSixMin);
+        READ_FIELD(stats.m_LevelOnTwelveMin, uint32_t, OFF_ShowFightDataTiny_m_LevelOnTwelveMin);
+        READ_FIELD(stats.m_KillNumCrossTower, uint32_t, OFF_ShowFightDataTiny_m_KillNumCrossTower);
+        READ_FIELD(stats.m_RevengeKillNum, uint32_t, OFF_ShowFightDataTiny_m_RevengeKillNum);
+        READ_FIELD(stats.m_ExtremeBackHomeNum, uint32_t, OFF_ShowFightDataTiny_m_ExtremeBackHomeNum);
+        READ_FIELD(stats.bLockGuidChanged, bool, OFF_ShowFightDataTiny_bLockGuidChanged);
+        READ_FIELD(stats.m_BackHomeCount, uint32_t, OFF_ShowFightDataTiny_m_BackHomeCount);
+        READ_FIELD(stats.m_RecoverSuccessfullyCount, uint32_t, OFF_ShowFightDataTiny_m_RecoverSuccessfullyCount);
+        READ_FIELD(stats.m_BuyEquipCount, uint32_t, OFF_ShowFightDataTiny_m_BuyEquipCount);
+        READ_FIELD(stats.m_BuyEquipTime, float, OFF_ShowFightDataTiny_m_BuyEquipTime);
+        READ_FIELD(stats.m_uSurvivalCount, uint32_t, OFF_ShowFightDataTiny_m_uSurvivalCount);
+        READ_FIELD(stats.m_uPlayerCount, uint32_t, OFF_ShowFightDataTiny_m_uPlayerCount);
+        READ_FIELD(stats.m_iCampAKill, int32_t, OFF_ShowFightDataTiny_m_iCampAKill);
+        READ_FIELD(stats.m_iCampBKill, int32_t, OFF_ShowFightDataTiny_m_iCampBKill);
+        READ_FIELD(stats.m_CampAGold, uint32_t, OFF_ShowFightDataTiny_m_CampAGold);
+        READ_FIELD(stats.m_CampBGold, uint32_t, OFF_ShowFightDataTiny_m_CampBGold);
+        READ_FIELD(stats.m_CampAExp, uint32_t, OFF_ShowFightDataTiny_m_CampAExp);
+        READ_FIELD(stats.m_CampBExp, uint32_t, OFF_ShowFightDataTiny_m_CampBExp);
+        READ_FIELD(stats.m_CampAKillTower, uint32_t, OFF_ShowFightDataTiny_m_CampAKillTower);
+        READ_FIELD(stats.m_CampBKillTower, uint32_t, OFF_ShowFightDataTiny_m_CampBKillTower);
+        READ_FIELD(stats.m_CampAKillLingZhu, uint32_t, OFF_ShowFightDataTiny_m_CampAKillLingZhu);
+        READ_FIELD(stats.m_CampBKillLingZhu, uint32_t, OFF_ShowFightDataTiny_m_CampBKillLingZhu);
+        READ_FIELD(stats.m_CampAKillShenGui, uint32_t, OFF_ShowFightDataTiny_m_CampAKillShenGui);
+        READ_FIELD(stats.m_CampBKillShenGui, uint32_t, OFF_ShowFightDataTiny_m_CampBKillShenGui);
+        READ_FIELD(stats.m_CampAKillLingzhuOnSuperior, uint32_t, OFF_ShowFightDataTiny_m_CampAKillLingzhuOnSuperior);
+        READ_FIELD(stats.m_CampBKillLingzhuOnSuperior, uint32_t, OFF_ShowFightDataTiny_m_CampBKillLingzhuOnSuperior);
+        READ_FIELD(stats.m_CampASuperiorTime, uint32_t, OFF_ShowFightDataTiny_m_CampASuperiorTime);
+        READ_FIELD(stats.m_CampBSuperiorTime, uint32_t, OFF_ShowFightDataTiny_m_CampBSuperiorTime);
+        READ_FIELD(stats.m_iFirstBldTime, uint32_t, OFF_ShowFightDataTiny_m_iFirstBldTime);
+        READ_FIELD(stats.m_iFirstBldKiller, uint32_t, OFF_ShowFightDataTiny_m_iFirstBldKiller);
     }
     return stats;
 }
@@ -144,7 +146,7 @@ void UpdateLogicPlayerStats(void* logicBattleManager) {
     auto processList = [&](uintptr_t listOffset) {
         if (listOffset == 0) return;
         void* listPtr = nullptr;
-        if (!utils::read_address((void*)((uintptr_t)logicBattleManager + listOffset), &listPtr, sizeof(listPtr)) || !listPtr) return;
+        if (!read_memory_safe((void*)((uintptr_t)logicBattleManager + listOffset), &listPtr, sizeof(listPtr)) || !listPtr) return;
         auto* list = (monoList<void*>*)listPtr;
         int size = list->getSize();
         if (size < 0 || size > 20) return; 
@@ -443,7 +445,7 @@ void UpdateBattleStats(void* logicBattleManager) {
     Il2CppGetStaticFieldValue(OBFUSCATE("Assembly-CSharp.dll"), "", OBFUSCATE("BattleData"), OBFUSCATE("Instance"), &battleDataInstance);
     if (battleDataInstance && BattleData_heroInfoList > 0) {
         void* dictPtr = nullptr;
-        if (utils::read_address((void*)((uintptr_t)battleDataInstance + BattleData_heroInfoList), &dictPtr, sizeof(dictPtr)) && dictPtr) {
+        if (read_memory_safe((void*)((uintptr_t)battleDataInstance + BattleData_heroInfoList), &dictPtr, sizeof(dictPtr)) && dictPtr) {
             auto* dictionary = (Dictionary<uint32_t, void*>*)dictPtr;
             if (dictionary->entries && dictionary->count > 0 && dictionary->count < 50) {
                 auto entries = dictionary->entries->toCPPlist();
@@ -750,6 +752,7 @@ void MonitorBattleState() {
 }
 
 void InitGameLogic() {
+    InitDynamicOffsets();
     LoadConfig();
     LOGI("GameLogic Initialized. Mod Enabled: %s", g_State.isModEnabled ? "true" : "false");
 }
