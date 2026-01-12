@@ -1,31 +1,30 @@
-import net from 'net';
-import { Server } from 'socket.io';
-import http from 'http';
 import { AdbService } from './services/AdbService.js';
 import { GameListener } from './services/GameListener.js';
-
-const SOCKET_IO_PORT = 3000;
-
-// Setup Socket.IO Server
-const httpServer = http.createServer();
-const io = new Server(httpServer, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-});
-
-io.on('connection', (socket) => {
-    console.log('Frontend client connected');
-});
-
-httpServer.listen(SOCKET_IO_PORT, () => {
-    console.log(`Socket.IO server listening on port ${SOCKET_IO_PORT}`);
-});
+import { SocketServer } from './services/SocketServer.js';
+import { Database } from './services/Database.js';
 
 // Initialize Services
 const adbService = new AdbService();
 adbService.setupForwarding();
 
+const socketServer = new SocketServer();
+socketServer.start();
+
+const database = new Database();
+
 const gameListener = new GameListener();
+
+gameListener.on('data', (data) => {
+    // Broadcast real-time data to frontend
+    socketServer.broadcast('update', data);
+
+    // Check for Game Over state to save match
+    // Based on GameLogic.cpp, GetBattleState returns an int.
+    // 7 seems to be End/GameOver based on logic there (stopping timer).
+    if (data.debug && data.debug.game_state === 7) {
+        console.log("Game Over detected. Saving match...");
+        database.saveMatch(data);
+    }
+});
+
 gameListener.start();

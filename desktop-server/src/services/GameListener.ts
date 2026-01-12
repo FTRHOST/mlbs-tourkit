@@ -1,6 +1,7 @@
 import net from 'net';
+import { EventEmitter } from 'events';
 
-export class GameListener {
+export class GameListener extends EventEmitter {
     private client: net.Socket;
     private port: number = 12345;
     private host: string = '127.0.0.1';
@@ -9,6 +10,7 @@ export class GameListener {
     private isConnected: boolean = false;
 
     constructor() {
+        super();
         this.client = new net.Socket();
 
         this.client.on('data', (data: Buffer) => {
@@ -35,9 +37,6 @@ export class GameListener {
                 console.error('Socket Error:', err.message);
             }
             this.isConnected = false;
-            // 'close' event is usually emitted after 'error', so reconnect logic is there.
-            // But just in case 'close' doesn't fire on some errors:
-            // We rely on 'close' to trigger reconnect to avoid double timers.
         });
     }
 
@@ -71,22 +70,18 @@ export class GameListener {
 
         try {
             const json = JSON.parse(message);
+            this.emit('data', json);
 
             if (json.data && json.data.logic_players && Array.isArray(json.data.logic_players)) {
+                // Keep the simple log for debugging
                 const player = json.data.logic_players[0];
-                if (player) {
-                     const gold = player.totalGold;
-                     console.log(`[GAME DATA] Gold: ${gold}`);
-                } else {
-                    console.log('[GAME DATA] Received data (No player details)');
+                if (player && player.totalGold !== undefined) {
+                     console.log(`[GAME DATA] Gold: ${player.totalGold}`);
                 }
-            } else {
-                 console.log('[GAME DATA]', message);
             }
 
         } catch (e) {
             console.error('Failed to parse JSON:', e);
-            // console.error('Raw message:', message); // Optional: reduce noise
         }
     }
 }
