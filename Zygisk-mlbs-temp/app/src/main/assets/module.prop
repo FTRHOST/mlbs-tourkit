@@ -1,0 +1,8 @@
+id=zygisk_mlbs
+name=Zygisk MLBS
+version=v1.0
+versionCode=1
+author=petwir (migrated)
+description=MLBS cheat menu migrated to Zygisk.
+minApi=21
+maxApi=30
