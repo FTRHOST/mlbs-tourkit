@@ -1,0 +1,7 @@
+node_modules/
+desktop-server/node_modules/
+desktop-server/dist/
+overlay-MLBB/node_modules/
+overlay-MLBB/dist/
+Zygisk-mlbs-temp/build/
+.DS_Store

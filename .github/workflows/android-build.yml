@@ -1,0 +1,43 @@
+name: Build Android Magisk Module
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install NDK
+      run: sdkmanager "ndk;27.0.12077973"
+
+    - name: Grant execute permission
+      run: chmod +x Zygisk-mlbs-temp/gradlew Zygisk-mlbs-temp/package.sh
+
+    - name: Build Zygisk Module
+      working-directory: Zygisk-mlbs-temp
+      run: ./package.sh
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Zygisk-MLBS
+        path: Zygisk-mlbs-temp/build/Zygisk-MLBS.zip

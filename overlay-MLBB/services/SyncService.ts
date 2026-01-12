@@ -1,105 +1,62 @@
-import { AppState } from '../types';
+import { io, Socket } from 'socket.io-client';
+import { AppState, GameData } from '../types';
 
-// Dynamically determine WebSocket URL based on current host
-const getWebSocketUrl = () => {
-  if (import.meta.env.VITE_WS_URL) {
-    return import.meta.env.VITE_WS_URL;
-  }
-  
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const host = window.location.hostname;
-
-  // In Development (Vite on 3001), backend is usually on 3003
-  if (import.meta.env.DEV) {
-    return `${protocol}//${host}:3003`;
-  }
-
-  // In Production (Same Origin), use the current port (if any)
-  // This handles both IP:3003 and Public Domains (Implicit Port 80/443)
-  const port = window.location.port ? `:${window.location.port}` : '';
-  return `${protocol}//${host}${port}`;
-};
-
-const WEBSOCKET_URL = getWebSocketUrl();
+const SOCKET_URL = 'http://localhost:3000';
 
 class SyncService {
-  private ws: WebSocket | null = null;
+  private socket: Socket | null = null;
   private onUpdateCallback: ((state: AppState) => void) | null = null;
+  private onGameDataCallback: ((data: GameData) => void) | null = null;
   private isConnected = false;
-  private httpBaseUrl: string;
 
   constructor() {
-    // Determine HTTP base URL dynamically as well
-    const protocol = window.location.protocol;
-    const host = window.location.hostname;
-    // Use the configured WS URL's port/host or fallback to derivation
-    // For simplicity in this specific setup where backend is known to be on 3003:
-    this.httpBaseUrl = `${protocol}//${host}:3003`; 
-    
     this.connect();
   }
 
   private connect() {
-    this.ws = new WebSocket(WEBSOCKET_URL);
+    this.socket = io(SOCKET_URL);
 
-    this.ws.onopen = () => {
-      console.log('Connected to WebSocket server');
+    this.socket.on('connect', () => {
+      console.log('Connected to Socket.IO server');
       this.isConnected = true;
-    };
+    });
 
-    this.ws.onmessage = (event) => {
-      try {
-        const state = JSON.parse(event.data);
-        if (this.onUpdateCallback) {
-          this.onUpdateCallback(state);
-        }
-      } catch (e) {
-        console.error('Failed to parse message from server:', e);
-      }
-    };
-
-    this.ws.onclose = () => {
-      console.log('Disconnected from WebSocket server. Reconnecting...');
+    this.socket.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server');
       this.isConnected = false;
-      setTimeout(() => this.connect(), 3000); // Coba konek lagi setelah 3 detik
-    };
+    });
 
-    this.ws.onerror = (err) => {
-      console.error('WebSocket error:', err);
-      this.ws?.close();
-    };
+    // Listen for manual overlay state updates (if any)
+    this.socket.on('state_update', (state: AppState) => {
+        if (this.onUpdateCallback) {
+            this.onUpdateCallback(state);
+        }
+    });
+
+    // Listen for real-time game data from C++ -> Node.js -> Frontend
+    this.socket.on('update', (data: GameData) => {
+        if (this.onGameDataCallback) {
+            this.onGameDataCallback(data);
+        }
+        // Also potentially merge into AppState if needed
+    });
   }
 
-  // Kirim state ke server
+  // Kirim state manual ke server (e.g. control panel updates)
   saveState(state: AppState) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(state));
-    } else {
-      console.warn('WebSocket is not connected. State not saved.');
+    if (this.socket && this.isConnected) {
+      this.socket.emit('save_state', state);
     }
   }
 
-  // Dengar perubahan dari server
   onUpdate(callback: (state: AppState) => void) {
     this.onUpdateCallback = callback;
   }
-  
-  // Method untuk mereset state di server
-  async resetState() {
-    try {
-      const response = await fetch(`${this.httpBaseUrl}/reset`, {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to reset state on server.');
-      }
-      console.log('Server state reset initiated.');
-    } catch (error) {
-      console.error('Error resetting state:', error);
-    }
+
+  onGameData(callback: (data: GameData) => void) {
+      this.onGameDataCallback = callback;
   }
 
-  // Helper untuk mengecek status koneksi jika diperlukan
   getIsConnected(): boolean {
     return this.isConnected;
   }
