@@ -1,0 +1,13 @@
+{
+  "name": "mlbs-tourkit-unified",
+  "version": "1.0.0",
+  "scripts": {
+    "install:all": "cd desktop-server && npm install && cd ../overlay-MLBB && npm install",
+    "start": "concurrently \"npm run start:server\" \"npm run start:web\"",
+    "start:server": "cd desktop-server && npm run start",
+    "start:web": "cd overlay-MLBB && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
