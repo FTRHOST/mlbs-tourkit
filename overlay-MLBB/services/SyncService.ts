@@ -1,65 +1,116 @@
 import { io, Socket } from 'socket.io-client';
 import { AppState, GameData } from '../types';
 
-const SOCKET_URL = 'http://localhost:3000';
+type Listener = (state: Partial<AppState>) => void;
 
 class SyncService {
-  private socket: Socket | null = null;
-  private onUpdateCallback: ((state: AppState) => void) | null = null;
-  private onGameDataCallback: ((data: GameData) => void) | null = null;
-  private isConnected = false;
+  private static instance: SyncService;
+  private socket: Socket;
+  private listeners: Listener[] = [];
+
+  private currentState: Partial<AppState> = {
+    status: 'connecting',
+    gameData: undefined
+  };
 
   constructor() {
-    this.connect();
+    // Determine connection URL
+    // If running via Vite Proxy (development), usually connects to same origin.
+    // But since Socket.IO port is distinct (3000) and we might access via IP, let's explicit it.
+    // If accessed via http://192.168.1.5:5173, we want socket at http://192.168.1.5:3000
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const port = '3000';
+    const url = `${protocol}//${hostname}:${port}`;
+
+    console.log('🔌 Connecting to Unified Server at:', url);
+
+    this.socket = io(url, {
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+      reconnection: true
+    });
+
+    this.setupSocketListeners();
   }
 
-  private connect() {
-    this.socket = io(SOCKET_URL);
+  public static getInstance(): SyncService {
+    if (!SyncService.instance) {
+      SyncService.instance = new SyncService();
+    }
+    return SyncService.instance;
+  }
 
+  private setupSocketListeners() {
     this.socket.on('connect', () => {
-      console.log('Connected to Socket.IO server');
-      this.isConnected = true;
+      console.log('✅ Connected to Unified Server');
+      this._updateInternalState({ status: 'connected' });
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Disconnected from Socket.IO server');
-      this.isConnected = false;
+      console.log('❌ Disconnected from Unified Server');
+      this._updateInternalState({ status: 'disconnected' });
     });
 
-    // Listen for manual overlay state updates (if any)
+    // 1. Overlay State Updates (Team Names, Score, Config)
     this.socket.on('state_update', (state: AppState) => {
-        if (this.onUpdateCallback) {
-            this.onUpdateCallback(state);
-        }
+      // console.log('📥 State Update received');
+      this._updateInternalState(state);
     });
 
-    // Listen for real-time game data from C++ -> Node.js -> Frontend
+    // 2. Game Data Updates (Real-time from ADB/Zygisk)
     this.socket.on('update', (data: GameData) => {
-        if (this.onGameDataCallback) {
-            this.onGameDataCallback(data);
-        }
-        // Also potentially merge into AppState if needed
+      // console.log('🎮 Game Data received');
+      this._updateInternalState({ gameData: data });
     });
   }
 
-  // Kirim state manual ke server (e.g. control panel updates)
-  saveState(state: AppState) {
-    if (this.socket && this.isConnected) {
-      this.socket.emit('save_state', state);
+  private _updateInternalState(newState: Partial<AppState>) {
+    this.currentState = { ...this.currentState, ...newState };
+    this.notifyListeners(newState);
+  }
+
+  subscribe(listener: Listener) {
+    this.listeners.push(listener);
+    listener(this.currentState);
+  }
+
+  addListener(listener: Listener) {
+    this.subscribe(listener);
+  }
+
+  removeListener(listener: Listener) {
+    this.listeners = this.listeners.filter(l => l !== listener);
+  }
+
+  private notifyListeners(state: Partial<AppState>) {
+    this.listeners.forEach(listener => listener(state));
+  }
+
+  updateState(partialState: Partial<AppState>) {
+    if (this.socket && this.socket.connected) {
+        this.socket.emit('update_state', partialState);
     }
   }
 
-  onUpdate(callback: (state: AppState) => void) {
-    this.onUpdateCallback = callback;
+  saveState(state: AppState) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('update_state', state);
+    }
   }
 
-  onGameData(callback: (data: GameData) => void) {
-      this.onGameDataCallback = callback;
+  resetState() {
+    // Use the proxy configured in Vite
+    fetch('/api/reset', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => console.log('Reset response:', data))
+        .catch(err => console.error("Reset failed", err));
   }
 
   getIsConnected(): boolean {
-    return this.isConnected;
+    return this.socket.connected;
   }
 }
 
-export const syncService = new SyncService();
+export { SyncService };
+export const syncService = SyncService.getInstance();

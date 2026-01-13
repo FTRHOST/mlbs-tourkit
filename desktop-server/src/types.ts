@@ -21,7 +21,7 @@ export interface GameState {
     timer: boolean;
     turn: boolean;
     score: boolean;
-    isAutoSync: boolean; // Add isAutoSync here
+    isAutoSync: boolean;
   };
 }
 
@@ -135,7 +135,7 @@ export interface GameData {
         room_info?: RoomInfo;
         logic_players?: LogicPlayer[];
         battle_stats?: BattleStats;
-        battle_players?: any[]; // Populated if needed
+        battle_players?: any[];
     };
 }
 
@@ -169,45 +169,47 @@ export const DEFAULT_GAME_DATA: GameData = {
     }
 };
 
-export const DEFAULT_APP_STATE: AppState = {
+export const INITIAL_STATE: AppState = {
   blue: {
-    name: 'BLUE TEAM',
-    picks: ['0', '0', '0', '0', '0'],
-    pNames: ['', '', '', '', ''],
+    name: 'MANSABA A',
+    logo: '',
+    picks: ['', '', '', '', ''],
+    pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
-    bans: ['0', '0', '0', '0', '0'],
+    bans: ['', '', '', '', ''],
     score: 0
   },
   red: {
-    name: 'RED TEAM',
-    picks: ['0', '0', '0', '0', '0'],
-    pNames: ['', '', '', '', ''],
+    name: 'MANSABA B',
+    logo: '',
+    picks: ['', '', '', '', ''],
+    pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
-    bans: ['0', '0', '0', '0', '0'],
+    bans: ['', '', '', '', ''],
     score: 0
   },
   game: {
-    matchTitle: 'MATCH TITLE',
-    phase: 'PREPARING',
-    timer: 0,
+    matchTitle: 'MATCH DAY 1',
+    phase: 'BANNING',
+    timer: 30,
     turn: 'blue',
     isIntroActive: false,
-    isGameControlEnabled: false,
+    isGameControlEnabled: true,
     bestOf: 3,
     visibility: {
       phase: true,
       timer: true,
       turn: true,
       score: true,
-      isAutoSync: true
+      isAutoSync: false
     }
   },
-  ads: [],
+  ads: ['AD 1', 'AD 2', 'AD 3'],
   adConfig: {
-    type: 'text',
+    type: 'images',
     effect: 'scroll',
-    text: 'WAITING FOR DATA...',
-    speed: 10
+    text: 'WELCOME TO THE TOURNAMENT! ENJOY THE MATCH!',
+    speed: 25
   },
   assets: {
     union1: '',

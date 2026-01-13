@@ -1,0 +1,154 @@
+{
+  "blue": {
+    "name": "BLUE TEAM",
+    "picks": [
+      "112",
+      "54",
+      "0",
+      "0",
+      "0"
+    ],
+    "pNames": [
+      "macom07",
+      "Computer",
+      "PLAYER",
+      "PLAYER",
+      "PLAYER"
+    ],
+    "pIds": [
+      "2055252516",
+      "99",
+      "",
+      "",
+      ""
+    ],
+    "bans": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "score": 0
+  },
+  "red": {
+    "name": "RED TEAM",
+    "picks": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "pNames": [
+      "PLAYER",
+      "PLAYER",
+      "PLAYER",
+      "PLAYER",
+      "PLAYER"
+    ],
+    "pIds": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "bans": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "score": 0
+  },
+  "game": {
+    "matchTitle": "MATCH TITLE",
+    "phase": "PREPARING",
+    "timer": 230,
+    "turn": "blue",
+    "isIntroActive": false,
+    "isGameControlEnabled": false,
+    "bestOf": 3,
+    "visibility": {
+      "phase": true,
+      "timer": true,
+      "turn": true,
+      "score": true,
+      "isAutoSync": true
+    }
+  },
+  "ads": [],
+  "adConfig": {
+    "type": "text",
+    "effect": "scroll",
+    "text": "WAITING FOR DATA...",
+    "speed": 10
+  },
+  "assets": {
+    "union1": "",
+    "union2": "",
+    "logo": "",
+    "gradient": ""
+  },
+  "registry": [],
+  "teamLibrary": [],
+  "history": [],
+  "gameData": {
+    "type": "heartbeat",
+    "debug": {
+      "manager_found": true,
+      "game_state": 3,
+      "feature_enabled": true
+    },
+    "data": {
+      "room_info": {
+        "player_count": 2,
+        "players": [
+          {
+            "lUid": 2055252516,
+            "_sName": "macom07",
+            "iCamp": 1,
+            "heroid": 112,
+            "uiRankLevel": 23,
+            "summonSkillId": 20050,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 2121
+          },
+          {
+            "lUid": 99,
+            "_sName": "Computer",
+            "iCamp": 1,
+            "heroid": 57,
+            "uiRankLevel": 0,
+            "summonSkillId": 20050,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
+            "heroskin": 1571
+          }
+        ],
+        "logic_players": []
+      },
+      "battle_stats": {
+        "time": 230.64,
+        "m_iCampAKill": 0,
+        "m_iCampBKill": 0,
+        "m_CampAGold": 0,
+        "m_CampBGold": 0,
+        "m_CampAExp": 0,
+        "m_CampBExp": 0,
+        "m_CampAKillTower": 0,
+        "m_CampBKillTower": 0,
+        "m_CampAKillLingZhu": 0,
+        "m_CampBKillLingZhu": 0,
+        "m_CampAKillShenGui": 0,
+        "m_CampBKillShenGui": 0
+      }
+    }
+  },
+  "status": "connecting"
+}

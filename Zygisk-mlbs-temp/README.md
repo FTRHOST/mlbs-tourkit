@@ -1,37 +1,30 @@
-# Android Mod Template (Zygisk + IPC) (MLBS)
+# MLBS Zygisk Module
 
-![GitHub](https://img.shields.io/github/license/LGLTeam/Android-Mod-Menu?style=flat-square)
+Modul Zygisk ini dirancang untuk mengekstrak data real-time dari Mobile Legends: Bang Bang (MLBB) untuk keperluan penyiaran (broadcasting) turnamen.
 
-Stealthy Zygisk module template for Android games (IL2CPP) focused on safety and anti-cheat evasion. This repository provides a base for creating game mods that broadcast data via **IPC (Unix Domain Sockets)** instead of using visual overlays or network ports.
+## Fitur Saat Ini
+*   **Heartbeat/State Monitoring:** Memantau status permainan (Lobby, Draft, Loading, In-Game).
+*   **Room Info:** Ekstraksi data pemain (Nama, Hero ID, Spell, Camp) saat di Lobby/Draft.
+*   **Battle Stats:** Ekstraksi data statistik (Kill, Gold, Tower, Lord/Turtle) saat In-Game.
+*   **Logic Player Stats:** Ekstraksi data mendalam dari `LogicPlayer` (Total Gold, Kill Streaks, dsb).
+*   **Ban/Pick Monitoring (New):** Memantau daftar hero yang di-ban dan di-pick secara real-time.
+*   **IPC Server:** Mengirimkan data via Unix Domain Socket (`mlbs_ipc`) yang kemudian diteruskan oleh ADB ke Unified Server.
 
-## Documentation / Dokumentasi
+## Arsitektur Data
+1.  **Zygisk Module:** Menginjeksi kode C++ ke dalam proses MLBB.
+2.  **Il2Cpp Resolver:** Mencari offset memori secara dinamis menggunakan `DynamicOffsets.cpp`.
+3.  **Unix Socket:** Membuka socket di `/dev/socket/mlbs_ipc` (atau abstract namespace).
+4.  **ADB Forward:** Komputer melakukan `adb forward tcp:12345 localabstract:mlbs_ipc`.
+5.  **Unified Server:** Node.js server terhubung ke port 12345 dan menyebarkan data via Socket.IO ke Frontend.
 
-Complete documentation is available in the `docs/` folder.
-Dokumentasi lengkap tersedia di dalam folder `docs/`.
+## Pengembangan (Menambah Offset Baru)
+Untuk menambah field memori baru:
+1.  Tambahkan `DEFINE_OFFSET(NamaField)` di `DynamicOffsets.h`.
+2.  Tambahkan `IMPL_OFFSET(NamaField)` di `DynamicOffsets.cpp`.
+3.  Tambahkan baris inisialisasi di `InitDynamicOffsets()` menggunakan macro `INIT_OFFSET`.
+4.  Gunakan macro `READ_FIELD` atau `READ_PTR` di `GameLogic.cpp` untuk membaca datanya.
 
-### 🇮🇩 Bahasa Indonesia
-- **[Pengantar & Instalasi](docs/id/PENGANTAR.md)**: Mulai di sini. Cara build dan install.
-- **[Fitur & Penggunaan](docs/id/FITUR.md)**: Penjelasan fitur Room Info, IPC Broadcasting, dll.
-- **[Panduan Pengembangan](docs/id/PENGEMBANGAN.md)**: Penjelasan kode (hooks, IPC, logic) untuk developer.
-
-### 🇺🇸 English
-- **[Introduction & Installation](docs/en/INTRODUCTION.md)**: Start here. How to build and install.
-- **[Features & Usage](docs/en/FEATURES.md)**: Explanation of Room Info, IPC Broadcasting, etc.
-- **[Development Guide](docs/en/DEVELOPMENT.md)**: Code explanation (hooks, IPC, logic) for developers.
-
----
-
-## Features Overview
-- **Stealth Mode:** No visual overlay, no open network ports, no input hooks.
-- **Zygisk Module:** Clean injection method using Magisk/KernelSU.
-- **IPC Broadcasting:** Broadcasts game data (Room Info, Stats) via Unix Domain Sockets (Abstract Namespace) for external tools to read.
-- **Memory Hacking:** Example implementation of reading game memory (IL2CPP) safely.
-- **String Obfuscation:** Compile-time encryption for sensitive strings.
-
-## Credits
-- **LGLTeam**
-- **MJx0 (KittyMemory)**
-- **Rprop (And64InlineHook)**
-
-## License
-GNU General Public License 3
+## Prasyarat Build
+*   Android NDK (r21e atau lebih baru)
+*   Gradle
+*   Akses Root pada perangkat target (untuk menginstal modul Magisk/Zygisk).

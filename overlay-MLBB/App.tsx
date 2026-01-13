@@ -1,59 +1,9 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Overlay from './components/Overlay';
 import ControlPanel from './ControlPanel';
-import { AppState } from './types';
-import { syncService } from './services/SyncService';
-
-// INITIAL_STATE is now managed by the server.
-// The client will receive it upon connection.
-
-const App: React.FC = () => {
-  // Initialize state to null until we get it from the server
-  const [state, setState] = useState<AppState | null>(null);
-
-  useEffect(() => {
-    // onUpdate will be called both on initial connection and for subsequent updates
-    syncService.onUpdate((remoteState) => {
-      setState(remoteState);
-    });
-  }, []); // Empty dependency array means this runs once on mount
-
-  const updateState = useCallback((newState: AppState | ((prev: AppState) => AppState)) => {
-    // We need to handle the function form of setState
-    setState(prev => {
-      // If the previous state is null, we can't apply a function update.
-      // This case should ideally not happen if updateState is called only after state is set.
-      if (prev === null) {
-          if (typeof newState === 'function') return null;
-          syncService.saveState(newState);
-          return newState;
-      }
-      
-      const updated = typeof newState === 'function' ? newState(prev) : newState;
-      syncService.saveState(updated);
-      return updated;
-    });
-  }, []);
-
-  const resetState = () => {
-    // This now sends a request to the server to reset the state for everyone
-    syncService.resetState();
-  };
-
-  // Render a loading/connecting message until we have state
-  if (!state) {
-    return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server...</div>;
-  }
-
-  return (
-    <Routes>
-      <Route path="/" element={<OverlayContainer state={state} />} />
-      <Route path="/control" element={<ControlPanel state={state} updateState={updateState} resetState={resetState} />} />
-    </Routes>
-  );
-};
+import { SyncService } from './services/SyncService';
+import { AppState, DEFAULT_APP_STATE, DEFAULT_GAME_DATA } from './types';
 
 const OverlayContainer: React.FC<{ state: AppState }> = ({ state }) => {
   useEffect(() => {
@@ -75,6 +25,135 @@ const OverlayContainer: React.FC<{ state: AppState }> = ({ state }) => {
         <Overlay data={state} />
       </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  const [state, setState] = useState<AppState | null>(null);
+
+  // 1. Setup Koneksi Socket
+  useEffect(() => {
+    const sync = SyncService.getInstance();
+    
+    const handleUpdate = (newState: Partial<AppState>) => {
+      setState(prev => {
+        return prev ? { ...prev, ...newState } : { ...DEFAULT_APP_STATE, ...newState };
+      });
+    };
+
+    sync.subscribe(handleUpdate);
+
+    return () => {
+      sync.removeListener(handleUpdate);
+    };
+  }, []);
+
+  const updateState = useCallback((newState: AppState | ((prev: AppState) => AppState)) => {
+    setState(prev => {
+      if (!prev) {
+          if (typeof newState === 'function') return null;
+          SyncService.getInstance().saveState(newState);
+          return newState;
+      }
+      const updated = typeof newState === 'function' ? newState(prev) : newState;
+      SyncService.getInstance().saveState(updated);
+      return updated;
+    });
+  }, []);
+
+  const resetState = useCallback(() => {
+    SyncService.getInstance().resetState();
+  }, []);
+
+  // --- PERBAIKAN: useMemo diletakkan DISINI (Sebelum 'if !state return') ---
+  const displayState: AppState = useMemo(() => {
+    // Jika state belum ada, gunakan default agar tidak error
+    if (!state) return DEFAULT_APP_STATE;
+
+    // Copy state saat ini
+    const current: AppState = { 
+      ...DEFAULT_APP_STATE, 
+      ...state, 
+      gameData: state.gameData || DEFAULT_GAME_DATA 
+    };
+
+    // --- LOGIKA MAPPING DATA GAME C++ KE UI ---
+    // Only map if Auto Sync is ENABLED globally
+    const isAutoSync = current.game.visibility?.isAutoSync ?? true; 
+    
+    // Robust check for nested data
+    const roomInfo = current.gameData?.data?.room_info || current.gameData?.room_info;
+    
+    if (isAutoSync && roomInfo && roomInfo.players) {
+      // Sort players to ensure consistent slot mapping
+      // REMOVED: .sort((a: any, b: any) => (a.lUid || 0) - (b.lUid || 0)) to prevent jumping
+      const sortedPlayers = [...roomInfo.players];
+      const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
+      const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
+
+      const processSide = (sidePlayers: any[], currentTeam: any) => {
+          const picks = Array(5).fill('0');
+          const bans = Array(5).fill('0');
+          const pNames = Array(5).fill('PLAYER');
+          const pIds = Array(5).fill('');
+
+          sidePlayers.forEach((p: any, idx: number) => {
+              if (idx < 5) {
+                  picks[idx] = String(p.heroid || 0);
+                  pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
+                  pIds[idx] = String(p.lUid || '');
+                  bans[idx] = String(p.banHero || 0);
+              }
+          });
+
+          return {
+              ...currentTeam,
+              picks,
+              bans,
+              pNames,
+              pIds
+          };
+      };
+
+      current.blue = processSide(blueTeamPlayers, current.blue);
+      current.red = processSide(redTeamPlayers, current.red);
+    }
+
+    // Battle Stats mapping (Timer)
+    const battleStats = current.gameData?.data?.battle_stats || current.gameData?.battle_stats;
+    if (battleStats && battleStats.time > 0) {
+        current.game = { ...current.game, timer: Math.floor(battleStats.time) };
+    }
+
+    return current;
+  }, [state]);
+
+  // --- LOADING CHECK (Hanya boleh dilakukan SETELAH semua hooks dideklarasikan) ---
+  if (!state) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Connecting to Overlay Server...</h1>
+          <p>Pastikan Terminal Unified Server (Port 3000) berjalan.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<OverlayContainer state={displayState} />} />
+      <Route 
+        path="/control" 
+        element={
+          <ControlPanel 
+            state={displayState} 
+            updateState={updateState} 
+            resetState={resetState} 
+          />
+        } 
+      />
+    </Routes>
   );
 };
 

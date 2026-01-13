@@ -4,11 +4,24 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
-  console.log('VITE_WS_URL:', env.VITE_WS_URL);
   return {
     server: {
-      host: true,
-      port: 3001
+      host: true, // Listen on all interfaces (0.0.0.0)
+      port: 5173, // Standard Vite Port
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true
+        },
+        '/upload': {
+          target: 'http://localhost:3000',
+          changeOrigin: true
+        },
+        '/socket.io': {
+          target: 'http://localhost:3000',
+          ws: true
+        }
+      }
     },
     plugins: [react()],
     define: {
