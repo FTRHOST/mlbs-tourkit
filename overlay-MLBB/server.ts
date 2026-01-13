@@ -3,7 +3,7 @@ import multer from 'multer';
 import cors from 'cors';
 import path, { dirname } from 'path';
 import http from 'http';
-import { WebSocketServer, WebSocket } from 'ws';
+import { Server } from 'socket.io';
 import { AppState, TeamLibraryEntry } from './types.js';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
@@ -74,7 +74,7 @@ const INITIAL_STATE: AppState = {
       timer: true,
       turn: true,
       score: true,
-      isAutoSync: false // NEW
+      isAutoSync: false
     }
   },
   ads: ['AD 1', 'AD 2', 'AD 3'],
@@ -129,7 +129,6 @@ try {
   console.error('Error loading or parsing metadata.json:', error);
 }
 
-// Function to save state to metadata.json
 const saveState = () => {
   try {
     fs.writeFileSync(METADATA_FILE_PATH, JSON.stringify(appState, null, 2), 'utf8');
@@ -158,6 +157,14 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 // Endpoint to reset state (Match Reset)
 app.post('/reset', (req, res) => {
@@ -197,11 +204,7 @@ app.post('/reset', (req, res) => {
   persistentVisibility = visibilityToKeep;
   
   saveState();
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(appState));
-    }
-  });
+  io.emit('state_update', appState);
   res.status(200).send({ message: 'Match reset successfully.' });
 });
 
@@ -218,8 +221,6 @@ app.post('/api/factory-reset', async (req, res) => {
         if (fs.existsSync(METADATA_FILE_PATH)) fs.unlinkSync(METADATA_FILE_PATH);
         if (fs.existsSync(HISTORY_FILE_PATH)) fs.unlinkSync(HISTORY_FILE_PATH);
         if (fs.existsSync(VISIBILITY_FILE_PATH)) fs.unlinkSync(VISIBILITY_FILE_PATH);
-        // game_config.json is environment config, maybe keep it? User said "reset semuanya".
-        // Usually factory reset clears user data. Game URL is config. Let's clear it too to be safe.
         if (fs.existsSync(GAME_CONFIG_PATH)) fs.unlinkSync(GAME_CONFIG_PATH);
 
         // 3. Clear Uploaded Assets (Logos)
@@ -230,11 +231,7 @@ app.post('/api/factory-reset', async (req, res) => {
         saveState();
 
         // 5. Broadcast
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(appState));
-            }
-        });
+        io.emit('state_update', appState);
 
         res.json({ success: true, message: 'Factory Reset Complete. System is clean.' });
     } catch (e: any) {
@@ -264,11 +261,7 @@ app.post('/api/save-history', express.json(), async (req, res) => {
     await fs.writeJson(HISTORY_FILE_PATH, history, { spaces: 2 });
     
     appState.history = history;
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(appState));
-      }
-    });
+    io.emit('state_update', appState);
     
     console.log('Match history saved:', entry.id);
     res.json({ success: true, id: entry.id });
@@ -434,11 +427,7 @@ app.post('/api/import-teams', upload.single('file'), async (req, res) => {
     appState.teamLibrary = teams;
     saveState();
 
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(appState));
-        }
-    });
+    io.emit('state_update', appState);
 
     await fs.remove(extractPath);
     await fs.remove(zipPath);
@@ -465,11 +454,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
       appState.assets.logo = filePath;
   }
   saveState();
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(appState));
-    }
-  });
+  io.emit('state_update', appState);
   res.send({ message: 'File uploaded and state updated.', filePath: filePath });
 });
 
@@ -479,31 +464,26 @@ app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+// Socket.IO Logic
+io.on('connection', (socket) => {
+  console.log('Client connected to Overlay Server (3003)');
 
-wss.on('connection', (ws) => {
-  console.log('Client connected');
-  ws.send(JSON.stringify(appState));
-  ws.on('message', (message) => {
-    try {
-      const receivedState = JSON.parse(message.toString());
-      appState = receivedState;
+  // Kirim state awal saat koneksi
+  socket.emit('state_update', appState);
+
+  // Listener untuk update dari Control Panel
+  socket.on('update_state', (newState: Partial<AppState>) => {
+      appState = deepMerge(appState, newState);
       saveState();
-      wss.clients.forEach((client) => {
-        if (client !== ws && client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(appState));
-        }
-      });
-    } catch (e) {
-      console.error('Failed to parse message or broadcast:', e);
-    }
+      // Broadcast ke semua client LAINNYA
+      socket.broadcast.emit('state_update', appState);
   });
-  ws.on('close', () => {
+
+  socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`Server with WebSocket is running on http://0.0.0.0:${port}`);
+  console.log(`Overlay Server with Socket.IO running on http://0.0.0.0:${port}`);
 });

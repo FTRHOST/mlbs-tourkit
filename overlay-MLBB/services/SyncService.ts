@@ -5,6 +5,7 @@ type Listener = (state: Partial<AppState>) => void;
 
 class SyncService {
   private socket: Socket;
+  private gameSocket: Socket | null = null;
   private listeners: Listener[] = [];
 
   // 1. Simpan state terakhir secara internal
@@ -14,30 +15,48 @@ class SyncService {
   };
 
   constructor() {
-    // Pastikan URL backend benar (biasanya http://localhost:3000)
-    this.socket = io('http://localhost:3000', {
-      transports: ['websocket', 'polling'] // Paksa websocket agar lebih stabil
+    // 1. Konek ke Overlay Server (Port 3003) untuk Nama Tim, Skor, dll.
+    this.socket = io('http://localhost:3003', {
+      transports: ['websocket', 'polling']
     });
 
+    // 2. Konek ke Game Server (Port 3000) untuk Data In-Game Realtime
+    this.gameSocket = io('http://localhost:3000', {
+        transports: ['websocket'],
+        autoConnect: true,
+        reconnection: true
+    });
+
+    this.setupSocketListeners();
+  }
+
+  private setupSocketListeners() {
+    // --- MAIN OVERLAY SOCKET (3003) ---
     this.socket.on('connect', () => {
-      console.log('✅ WebSocket Connected');
+      console.log('✅ Connected to Overlay Server (3003)');
       this.updateState({ status: 'connected' });
     });
 
     this.socket.on('disconnect', () => {
-      console.log('❌ WebSocket Disconnected');
+      console.log('❌ Disconnected from Overlay Server');
       this.updateState({ status: 'disconnected' });
     });
 
-    // Listen for manual overlay state updates (from control panel)
+    // Terima update state dari server.ts
     this.socket.on('state_update', (state: AppState) => {
       this.updateState(state);
     });
 
-    // Listen for real-time game data from C++ -> Node.js -> Frontend
-    this.socket.on('update', (data: GameData) => {
-      this.updateState({ gameData: data });
-    });
+    // --- GAME DATA SOCKET (3000) ---
+    if (this.gameSocket) {
+        this.gameSocket.on('connect', () => console.log('✅ Connected to Game Data (3000)'));
+        this.gameSocket.on('disconnect', () => console.log('❌ Disconnected from Game Data (3000)'));
+
+        this.gameSocket.on('update', (data: GameData) => {
+            // Masukkan data game ke dalam state global
+            this.updateState({ gameData: data });
+        });
+    }
   }
 
   // 2. Fungsi helper untuk update state & notify listeners
@@ -49,7 +68,6 @@ class SyncService {
   addListener(listener: Listener) {
     this.listeners.push(listener);
     // 3. PENTING: Langsung kirim status terakhir ke listener baru!
-    // Ini memperbaiki masalah "stuck on connecting"
     listener(this.currentState);
   }
 
@@ -61,18 +79,17 @@ class SyncService {
     this.listeners.forEach(listener => listener(state));
   }
 
-  // Legacy/Helper methods required by App.tsx
-
+  // Kirim data balik ke server (untuk Control Panel)
   saveState(state: AppState) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('save_state', state);
+      this.socket.emit('update_state', state);
     }
   }
 
   resetState() {
-    if (this.socket && this.socket.connected) {
-      this.socket.emit('reset_state');
-    }
+     // Panggil API reset via fetch karena server.ts handle /reset endpoint
+    fetch('http://localhost:3003/reset', { method: 'POST' })
+        .catch(err => console.error("Reset failed", err));
   }
 
   getIsConnected(): boolean {

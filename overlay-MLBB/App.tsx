@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Overlay from './components/Overlay';
 import ControlPanel from './ControlPanel';
@@ -56,13 +56,86 @@ const App: React.FC = () => {
     return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server... {state?.status}</div>;
   }
 
-  // Fallback to default state if actual state is partial or missing data
-  // Explicitly handle gameData fallback since undefined overrides default in spread
-  const displayState: AppState = state ? {
-    ...DEFAULT_APP_STATE,
-    ...state,
-    gameData: state.gameData || DEFAULT_GAME_DATA
-  } : DEFAULT_APP_STATE;
+  // Gunakan useMemo untuk memproses gameData menjadi displayState setiap kali state berubah
+  const displayState: AppState = useMemo(() => {
+    // 1. Ambil base state atau default
+    if (!state) return DEFAULT_APP_STATE;
+
+    // Copy state saat ini agar immutability terjaga
+    // Pastikan gameData tidak undefined
+    const current: AppState = {
+      ...DEFAULT_APP_STATE,
+      ...state,
+      gameData: state.gameData || DEFAULT_GAME_DATA
+    };
+
+    // 2. Cek apakah ada data game dari C++ (Room Info)
+    const roomInfo = current.gameData?.data?.room_info;
+
+    if (roomInfo && roomInfo.players) {
+      // Siapkan array baru untuk picks/bans/pNames agar react mendeteksi perubahan
+      // Kita copy dari current (yang sudah dimerge dengan state)
+      const newBlue = {
+          ...current.blue,
+          picks: [...current.blue.picks],
+          bans: [...current.blue.bans],
+          pNames: [...current.blue.pNames]
+      };
+      const newRed = {
+          ...current.red,
+          picks: [...current.red.picks],
+          bans: [...current.red.bans],
+          pNames: [...current.red.pNames]
+      };
+
+      let blueIdx = 0;
+      let redIdx = 0;
+
+      // 3. Loop setiap player dan masukkan ke tim yang sesuai
+      roomInfo.players.forEach((p: any) => {
+        // Asumsi: iCamp 1 = Blue Team, iCamp 2 = Red Team
+        if (p.iCamp === 1) {
+          if (blueIdx < 5) {
+            // Update Pick
+            if (p.heroid && p.heroid !== 0) newBlue.picks[blueIdx] = p.heroid.toString();
+            // Update Ban
+            if (p.banHero && p.banHero !== 0) newBlue.bans[blueIdx] = p.banHero.toString();
+            // Update Name
+            if (p._sName) newBlue.pNames[blueIdx] = p._sName;
+
+            blueIdx++;
+          }
+        } else if (p.iCamp === 2) {
+          if (redIdx < 5) {
+            if (p.heroid && p.heroid !== 0) newRed.picks[redIdx] = p.heroid.toString();
+            if (p.banHero && p.banHero !== 0) newRed.bans[redIdx] = p.banHero.toString();
+            if (p._sName) newRed.pNames[redIdx] = p._sName;
+
+            redIdx++;
+          }
+        }
+      });
+
+      // Update state sementara untuk ditampilkan
+      current.blue = newBlue;
+      current.red = newRed;
+    }
+
+    // 4. Cek Battle Stats (untuk Timer/Score jika ada)
+    const battleStats = current.gameData?.data?.battle_stats;
+    if (battleStats) {
+        // Update timer dari data battle (jika > 0)
+        if (battleStats.time > 0) {
+            current.game = { ...current.game, timer: Math.floor(battleStats.time) };
+        }
+
+        // Auto update Score (Kill count) - Uncomment jika diinginkan
+        // current.blue = { ...current.blue, score: battleStats.m_iCampAKill };
+        // current.red = { ...current.red, score: battleStats.m_iCampBKill };
+    }
+
+    return current;
+  }, [state]);
 
   return (
     <Routes>
