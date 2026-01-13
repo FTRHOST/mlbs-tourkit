@@ -1,149 +1,9 @@
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Overlay from './components/Overlay';
 import ControlPanel from './ControlPanel';
-import { AppState } from './types';
-import { syncService } from './services/SyncService';
-import { DEFAULT_APP_STATE, DEFAULT_GAME_DATA } from './defaultData';
-
-// INITIAL_STATE is now managed by the server.
-// The client will receive it upon connection.
-
-const App: React.FC = () => {
-  // Initialize state to null until we get it from the server
-  const [state, setState] = useState<AppState | null>(null);
-
-  useEffect(() => {
-    // Updated to use addListener/removeListener
-    const handleUpdate = (newState: Partial<AppState>) => {
-      setState(prev => {
-        // Merge previous state with new partial state
-        // If prev is null, newState acts as the initial state (assuming it has enough data or we handle partials)
-        return prev ? { ...prev, ...newState } : (newState as AppState);
-      });
-    };
-
-    syncService.addListener(handleUpdate);
-    return () => syncService.removeListener(handleUpdate);
-  }, []); // Empty dependency array means this runs once on mount
-
-  const updateState = useCallback((newState: AppState | ((prev: AppState) => AppState)) => {
-    // We need to handle the function form of setState
-    setState(prev => {
-      // If the previous state is null, we can't apply a function update.
-      // This case should ideally not happen if updateState is called only after state is set.
-      if (prev === null) {
-          if (typeof newState === 'function') return null;
-          syncService.saveState(newState);
-          return newState;
-      }
-      
-      const updated = typeof newState === 'function' ? newState(prev) : newState;
-      syncService.saveState(updated);
-      return updated;
-    });
-  }, []);
-
-  const resetState = () => {
-    // This now sends a request to the server to reset the state for everyone
-    syncService.resetState();
-  };
-
-  // Render a loading/connecting message until we have state
-  // Check if we are still connecting
-  if (!state || state.status !== 'connected') {
-    return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server... {state?.status}</div>;
-  }
-
-  // Gunakan useMemo untuk memproses gameData menjadi displayState setiap kali state berubah
-  const displayState: AppState = useMemo(() => {
-    // 1. Ambil base state atau default
-    if (!state) return DEFAULT_APP_STATE;
-
-    // Copy state saat ini agar immutability terjaga
-    // Pastikan gameData tidak undefined
-    const current: AppState = {
-      ...DEFAULT_APP_STATE,
-      ...state,
-      gameData: state.gameData || DEFAULT_GAME_DATA
-    };
-
-    // 2. Cek apakah ada data game dari C++ (Room Info)
-    const roomInfo = current.gameData?.data?.room_info;
-
-    if (roomInfo && roomInfo.players) {
-      // Siapkan array baru untuk picks/bans/pNames agar react mendeteksi perubahan
-      // Kita copy dari current (yang sudah dimerge dengan state)
-      const newBlue = {
-          ...current.blue,
-          picks: [...current.blue.picks],
-          bans: [...current.blue.bans],
-          pNames: [...current.blue.pNames]
-      };
-      const newRed = {
-          ...current.red,
-          picks: [...current.red.picks],
-          bans: [...current.red.bans],
-          pNames: [...current.red.pNames]
-      };
-
-      let blueIdx = 0;
-      let redIdx = 0;
-
-      // 3. Loop setiap player dan masukkan ke tim yang sesuai
-      roomInfo.players.forEach((p: any) => {
-        // Asumsi: iCamp 1 = Blue Team, iCamp 2 = Red Team
-        if (p.iCamp === 1) {
-          if (blueIdx < 5) {
-            // Update Pick
-            if (p.heroid && p.heroid !== 0) newBlue.picks[blueIdx] = p.heroid.toString();
-            // Update Ban
-            if (p.banHero && p.banHero !== 0) newBlue.bans[blueIdx] = p.banHero.toString();
-            // Update Name
-            if (p._sName) newBlue.pNames[blueIdx] = p._sName;
-
-            blueIdx++;
-          }
-        } else if (p.iCamp === 2) {
-          if (redIdx < 5) {
-            if (p.heroid && p.heroid !== 0) newRed.picks[redIdx] = p.heroid.toString();
-            if (p.banHero && p.banHero !== 0) newRed.bans[redIdx] = p.banHero.toString();
-            if (p._sName) newRed.pNames[redIdx] = p._sName;
-
-            redIdx++;
-          }
-        }
-      });
-
-      // Update state sementara untuk ditampilkan
-      current.blue = newBlue;
-      current.red = newRed;
-    }
-
-    // 4. Cek Battle Stats (untuk Timer/Score jika ada)
-    const battleStats = current.gameData?.data?.battle_stats;
-    if (battleStats) {
-        // Update timer dari data battle (jika > 0)
-        if (battleStats.time > 0) {
-            current.game = { ...current.game, timer: Math.floor(battleStats.time) };
-        }
-
-        // Auto update Score (Kill count) - Uncomment jika diinginkan
-        // current.blue = { ...current.blue, score: battleStats.m_iCampAKill };
-        // current.red = { ...current.red, score: battleStats.m_iCampBKill };
-    }
-
-    return current;
-  }, [state]);
-
-  return (
-    <Routes>
-      <Route path="/" element={<OverlayContainer state={displayState} />} />
-      <Route path="/control" element={<ControlPanel state={displayState} updateState={updateState} resetState={resetState} />} />
-    </Routes>
-  );
-};
+import { SyncService } from './services/SyncService';
+import { AppState, DEFAULT_APP_STATE, DEFAULT_GAME_DATA } from './types';
 
 const OverlayContainer: React.FC<{ state: AppState }> = ({ state }) => {
   useEffect(() => {
@@ -165,6 +25,127 @@ const OverlayContainer: React.FC<{ state: AppState }> = ({ state }) => {
         <Overlay data={state} />
       </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  const [state, setState] = useState<AppState | null>(null);
+
+  // 1. Setup Koneksi Socket
+  useEffect(() => {
+    const sync = SyncService.getInstance();
+    
+    const handleUpdate = (newState: Partial<AppState>) => {
+      setState(prev => {
+        return prev ? { ...prev, ...newState } : (newState as AppState);
+      });
+    };
+
+    sync.subscribe(handleUpdate);
+
+    return () => {
+      sync.removeListener(handleUpdate);
+    };
+  }, []);
+
+  const updateState = useCallback((newState: AppState | ((prev: AppState) => AppState)) => {
+    setState(prev => {
+      if (!prev) {
+          if (typeof newState === 'function') return null;
+          SyncService.getInstance().saveState(newState);
+          return newState;
+      }
+      const updated = typeof newState === 'function' ? newState(prev) : newState;
+      SyncService.getInstance().saveState(updated);
+      return updated;
+    });
+  }, []);
+
+  const resetState = useCallback(() => {
+    SyncService.getInstance().resetState();
+  }, []);
+
+  // --- PERBAIKAN: useMemo diletakkan DISINI (Sebelum 'if !state return') ---
+  const displayState: AppState = useMemo(() => {
+    // Jika state belum ada, gunakan default agar tidak error
+    if (!state) return DEFAULT_APP_STATE;
+
+    // Copy state saat ini
+    const current: AppState = { 
+      ...DEFAULT_APP_STATE, 
+      ...state, 
+      gameData: state.gameData || DEFAULT_GAME_DATA 
+    };
+
+    // --- LOGIKA MAPPING DATA GAME C++ KE UI ---
+    const roomInfo = current.gameData?.data?.room_info;
+    
+    if (roomInfo && roomInfo.players) {
+      // Siapkan object baru untuk Blue dan Red team
+      const newBlue = { ...current.blue, picks: [...current.blue.picks], bans: [...current.blue.bans], pNames: [...current.blue.pNames] };
+      const newRed = { ...current.red, picks: [...current.red.picks], bans: [...current.red.bans], pNames: [...current.red.pNames] };
+      
+      let blueIdx = 0;
+      let redIdx = 0;
+
+      roomInfo.players.forEach((p: any) => {
+        // Asumsi: iCamp 1 = Blue/Left, iCamp 2 = Red/Right
+        if (p.iCamp === 1) {
+          if (blueIdx < 5) {
+            newBlue.picks[blueIdx] = p.heroid.toString();
+            newBlue.bans[blueIdx] = p.banHero.toString();
+            newBlue.pNames[blueIdx] = p._sName || `Player ${blueIdx + 1}`;
+            blueIdx++;
+          }
+        } else if (p.iCamp === 2) {
+          if (redIdx < 5) {
+            newRed.picks[redIdx] = p.heroid.toString();
+            newRed.bans[redIdx] = p.banHero.toString();
+            newRed.pNames[redIdx] = p._sName || `Player ${redIdx + 1}`;
+            redIdx++;
+          }
+        }
+      });
+
+      current.blue = newBlue;
+      current.red = newRed;
+    }
+
+    // Battle Stats mapping (Timer)
+    const battleStats = current.gameData?.data?.battle_stats;
+    if (battleStats && battleStats.time > 0) {
+        current.game = { ...current.game, timer: Math.floor(battleStats.time) };
+    }
+
+    return current;
+  }, [state]);
+
+  // --- LOADING CHECK (Hanya boleh dilakukan SETELAH semua hooks dideklarasikan) ---
+  if (!state) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Connecting to Overlay Server...</h1>
+          <p>Pastikan Terminal 3 (Port 3003) berjalan.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<OverlayContainer state={displayState} />} />
+      <Route 
+        path="/control" 
+        element={
+          <ControlPanel 
+            state={displayState} 
+            updateState={updateState} 
+            resetState={resetState} 
+          />
+        } 
+      />
+    </Routes>
   );
 };
 

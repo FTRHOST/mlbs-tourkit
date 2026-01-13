@@ -4,6 +4,7 @@ import { AppState, GameData } from '../types';
 type Listener = (state: Partial<AppState>) => void;
 
 class SyncService {
+  private static instance: SyncService;
   private socket: Socket;
   private gameSocket: Socket | null = null;
   private listeners: Listener[] = [];
@@ -30,21 +31,28 @@ class SyncService {
     this.setupSocketListeners();
   }
 
+  public static getInstance(): SyncService {
+    if (!SyncService.instance) {
+      SyncService.instance = new SyncService();
+    }
+    return SyncService.instance;
+  }
+
   private setupSocketListeners() {
     // --- MAIN OVERLAY SOCKET (3003) ---
     this.socket.on('connect', () => {
       console.log('✅ Connected to Overlay Server (3003)');
-      this.updateState({ status: 'connected' });
+      this._updateInternalState({ status: 'connected' });
     });
 
     this.socket.on('disconnect', () => {
       console.log('❌ Disconnected from Overlay Server');
-      this.updateState({ status: 'disconnected' });
+      this._updateInternalState({ status: 'disconnected' });
     });
 
     // Terima update state dari server.ts
     this.socket.on('state_update', (state: AppState) => {
-      this.updateState(state);
+      this._updateInternalState(state);
     });
 
     // --- GAME DATA SOCKET (3000) ---
@@ -54,21 +62,26 @@ class SyncService {
 
         this.gameSocket.on('update', (data: GameData) => {
             // Masukkan data game ke dalam state global
-            this.updateState({ gameData: data });
+            this._updateInternalState({ gameData: data });
         });
     }
   }
 
-  // 2. Fungsi helper untuk update state & notify listeners
-  private updateState(newState: Partial<AppState>) {
+  // Helper internal untuk update state & notify listeners
+  private _updateInternalState(newState: Partial<AppState>) {
     this.currentState = { ...this.currentState, ...newState };
     this.notifyListeners(newState);
   }
 
-  addListener(listener: Listener) {
+  // Method yang diminta oleh App.tsx baru
+  subscribe(listener: Listener) {
     this.listeners.push(listener);
-    // 3. PENTING: Langsung kirim status terakhir ke listener baru!
+    // Langsung kirim status terakhir ke listener baru!
     listener(this.currentState);
+  }
+
+  addListener(listener: Listener) {
+    this.subscribe(listener);
   }
 
   removeListener(listener: Listener) {
@@ -79,7 +92,17 @@ class SyncService {
     this.listeners.forEach(listener => listener(state));
   }
 
-  // Kirim data balik ke server (untuk Control Panel)
+  // Method untuk update state dari client (Control Panel / App.tsx)
+  updateState(partialState: Partial<AppState>) {
+    // Kita kirim partial ke server, server akan broadcast balik
+    if (this.socket && this.socket.connected) {
+        // Gabungkan dengan current agar server mendapat full state jika perlu, 
+        // atau server bisa handle partial. Di server.ts biasanya handle full state.
+        const fullState = { ...this.currentState, ...partialState } as AppState;
+        this.socket.emit('update_state', fullState);
+    }
+  }
+
   saveState(state: AppState) {
     if (this.socket && this.socket.connected) {
       this.socket.emit('update_state', state);
@@ -87,7 +110,6 @@ class SyncService {
   }
 
   resetState() {
-     // Panggil API reset via fetch karena server.ts handle /reset endpoint
     fetch('http://localhost:3003/reset', { method: 'POST' })
         .catch(err => console.error("Reset failed", err));
   }
@@ -97,4 +119,5 @@ class SyncService {
   }
 }
 
-export const syncService = new SyncService();
+export { SyncService };
+export const syncService = SyncService.getInstance();

@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "dev:all": "concurrently \"npm run start\" \"npm run dev\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\"",
     "preview": "vite preview",
-    "server": "ts-node server.ts"
+    "server": "tsx server.ts"
   },
   "dependencies": {
     "@types/cors": "^2.8.19",
@@ -38,6 +38,7 @@
     "@vitejs/plugin-react": "^5.0.0",
     "concurrently": "^9.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   },
