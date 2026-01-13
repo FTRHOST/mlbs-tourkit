@@ -37,7 +37,7 @@ const App: React.FC = () => {
     
     const handleUpdate = (newState: Partial<AppState>) => {
       setState(prev => {
-        return prev ? { ...prev, ...newState } : (newState as AppState);
+        return prev ? { ...prev, ...newState } : { ...DEFAULT_APP_STATE, ...newState };
       });
     };
 
@@ -78,41 +78,49 @@ const App: React.FC = () => {
     };
 
     // --- LOGIKA MAPPING DATA GAME C++ KE UI ---
-    const roomInfo = current.gameData?.data?.room_info;
+    // Only map if Auto Sync is ENABLED globally
+    const isAutoSync = current.game.visibility?.isAutoSync ?? true; 
     
-    if (roomInfo && roomInfo.players) {
-      // Siapkan object baru untuk Blue dan Red team
-      const newBlue = { ...current.blue, picks: [...current.blue.picks], bans: [...current.blue.bans], pNames: [...current.blue.pNames] };
-      const newRed = { ...current.red, picks: [...current.red.picks], bans: [...current.red.bans], pNames: [...current.red.pNames] };
-      
-      let blueIdx = 0;
-      let redIdx = 0;
+    // Robust check for nested data
+    const roomInfo = current.gameData?.data?.room_info || current.gameData?.room_info;
+    
+    if (isAutoSync && roomInfo && roomInfo.players) {
+      // Sort players to ensure consistent slot mapping
+      // REMOVED: .sort((a: any, b: any) => (a.lUid || 0) - (b.lUid || 0)) to prevent jumping
+      const sortedPlayers = [...roomInfo.players];
+      const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
+      const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
 
-      roomInfo.players.forEach((p: any) => {
-        // Asumsi: iCamp 1 = Blue/Left, iCamp 2 = Red/Right
-        if (p.iCamp === 1) {
-          if (blueIdx < 5) {
-            newBlue.picks[blueIdx] = p.heroid.toString();
-            newBlue.bans[blueIdx] = p.banHero.toString();
-            newBlue.pNames[blueIdx] = p._sName || `Player ${blueIdx + 1}`;
-            blueIdx++;
-          }
-        } else if (p.iCamp === 2) {
-          if (redIdx < 5) {
-            newRed.picks[redIdx] = p.heroid.toString();
-            newRed.bans[redIdx] = p.banHero.toString();
-            newRed.pNames[redIdx] = p._sName || `Player ${redIdx + 1}`;
-            redIdx++;
-          }
-        }
-      });
+      const processSide = (sidePlayers: any[], currentTeam: any) => {
+          const picks = Array(5).fill('0');
+          const bans = Array(5).fill('0');
+          const pNames = Array(5).fill('PLAYER');
+          const pIds = Array(5).fill('');
 
-      current.blue = newBlue;
-      current.red = newRed;
+          sidePlayers.forEach((p: any, idx: number) => {
+              if (idx < 5) {
+                  picks[idx] = String(p.heroid || 0);
+                  pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
+                  pIds[idx] = String(p.lUid || '');
+                  bans[idx] = String(p.banHero || 0);
+              }
+          });
+
+          return {
+              ...currentTeam,
+              picks,
+              bans,
+              pNames,
+              pIds
+          };
+      };
+
+      current.blue = processSide(blueTeamPlayers, current.blue);
+      current.red = processSide(redTeamPlayers, current.red);
     }
 
     // Battle Stats mapping (Timer)
-    const battleStats = current.gameData?.data?.battle_stats;
+    const battleStats = current.gameData?.data?.battle_stats || current.gameData?.battle_stats;
     if (battleStats && battleStats.time > 0) {
         current.game = { ...current.game, timer: Math.floor(battleStats.time) };
     }
@@ -126,7 +134,7 @@ const App: React.FC = () => {
       <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Connecting to Overlay Server...</h1>
-          <p>Pastikan Terminal 3 (Port 3003) berjalan.</p>
+          <p>Pastikan Terminal Unified Server (Port 3000) berjalan.</p>
         </div>
       </div>
     );

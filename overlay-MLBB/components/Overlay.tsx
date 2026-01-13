@@ -6,15 +6,15 @@ interface OverlayProps {
   data: AppState;
 }
 
-const ASSETS = "assets/";
+const ASSETS = "/assets/";
 const PLACEHOLDERS = { 
-  blue: "assets/PheroB.png", 
-  red: "assets/PheroR.png", 
-  ban: "assets/Pban.png",
-  logo: "assets/logo.png",
-  gradient: "assets/gradient.png",
-  union1: "assets/union1.png",
-  union2: "assets/union11.png"
+  blue: "/assets/PheroB.png", 
+  red: "/assets/PheroR.png", 
+  ban: "/assets/Pban.png",
+  logo: "/assets/logo.png",
+  gradient: "/assets/gradient.png",
+  union1: "/assets/union1.png",
+  union2: "/assets/union11.png"
 };
 
 const PickSlot: React.FC<{ 
@@ -198,6 +198,9 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   const getLogoSrc = (logo: string | undefined) => {
     if (!logo) return "";
     if (logo.startsWith('data:')) return logo;
+    if (logo.startsWith('assets/') || logo.startsWith('/assets/')) {
+        return logo.startsWith('/') ? logo : '/' + logo;
+    }
     return `${ASSETS}${logo}.png`;
   };
 

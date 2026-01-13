@@ -539,7 +539,17 @@ struct LogicPlayerStats {
     uint32_t iPreKilledResultTime;
 };
 
-// Ban/Pick State (Removed)
+// Ban/Pick State
+struct BanPickState {
+    std::vector<int32_t> banList;
+    std::vector<int32_t> pickList;
+    int32_t banOrder;
+    int32_t pickOrder;
+    float startBanTime;
+    float startSelectTime;
+    int32_t banTimeSpan;
+    int32_t pickTimeSpan;
+};
 
 // Global Battle Stats (Expanded with all requested raw fields)
 struct BattleGlobalStats {
@@ -629,6 +639,7 @@ struct GlobalState {
     std::vector<PlayerBattleData> battlePlayers; // From BattleData.heroInfoList
     std::vector<LogicPlayerStats> logicPlayers; // From LogicBattleManager (LogicPlayer)
     BattleGlobalStats battleStats;
+    BanPickState banPickState;
 
     // Internal Timers
     std::chrono::steady_clock::time_point battleStartTime;

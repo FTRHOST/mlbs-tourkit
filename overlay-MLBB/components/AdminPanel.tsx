@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AppState, TeamData, AdConfig, RegisteredTeam, BracketMatch } from '../types';
-import { io, Socket } from 'socket.io-client';
 
 interface AdminPanelProps {
   state: AppState;
@@ -18,29 +17,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   const [newTeamLogo, setNewTeamLogo] = useState('');
 
   // Local state for Network/Sync
-  const [gameApiUrl, setGameApiUrl] = useState('http://localhost:5000/api/data');
-  const [isAutoSync, setIsAutoSync] = useState(false);
-  const [discoveredDevices, setDiscoveredDevices] = useState<{ ip: string, status: string }[]>([]);
-  const [isScanning, setIsScanning] = useState(false);
-  const [wsStatus, setWsStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
+  // isAutoSync now refers to the Global State setting
   
-  const socketRef = useRef<Socket | null>(null);
+  // Stats
+  const [lastPacketTime, setLastPacketTime] = useState<Date | null>(null);
 
-  // Load Game URL Config on Mount
-  useEffect(() => {
-      fetch(`http://${window.location.hostname}:3003/api/config/game-url`)
-          .then(r => r.json())
-          .then(data => {
-              if (data && data.gameApiUrl) {
-                  setGameApiUrl(data.gameApiUrl);
-              }
-          })
-          .catch(e => console.error("Failed to load game config:", e));
-  }, []);
-
-  useEffect(() => {
-    setDraft(state);
-  }, [state]);
+  // Helper for deep comparison to avoid unnecessary updates/renders
+  const isTeamEqual = (a: TeamData, b: TeamData) => {
+    if (a.name !== b.name) return false;
+    if (a.score !== b.score) return false;
+    if (a.logo !== b.logo) return false;
+    if (JSON.stringify(a.picks) !== JSON.stringify(b.picks)) return false;
+    if (JSON.stringify(a.bans) !== JSON.stringify(b.bans)) return false;
+    if (JSON.stringify(a.pNames) !== JSON.stringify(b.pNames)) return false;
+    if (JSON.stringify(a.pIds) !== JSON.stringify(b.pIds)) return false;
+    return true;
+  };
 
   const handleApplyAll = useCallback(() => {
     setState(draft);
@@ -56,53 +48,93 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleApplyAll]);
 
-  // --- LIVE SYNC LOGIC (WEBSOCKET) ---
+  // --- SMART SYNC: State -> Draft ---
+  // We track the previous server state to know what ACTUALLY changed on the server.
+  // This prevents the Timer (which updates every second) from resetting user input in 'draft'.
+  const prevStateRef = useRef(state);
+
   useEffect(() => {
-    if (isAutoSync) {
-        let wsUrl = gameApiUrl;
-        try {
-            const urlObj = new URL(gameApiUrl);
-            wsUrl = `${urlObj.protocol}//${urlObj.host}`;
-        } catch (e) {
-            console.error("Invalid URL format");
+    const prev = prevStateRef.current;
+    
+    setDraft(currentDraft => {
+        let nextDraft = { ...currentDraft };
+        let hasChanges = false;
+
+        // 1. Sync Game Fields (Timer, Phase, Turn)
+        // We always sync these as they are rarely edited via text input in a way that conflicts.
+        if (state.game.timer !== prev.game.timer) {
+            nextDraft.game = { ...nextDraft.game, timer: state.game.timer };
+            hasChanges = true;
+        }
+        if (state.game.phase !== prev.game.phase) {
+            nextDraft.game = { ...nextDraft.game, phase: state.game.phase };
+            hasChanges = true;
+        }
+        if (state.game.turn !== prev.game.turn) {
+            nextDraft.game = { ...nextDraft.game, turn: state.game.turn };
+            hasChanges = true;
+        }
+        if (state.game.isIntroActive !== prev.game.isIntroActive) {
+             nextDraft.game = { ...nextDraft.game, isIntroActive: state.game.isIntroActive };
+             hasChanges = true;
+        }
+        // Sync matchTitle only if it changed on server (e.g. other admin), to allow typing.
+        if (state.game.matchTitle !== prev.game.matchTitle) {
+             nextDraft.game = { ...nextDraft.game, matchTitle: state.game.matchTitle };
+             hasChanges = true;
+        }
+        // Sync Visibility
+         if (JSON.stringify(state.game.visibility) !== JSON.stringify(prev.game.visibility)) {
+             nextDraft.game = { ...nextDraft.game, visibility: state.game.visibility };
+             hasChanges = true;
+         }
+
+        // 2. Sync Teams - Only if server state actually changed (e.g. Auto Sync or other Admin)
+        if (!isTeamEqual(state.blue, prev.blue)) {
+            nextDraft.blue = state.blue;
+            hasChanges = true;
+        }
+        if (!isTeamEqual(state.red, prev.red)) {
+            nextDraft.red = state.red;
+            hasChanges = true;
         }
 
-        console.log("Sync: Connecting WebSocket to", wsUrl);
-        setWsStatus('connecting');
+        // 3. Sync Configs
+        if (JSON.stringify(state.ads) !== JSON.stringify(prev.ads)) {
+             nextDraft.ads = state.ads;
+             hasChanges = true;
+        }
+        if (JSON.stringify(state.adConfig) !== JSON.stringify(prev.adConfig)) {
+             nextDraft.adConfig = state.adConfig;
+             hasChanges = true;
+        }
+        if (JSON.stringify(state.registry) !== JSON.stringify(prev.registry)) {
+             nextDraft.registry = state.registry;
+             hasChanges = true;
+        }
+         if (JSON.stringify(state.history) !== JSON.stringify(prev.history)) {
+             nextDraft.history = state.history;
+             hasChanges = true;
+        }
 
-        const socket = io(wsUrl, {
-            transports: ['websocket', 'polling'],
-            reconnectionAttempts: 5
-        });
+        return hasChanges ? nextDraft : currentDraft;
+    });
 
-        socket.on('connect', () => {
-            console.log("Sync: WS Connected!");
-            setWsStatus('connected');
-        });
+    prevStateRef.current = state;
+  }, [state]);
 
-        socket.on('disconnect', () => {
-            setWsStatus('disconnected');
-        });
-
-        socket.on('game_data', (data: any) => {
-            processGameData(data);
-        });
-
-        socketRef.current = socket;
-
-        return () => {
-            socket.disconnect();
-            socketRef.current = null;
-            setWsStatus('disconnected');
-        };
-    } else {
-        if (socketRef.current) {
-            socketRef.current.disconnect();
-            socketRef.current = null;
-            setWsStatus('disconnected');
+  // --- LIVE DATA PROCESSING ---
+  // Instead of a socket connection, we watch the prop 'state.gameData' which comes from SyncService
+  useEffect(() => {
+    if (state.gameData) {
+        setLastPacketTime(new Date());
+        
+        // If Auto Sync is ON, we automatically process the data and update the UI (Draft & State)
+        if (state.game.visibility?.isAutoSync) {
+            processGameData(state.gameData);
         }
     }
-  }, [isAutoSync, gameApiUrl]); 
+  }, [state.gameData, state.game.visibility?.isAutoSync]); // Trigger when new data arrives or mode changes
 
   const latestDraftRef = useRef(draft);
   const latestStateRef = useRef(state);
@@ -112,44 +144,63 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   useEffect(() => { latestStateRef.current = state; }, [state]);
 
   const processGameData = (data: any) => {
-      if (!data?.room_info?.players) return;
+      // Robust check for nested data
+      const roomInfo = data?.data?.room_info || data?.room_info;
+      if (!roomInfo?.players) return;
 
       const currentDraft = latestDraftRef.current;
       const currentState = latestStateRef.current;
       const incomingGameState = data.debug?.game_state;
 
-      const players = data.room_info.players;
-      const blueTeamPlayers = players.filter((p: any) => p.iCamp === 1);
-      const redTeamPlayers = players.filter((p: any) => p.iCamp === 2);
+      // Sort players to ensure consistent slot mapping (MUST MATCH App.tsx)
+      // REMOVED: .sort((a: any, b: any) => (a.lUid || 0) - (b.lUid || 0))
+      const sortedPlayers = [...roomInfo.players];
+      const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
+      const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
 
       const processSide = (sidePlayers: any[], side: 'blue' | 'red') => {
-          const picks = Array(5).fill('');
-          const bans = Array(5).fill('');
+          const picks = Array(5).fill('0');
+          const bans = Array(5).fill('0');
           const pNames = Array(5).fill('PLAYER');
-          const pIds = Array(5).fill(''); // For lUid display
+          const pIds = Array(5).fill('');
           
           let teamIdToMatch = '';
 
           sidePlayers.forEach((p: any, idx: number) => {
               if (idx < 5) {
-                  if (p.heroid && p.heroid !== 0) picks[idx] = String(p.heroid);
-                  if (p._sName) pNames[idx] = p._sName;
-                  if (p.lUid) pIds[idx] = String(p.lUid);
-
-                  if (p.banHero && p.banHero !== 0) {
-                      const emptyBanIdx = bans.findIndex(b => b === '');
-                      if (emptyBanIdx !== -1) bans[emptyBanIdx] = String(p.banHero);
-                  }
+                  picks[idx] = String(p.heroid || 0);
+                  pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
+                  pIds[idx] = String(p.lUid || '');
+                  bans[idx] = String(p.banHero || 0);
 
                   if (!teamIdToMatch) {
-                      const regTeam = currentState.registry?.find(t => t.leaderId.toLowerCase() === String(p.lUid) || t.leaderId.toLowerCase() === p._sName.toLowerCase());
-                      if (regTeam) teamIdToMatch = regTeam.name;
-                      const libTeam = currentState.teamLibrary?.find(t => t.captainId === String(p.lUid));
-                      if (libTeam) teamIdToMatch = libTeam.name;
+                      const pUid = String(p.lUid || '');
+                      const pName = String(p._sName || '').trim().toLowerCase();
+
+                      // 1. Try to find in Registry (Manual Additions)
+                      const regTeam = currentState.registry?.find(t => {
+                          const leader = String(t.leaderId || '').trim().toLowerCase();
+                          return (pUid && leader === pUid) || (pName && leader === pName);
+                      });
+
+                      if (regTeam) {
+                          teamIdToMatch = regTeam.name;
+                      } else {
+                          // 2. Try to find in Team Library (Imported Excel)
+                          const libTeam = currentState.teamLibrary?.find(t => {
+                              const capId = String(t.captainId || '');
+                              return pUid && capId === pUid;
+                          });
+                          
+                          if (libTeam) {
+                              teamIdToMatch = libTeam.name;
+                          }
+                      }
                   }
               }
           });
 
+          // Use DRAFT as base to preserve any user typing for Name/Score/Logo
           const currentTeamState = currentDraft[side];
           const newTeamState = {
               ...currentTeamState,
@@ -159,49 +210,47 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
               bans
           };
 
-          if (teamIdToMatch && teamIdToMatch !== currentTeamState.name) {
+          const DEFAULT_TEAM_NAMES = ["BLUE TEAM", "RED TEAM", "MANSABA A", "MANSABA B", "NO TEAM", "PETWIR", "Computer"];
+
+          if (teamIdToMatch && teamIdToMatch !== currentTeamState.name && (DEFAULT_TEAM_NAMES.includes(currentTeamState.name) || !currentTeamState.name)) {
               const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
               const regTeam = currentState.registry?.find(t => t.name === teamIdToMatch);
-              if (libTeam) {
-                  newTeamState.name = libTeam.name;
-                  newTeamState.logo = libTeam.logoUrl;
-              } else if (regTeam) {
+              
+              if (regTeam) {
                   newTeamState.name = regTeam.name;
                   newTeamState.logo = regTeam.logo;
+              } else if (libTeam) {
+                  newTeamState.name = libTeam.name;
+                  newTeamState.logo = libTeam.logoUrl;
               }
-          } else if (!teamIdToMatch && sidePlayers.length > 0) {
-              // NEW: If players exist but no leader matched, set to NO TEAM
-              newTeamState.name = "NO TEAM";
-              newTeamState.logo = "";
           }
+          
           return newTeamState;
       };
 
       const newBlue = processSide(blueTeamPlayers, 'blue');
       const newRed = processSide(redTeamPlayers, 'red');
 
+      // Base newState on CURRENT SERVER STATE (to preserve Timer), NOT Draft
       let newState = {
-          ...currentDraft,
+          ...currentState,
           blue: newBlue,
           red: newRed
       };
 
-      // Auto Reset on transition to State 0 OR 7->3 (Skip 0 case)
-      if ((incomingGameState === 0 && lastGameStateRef.current !== 0) || 
-          (incomingGameState === 3 && lastGameStateRef.current === 7)) {
+      // Auto Reset on transition 7->3 (New Match from Post-Game)
+      // Removed State 0 check to prevent flickering/loops during unstable connection
+      if (incomingGameState === 3 && lastGameStateRef.current === 7) {
           console.log(`Game State Transition (${lastGameStateRef.current} -> ${incomingGameState}): Resetting Overlay...`);
-          resetState(); 
           // Clear picks/bans manually for immediate feedback
-          newState.blue.picks = ['', '', '', '', ''];
-          newState.blue.bans = ['', '', '', '', ''];
-          newState.red.picks = ['', '', '', '', ''];
-          newState.red.bans = ['', '', '', '', ''];
+          newState.blue = { ...newState.blue, picks: ['0', '0', '0', '0', '0'], bans: ['0', '0', '0', '0', '0'] };
+          newState.red = { ...newState.red, picks: ['0', '0', '0', '0', '0'], bans: ['0', '0', '0', '0', '0'] };
       }
 
       // Auto Trigger Intro ONLY on transition to State 3
       if (incomingGameState === 3 && lastGameStateRef.current !== 3) {
           console.log("Auto-Triggering Intro");
-          newState.game.isIntroActive = true;
+          newState.game = { ...newState.game, isIntroActive: true };
       }
 
       // Auto Save History on transition to State 7
@@ -221,37 +270,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
               winner: winner
           };
           
-          fetch(`http://${window.location.hostname}:3003/api/save-history`, {
+          fetch(`http://${window.location.hostname}:3000/api/save-history`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(historyData)
           }).then(r => r.json()).then(d => {
               console.log("History saved:", d);
-              // Optimistic update of history list
-              // In real app, we might wait for socket broadcast, but local update is fine
           }).catch(e => console.error("History save failed", e));
       }
       
-      lastGameStateRef.current = incomingGameState;
+      // Update state history ONLY if meaningful (ignore 0/Lobby to prevent flicker loops)
+      if (incomingGameState !== 0 && incomingGameState !== undefined && incomingGameState !== null) {
+          lastGameStateRef.current = incomingGameState;
+      }
       
-      setDraft(newState);
-      setState(newState); 
+      // OPTIMIZATION: Only update state if something actually changed on the server
+      const hasChanged = !isTeamEqual(newState.blue, currentState.blue) ||
+                         !isTeamEqual(newState.red, currentState.red) ||
+                         newState.game.isIntroActive !== currentState.game.isIntroActive;
+
+      if (hasChanged) {
+          setDraft(newState);
+          setState(newState); 
+      }
   };
 
   const scanNetwork = async () => {
-      setIsScanning(true);
-      setDiscoveredDevices([]);
+      // Just a placeholder or simple ping check to localhost
       try {
-          const res = await fetch(`http://${window.location.hostname}:3003/api/scan-network`);
+          const res = await fetch(`http://${window.location.hostname}:3000`);
           const data = await res.json();
-          if (data.success) {
-              setDiscoveredDevices(data.devices);
-          }
+          alert("Connected to Server: " + (data ? "OK" : "Error"));
       } catch (e) {
           console.error(e);
-          alert("Scan failed.");
+          alert("Server not reachable.");
       }
-      setIsScanning(false);
   };
 
   // --- HELPERS ---
@@ -268,6 +321,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
         (team[field as keyof TeamData] as any) = value;
       }
       newDraft[side] = team;
+      
       return newDraft;
     });
   };
@@ -292,7 +346,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     const apiHost = window.location.hostname;
     
     try {
-        const res = await fetch(`http://${apiHost}:3003/api/import-teams`, { 
+        const res = await fetch(`http://${apiHost}:3000/api/import-teams`, { 
             method: 'POST', 
             body: formData 
         });
@@ -315,26 +369,46 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
-      if (side === 'blue' || side === 'red') updateDraftTeam(side, 'logo', base64);
-      else if (side === 'ads') setDraft(prev => ({ ...prev, ads: [...prev.ads, base64] }));
-      else if (side === 'prepare') setNewTeamLogo(base64);
+      if (side === 'blue' || side === 'red') {
+          updateDraftTeam(side, 'logo', base64);
+      } else if (side === 'ads') {
+          setDraft(prev => {
+              const newState = { ...prev, ads: [...prev.ads, base64] };
+              return newState;
+          });
+      } else if (side === 'prepare') {
+          setNewTeamLogo(base64);
+      }
     };
     reader.readAsDataURL(file);
   };
 
   const removeAd = (index: number) => {
-    setDraft(prev => ({ ...prev, ads: prev.ads.filter((_, i) => i !== index) }));
+    setDraft(prev => {
+        const newState = { ...prev, ads: prev.ads.filter((_, i) => i !== index) };
+        return newState;
+    });
   };
   
   const addTeamToRegistry = () => {
     if (!newTeamName || !newTeamLeader) return;
     const newTeam: RegisteredTeam = { id: Date.now().toString(), name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo };
-    setDraft(prev => ({ ...prev, registry: [...(prev.registry || []), newTeam] }));
+    
+    // Update draft only
+    setDraft(prev => {
+        const updated = { ...prev, registry: [...(prev.registry || []), newTeam] };
+        return updated;
+    });
+    
     setNewTeamName(''); setNewTeamLeader(''); setNewTeamLogo('');
   };
   
   const removeTeamFromRegistry = (id: string) => {
-    setDraft(prev => ({ ...prev, registry: (prev.registry || []).filter(t => t.id !== id) }));
+    // Update draft only
+    setDraft(prev => {
+        const updated = { ...prev, registry: (prev.registry || []).filter(t => t.id !== id) };
+        return updated;
+    });
   };
 
   const updateDraftAdConfig = (field: keyof AdConfig, value: any) => {
@@ -346,7 +420,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     setDraft(prev => ({ ...prev, game: { ...prev.game, [field]: value } }));
   };
 
-  const updateVisibility = (field: 'phase' | 'timer' | 'turn' | 'score') => {
+  const updateVisibility = (field: 'phase' | 'timer' | 'turn' | 'score' | 'isAutoSync') => {
     setDraft(prev => {
         const currentVis = prev.game.visibility || { phase: true, timer: true, turn: true, score: true };
         const newVis = { ...currentVis, [field]: !currentVis[field] };
@@ -376,6 +450,95 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
 
   // --- RENDERERS ---
 
+  const renderAds = () => (
+    <div className="flex flex-col gap-6">
+      <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6">
+        <h3 className="text-amber-400 font-black uppercase tracking-widest mb-4">Ad Configuration</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Ad Type</span>
+            <select 
+              value={draft.adConfig.type} 
+              onChange={(e) => updateDraftAdConfig('type', e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold"
+            >
+              <option value="text">Text Only</option>
+              <option value="images">Image Gallery</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Animation Effect</span>
+            <select 
+              value={draft.adConfig.effect} 
+              onChange={(e) => updateDraftAdConfig('effect', e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold"
+            >
+              <option value="scroll">Marquee (Scroll)</option>
+              <option value="fade">Fade Transition</option>
+            </select>
+          </div>
+          {draft.adConfig.type === 'text' && (
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Ad Text</span>
+              <textarea 
+                value={draft.adConfig.text} 
+                onChange={(e) => updateDraftAdConfig('text', e.target.value)}
+                className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold h-20"
+                placeholder="Enter ticker text here..."
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Speed (Seconds / Duration)</span>
+            <input 
+              type="number" 
+              value={draft.adConfig.speed} 
+              onChange={(e) => updateDraftAdConfig('speed', parseInt(e.target.value) || 0)}
+              className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold"
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-end gap-2">
+          {isAdsDirty() && (
+            <button onClick={applyAdChanges} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-black text-[10px] uppercase shadow-lg">
+              Apply Ad Changes
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-amber-400 font-black uppercase tracking-widest">Ad Images</h3>
+          <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg">
+            <span>+ ADD IMAGE</span>
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload('ads', e)} />
+          </label>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {draft.ads.map((ad, idx) => (
+            <div key={idx} className="relative group aspect-video bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
+              <img src={ad.startsWith('data:') ? ad : `/assets/${ad}.png`} className="w-full h-full object-contain" />
+              <button 
+                onClick={() => removeAd(idx)}
+                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          ))}
+          {draft.ads.length === 0 && (
+            <div className="col-span-full py-10 text-center text-slate-600 italic text-xs">
+              No images added. Ticker will be empty if "Image Gallery" is selected.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderTeams = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {['blue', 'red'].map((side) => (
@@ -384,7 +547,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
             <div className="flex items-center gap-3 flex-1">
               <div className={`w-2 h-6 bg-${side}-500 rounded-full`} />
               <div className="relative group/logo">
-                {draft[side as 'blue' | 'red'].logo ? <img src={draft[side as 'blue' | 'red'].logo} className="w-8 h-8 rounded" /> : <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-[8px]">LOGO</div>}
+                {draft[side as 'blue' | 'red'].logo ? <img src={draft[side as 'blue' | 'red'].logo?.startsWith('assets/') ? '/' + draft[side as 'blue' | 'red'].logo : draft[side as 'blue' | 'red'].logo} className="w-8 h-8 rounded" /> : <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-[8px]">LOGO</div>}
                 <input type="file" accept="image/*" onChange={(e) => handleImageUpload(side as any, e)} className="absolute inset-0 opacity-0 cursor-pointer" />
               </div>
               
@@ -484,17 +647,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   const renderNetwork = () => (
     <div className="flex flex-col gap-6">
        <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6">
-          <h3 className="text-blue-400 font-black uppercase tracking-widest mb-4">Network Scanner (Port 5000)</h3>
-          <div className="flex flex-col gap-4">
-             <button onClick={scanNetwork} disabled={isScanning} className={`w-full py-3 rounded-lg font-black uppercase tracking-widest shadow-lg transition-all ${isScanning ? 'bg-slate-700 text-slate-500' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}>{isScanning ? 'Scanning...' : 'Scan Local Network'}</button>
-             {discoveredDevices.length > 0 ? (
-               <div className="flex flex-col gap-2">{discoveredDevices.map(device => (<div key={device.ip} className="flex items-center justify-between bg-slate-900 p-3 rounded border border-slate-700"><span className="text-white font-mono font-bold">{device.ip}</span><button onClick={() => setGameApiUrl(`http://${device.ip}:5000`)} className="text-[10px] font-black bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded">CONNECT</button></div>))}</div>
-             ) : (!isScanning && <div className="text-center text-slate-500 text-xs italic">No devices found. Ensure the game server is running on port 5000.</div>)}
+          <h3 className="text-blue-400 font-black uppercase tracking-widest mb-4">Network & Data Source</h3>
+          <div className="flex flex-col gap-6">
+             <div className="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                <div className="flex flex-col gap-1">
+                    <span className="text-sm font-black text-white">Live Data Sync</span>
+                    <span className="text-[10px] text-slate-500">Automatically update scores & picks from game data.</span>
+                </div>
+                <button 
+                    onClick={() => updateVisibility('isAutoSync')} 
+                    className={`px-4 py-2 rounded-lg font-black text-[10px] tracking-widest uppercase transition-all shadow-lg ${state.game.visibility?.isAutoSync ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+                >
+                    {state.game.visibility?.isAutoSync ? 'ENABLED (AUTO)' : 'DISABLED (MANUAL)'}
+                </button>
+             </div>
+
+             <div className="space-y-2">
+                <div className="flex justify-between items-center bg-slate-900 p-3 rounded border border-slate-700/50">
+                    <span className="text-xs font-bold text-slate-400">Server Connection</span>
+                    <span className="text-xs font-black text-emerald-400">CONNECTED</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900 p-3 rounded border border-slate-700/50">
+                    <span className="text-xs font-bold text-slate-400">Game Data Flow</span>
+                    {lastPacketTime ? (
+                        <div className="text-right">
+                            <div className="text-xs font-black text-blue-400">ACTIVE</div>
+                            <div className="text-[9px] text-slate-500">Last: {lastPacketTime.toLocaleTimeString()}</div>
+                        </div>
+                    ) : (
+                        <span className="text-xs font-bold text-slate-600 uppercase">WAITING FOR DATA...</span>
+                    )}
+                </div>
+             </div>
+
+             {!lastPacketTime && (
+                 <div className="text-[10px] text-slate-500 italic text-center p-2 bg-slate-900/30 rounded">
+                    If "Waiting for Data" persists, ensure ADB is connected and Zygisk module is active on the phone.
+                 </div>
+             )}
           </div>
-       </div>
-       <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6">
-          <h3 className="text-emerald-400 font-black uppercase tracking-widest mb-4">Connection Status</h3>
-          <div className="flex flex-col gap-2"><div className="flex items-center justify-between"><span className="text-xs text-slate-400 font-bold">Status:</span><span className={`text-xs font-black uppercase ${wsStatus === 'connected' ? 'text-green-400' : wsStatus === 'connecting' ? 'text-amber-400' : 'text-red-400'}`}>{wsStatus}</span></div><label className="text-[10px] font-bold text-slate-500 uppercase">Game Host URL</label><input value={gameApiUrl} onChange={(e) => setGameApiUrl(e.target.value)} className="bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-white" /><p className="text-[9px] text-slate-500 italic">Example: http://localhost:5000 (No /api/data path needed for WS)</p></div>
        </div>
     </div>
   );
@@ -505,7 +696,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
 
             try {
 
-                const res = await fetch(`http://${window.location.hostname}:3003/api/factory-reset`, { method: 'POST' });
+                const res = await fetch(`http://${window.location.hostname}:3000/api/factory-reset`, { method: 'POST' });
 
                 const data = await res.json();
 
@@ -569,23 +760,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
 
          </div>
        <div className="flex flex-col gap-6">
-         {(state.teamLibrary && state.teamLibrary.length > 0) && (<div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2"><h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4><div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar">{state.teamLibrary.map(t => (<div key={t.id} className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px] text-white flex items-center gap-2">{t.logoUrl && <img src={t.logoUrl} className="w-4 h-4 object-contain" />}<span>{t.name}</span></div>))}</div></div>)}
+         {(state.teamLibrary && state.teamLibrary.length > 0) && (<div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2"><h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4><div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar">{state.teamLibrary.map(t => (<div key={t.id} className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px] text-white flex items-center gap-2">{t.logoUrl && <img src={t.logoUrl.startsWith('assets/') ? '/' + t.logoUrl : t.logoUrl} className="w-4 h-4 object-contain" />}<span>{t.name}</span></div>))}</div></div>)}
          <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-4"><h4 className="text-xs font-bold text-slate-400 uppercase">Add New Team</h4><div className="flex flex-wrap gap-4 items-end"><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Team Name</label><input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS LEGENDS" /></div><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Leader ID / Trigger</label><input value={newTeamLeader} onChange={(e) => setNewTeamLeader(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS.REKT" /></div><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Logo</label><div className="relative group">{newTeamLogo ? <img src={newTeamLogo} className="w-9 h-9 object-contain bg-black/20 rounded border border-slate-600" /> : <div className="w-9 h-9 bg-slate-800 border border-slate-600 rounded flex items-center justify-center text-[8px]">UP</div>}<input type="file" accept="image/*" onChange={(e) => handleImageUpload('prepare', e)} className="absolute inset-0 opacity-0 cursor-pointer" /></div></div><button onClick={addTeamToRegistry} className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded text-[10px] font-black uppercase tracking-wide">Add Team</button></div></div>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{(draft.registry || []).map((team) => (<div key={team.id} className="bg-slate-800 border border-slate-700 rounded-lg p-3 flex items-center justify-between group"><div className="flex items-center gap-3">{team.logo ? <img src={team.logo.startsWith('data:') ? team.logo : `assets/${team.logo}.png`} className="w-10 h-10 object-contain bg-black/20 rounded" /> : <div className="w-10 h-10 bg-slate-900 rounded flex items-center justify-center text-[8px]">N/A</div>}<div className="flex flex-col"><span className="text-xs font-black text-white">{team.name}</span><span className="text-[9px] text-purple-400 font-bold uppercase">{team.leaderId}</span></div></div><button onClick={() => removeTeamFromRegistry(team.id)} className="text-slate-600 hover:text-red-500 transition-colors p-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div>))}</div>
-       </div>
-    </div>
-  );
-
-  const renderAds = () => (
-    <div className={`bg-slate-800/30 rounded-2xl border p-6 transition-all duration-300 ${isAdsDirty() ? 'border-amber-500/50 shadow-lg shadow-amber-500/5' : 'border-slate-700/50'}`}>
-       <div className="flex justify-between items-center mb-6"><h3 className="text-amber-400 font-black uppercase tracking-widest">Ad Configuration</h3><div className="flex gap-2"><button onClick={() => downloadJson({ ads: state.ads, config: state.adConfig }, 'ads-config.json')} className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ EXPORT JSON</span></button><a href="/ads-template.zip" download className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ TEMPLATE</span></a>{isAdsDirty() && <button onClick={applyAdChanges} className="text-[10px] font-black bg-amber-500 text-white px-4 py-1.5 rounded-full hover:bg-amber-400 transition-all shadow-lg">APPLY CHANGES</button>}</div></div>
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1"><label className="text-[10px] text-slate-500 font-bold uppercase">Display Type</label><select value={draft.adConfig.type} onChange={(e) => updateDraftAdConfig('type', e.target.value as any)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold"><option value="images">Logos / Images</option><option value="text">Custom Text</option></select></div>
-            <div className="flex flex-col gap-1"><label className="text-[10px] text-slate-500 font-bold uppercase">Transition Effect</label><select value={draft.adConfig.effect} onChange={(e) => updateDraftAdConfig('effect', e.target.value as any)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold"><option value="scroll">Smooth Scroll</option><option value="fade">Cross Fade</option></select></div>
-            <div className="flex flex-col gap-1"><label className="text-[10px] text-slate-500 font-bold uppercase">Scroll Speed (seconds)</label><input type="number" value={draft.adConfig.speed} onChange={(e) => updateDraftAdConfig('speed', parseInt(e.target.value) || 0)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold" /></div>
-          </div>
-          <div className="space-y-4">{draft.adConfig.type === 'text' ? (<div className="flex flex-col gap-1"><label className="text-[10px] text-slate-500 font-bold uppercase">Marquee Text</label><textarea value={draft.adConfig.text} onChange={(e) => updateDraftAdConfig('text', e.target.value)} className="bg-slate-900 border border-slate-700 rounded p-3 text-xs font-semibold h-32 focus:border-amber-500 transition-all" placeholder="Enter your ad text here..." /></div>) : (<div className="flex flex-col gap-1"><label className="text-[10px] text-slate-500 font-bold uppercase">Ad Images</label><div className="grid grid-cols-4 gap-2 mb-2">{draft.ads.map((ad, i) => (<div key={i} className="relative group aspect-video bg-black/40 rounded border border-slate-700 overflow-hidden"><img src={ad.startsWith('data:') ? ad : `assets/${ad}.png`} className="w-full h-full object-contain" onError={(e) => { e.currentTarget.src = `https://placehold.co/100x50/18252C/ffffff?text=${ad}`; }} /><button onClick={() => removeAd(i)} className="absolute inset-0 bg-red-600/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><span className="text-[8px] font-bold">REMOVE</span></button></div>))}<label className="aspect-video bg-slate-900 border-2 border-dashed border-slate-700 rounded flex flex-col items-center justify-center cursor-pointer hover:border-amber-500 transition-colors"><span className="text-lg">+</span><span className="text-[8px] font-bold">UPLOAD</span><input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload('ads', e)} /></label></div><p className="text-[9px] text-slate-600 italic">Upload custom images for your ads carousel.</p></div>)}</div>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{(draft.registry || []).map((team) => (<div key={team.id} className="bg-slate-800 border border-slate-700 rounded-lg p-3 flex items-center justify-between group"><div className="flex items-center gap-3">{team.logo ? <img src={team.logo.startsWith('data:') ? team.logo : (team.logo.startsWith('assets/') ? '/' + team.logo : `/assets/${team.logo}.png`)} className="w-10 h-10 object-contain bg-black/20 rounded" /> : <div className="w-10 h-10 bg-slate-900 rounded flex items-center justify-center text-[8px]">N/A</div>}<div className="flex flex-col"><span className="text-xs font-black text-white">{team.name}</span><span className="text-[9px] text-purple-400 font-bold uppercase">{team.leaderId}</span></div></div><button onClick={() => removeTeamFromRegistry(team.id)} className="text-slate-600 hover:text-red-500 transition-colors p-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div>))}</div>
        </div>
     </div>
   );
@@ -615,7 +792,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
 
         <div className="flex items-center gap-3">
           {/* Live Sync Toggle */}
-          <button onClick={() => setIsAutoSync(!isAutoSync)} className={`px-3 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest flex items-center gap-2 transition-all ${isAutoSync ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-700 text-slate-400'}`}><div className={`w-2 h-2 rounded-full ${isAutoSync ? 'bg-white' : 'bg-slate-500'}`}></div>{isAutoSync ? 'LIVE SYNC ON' : 'SYNC OFF'}</button>
+          <button onClick={() => updateVisibility('isAutoSync')} className={`px-3 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest flex items-center gap-2 transition-all ${state.game.visibility?.isAutoSync ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-700 text-slate-400'}`}><div className={`w-2 h-2 rounded-full ${state.game.visibility?.isAutoSync ? 'bg-white' : 'bg-slate-500'}`}></div>{state.game.visibility?.isAutoSync ? 'LIVE SYNC ON' : 'SYNC OFF'}</button>
           
           {/* Visibility Toggles */}
           <div className="flex items-center gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-700/50 mr-2"><span className="text-[8px] font-bold text-slate-500 px-1 uppercase">Show:</span><button onClick={() => updateVisibility('phase')} className={`px-2 py-1 rounded text-[9px] font-black uppercase ${state.game.visibility?.phase ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : 'text-slate-600 hover:text-slate-400'}`}>Phase</button><button onClick={() => updateVisibility('timer')} className={`px-2 py-1 rounded text-[9px] font-black uppercase ${state.game.visibility?.timer ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : 'text-slate-600 hover:text-slate-400'}`}>Timer</button><button onClick={() => updateVisibility('turn')} className={`px-2 py-1 rounded text-[9px] font-black uppercase ${state.game.visibility?.turn ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : 'text-slate-600 hover:text-slate-400'}`}>Turn</button><button onClick={() => updateVisibility('score')} className={`px-2 py-1 rounded text-[9px] font-black uppercase ${state.game.visibility?.score ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : 'text-slate-600 hover:text-slate-400'}`}>Score</button></div>

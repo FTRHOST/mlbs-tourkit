@@ -6,26 +6,29 @@ type Listener = (state: Partial<AppState>) => void;
 class SyncService {
   private static instance: SyncService;
   private socket: Socket;
-  private gameSocket: Socket | null = null;
   private listeners: Listener[] = [];
 
-  // 1. Simpan state terakhir secara internal
   private currentState: Partial<AppState> = {
     status: 'connecting',
     gameData: undefined
   };
 
   constructor() {
-    // 1. Konek ke Overlay Server (Port 3003) untuk Nama Tim, Skor, dll.
-    this.socket = io('http://localhost:3003', {
-      transports: ['websocket', 'polling']
-    });
+    // Determine connection URL
+    // If running via Vite Proxy (development), usually connects to same origin.
+    // But since Socket.IO port is distinct (3000) and we might access via IP, let's explicit it.
+    // If accessed via http://192.168.1.5:5173, we want socket at http://192.168.1.5:3000
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const port = '3000';
+    const url = `${protocol}//${hostname}:${port}`;
 
-    // 2. Konek ke Game Server (Port 3000) untuk Data In-Game Realtime
-    this.gameSocket = io('http://localhost:3000', {
-        transports: ['websocket'],
-        autoConnect: true,
-        reconnection: true
+    console.log('🔌 Connecting to Unified Server at:', url);
+
+    this.socket = io(url, {
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+      reconnection: true
     });
 
     this.setupSocketListeners();
@@ -39,44 +42,36 @@ class SyncService {
   }
 
   private setupSocketListeners() {
-    // --- MAIN OVERLAY SOCKET (3003) ---
     this.socket.on('connect', () => {
-      console.log('✅ Connected to Overlay Server (3003)');
+      console.log('✅ Connected to Unified Server');
       this._updateInternalState({ status: 'connected' });
     });
 
     this.socket.on('disconnect', () => {
-      console.log('❌ Disconnected from Overlay Server');
+      console.log('❌ Disconnected from Unified Server');
       this._updateInternalState({ status: 'disconnected' });
     });
 
-    // Terima update state dari server.ts
+    // 1. Overlay State Updates (Team Names, Score, Config)
     this.socket.on('state_update', (state: AppState) => {
+      // console.log('📥 State Update received');
       this._updateInternalState(state);
     });
 
-    // --- GAME DATA SOCKET (3000) ---
-    if (this.gameSocket) {
-        this.gameSocket.on('connect', () => console.log('✅ Connected to Game Data (3000)'));
-        this.gameSocket.on('disconnect', () => console.log('❌ Disconnected from Game Data (3000)'));
-
-        this.gameSocket.on('update', (data: GameData) => {
-            // Masukkan data game ke dalam state global
-            this._updateInternalState({ gameData: data });
-        });
-    }
+    // 2. Game Data Updates (Real-time from ADB/Zygisk)
+    this.socket.on('update', (data: GameData) => {
+      // console.log('🎮 Game Data received');
+      this._updateInternalState({ gameData: data });
+    });
   }
 
-  // Helper internal untuk update state & notify listeners
   private _updateInternalState(newState: Partial<AppState>) {
     this.currentState = { ...this.currentState, ...newState };
     this.notifyListeners(newState);
   }
 
-  // Method yang diminta oleh App.tsx baru
   subscribe(listener: Listener) {
     this.listeners.push(listener);
-    // Langsung kirim status terakhir ke listener baru!
     listener(this.currentState);
   }
 
@@ -92,14 +87,9 @@ class SyncService {
     this.listeners.forEach(listener => listener(state));
   }
 
-  // Method untuk update state dari client (Control Panel / App.tsx)
   updateState(partialState: Partial<AppState>) {
-    // Kita kirim partial ke server, server akan broadcast balik
     if (this.socket && this.socket.connected) {
-        // Gabungkan dengan current agar server mendapat full state jika perlu, 
-        // atau server bisa handle partial. Di server.ts biasanya handle full state.
-        const fullState = { ...this.currentState, ...partialState } as AppState;
-        this.socket.emit('update_state', fullState);
+        this.socket.emit('update_state', partialState);
     }
   }
 
@@ -110,7 +100,10 @@ class SyncService {
   }
 
   resetState() {
-    fetch('http://localhost:3003/reset', { method: 'POST' })
+    // Use the proxy configured in Vite
+    fetch('/api/reset', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => console.log('Reset response:', data))
         .catch(err => console.error("Reset failed", err));
   }
 

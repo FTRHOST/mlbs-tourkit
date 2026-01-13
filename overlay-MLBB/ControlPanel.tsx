@@ -16,7 +16,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, updateState, resetSt
   useEffect(() => {
     const interval = setInterval(() => {
       updateState(prev => {
-        if (!prev.game.isGameControlEnabled || prev.game.timer <= 0) return prev;
+        if (!prev?.game?.isGameControlEnabled || prev.game.timer <= 0) return prev;
         return {
           ...prev,
           game: {
