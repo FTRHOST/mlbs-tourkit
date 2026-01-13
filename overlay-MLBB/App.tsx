@@ -14,10 +14,17 @@ const App: React.FC = () => {
   const [state, setState] = useState<AppState | null>(null);
 
   useEffect(() => {
-    // onUpdate will be called both on initial connection and for subsequent updates
-    syncService.onUpdate((remoteState) => {
-      setState(remoteState);
-    });
+    // Updated to use addListener/removeListener
+    const handleUpdate = (newState: Partial<AppState>) => {
+      setState(prev => {
+        // Merge previous state with new partial state
+        // If prev is null, newState acts as the initial state (assuming it has enough data or we handle partials)
+        return prev ? { ...prev, ...newState } : (newState as AppState);
+      });
+    };
+
+    syncService.addListener(handleUpdate);
+    return () => syncService.removeListener(handleUpdate);
   }, []); // Empty dependency array means this runs once on mount
 
   const updateState = useCallback((newState: AppState | ((prev: AppState) => AppState)) => {
@@ -43,8 +50,9 @@ const App: React.FC = () => {
   };
 
   // Render a loading/connecting message until we have state
-  if (!state) {
-    return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server...</div>;
+  // Check if we have core data (e.g., blue team data) or if we are still connecting
+  if (!state || !state.blue) {
+    return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server... {state?.status}</div>;
   }
 
   return (

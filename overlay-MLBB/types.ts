@@ -64,6 +64,20 @@ export interface AppState {
   registry: RegisteredTeam[];
   teamLibrary: TeamLibraryEntry[];
   history: any[];
+  status?: string;
+  gameData?: GameData;
+}
+
+export interface BracketMatch {
+  id: string;
+  round: string;
+  matchTitle: string;
+  team1Id?: string;
+  team2Id?: string;
+  score1?: number;
+  score2?: number;
+  winnerId?: string;
+  nextMatchId?: string;
 }
 
 // Interfaces matching C++ JSON output
