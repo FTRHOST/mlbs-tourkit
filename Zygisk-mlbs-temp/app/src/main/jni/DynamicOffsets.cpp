@@ -539,7 +539,7 @@ void InitDynamicOffsets() {
 
     OFF_LogicPlayer_m_LoigcBezierBullet = Il2CppGetFieldOffset(image, battle, lp, "m_LoigcBezierBullet");
     OFF_LogicPlayer_moveControllers = Il2CppGetFieldOffset(image, battle, lp, "moveControllers");
-    OFF_LogicPlayer_totalGold = Il2CppGetFieldOffset(image, battle, lp, "totalGold");
+    OFF_LogicPlayer_totalGold = Il2CppGetFieldOffset(image, battle, lp, "_totalGold");
     OFF_LogicPlayer_m_copyHurtCount = Il2CppGetFieldOffset(image, battle, lp, "m_copyHurtCount");
     OFF_LogicPlayer_m_HurtTotalValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtTotalValue");
     OFF_LogicPlayer_m_HurtHeroValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroValue");
@@ -599,12 +599,12 @@ void InitDynamicOffsets() {
     OFF_LogicPlayer_endedSightValue = Il2CppGetFieldOffset(image, battle, lp, "endedSightValue");
     OFF_LogicPlayer_ongoingSightValue = Il2CppGetFieldOffset(image, battle, lp, "ongoingSightValue");
     OFF_LogicPlayer_sightIdGenerator = Il2CppGetFieldOffset(image, battle, lp, "sightIdGenerator");
-    OFF_LogicPlayer_continueKill = Il2CppGetFieldOffset(image, battle, lp, "continueKill");
-    OFF_LogicPlayer_multiKill = Il2CppGetFieldOffset(image, battle, lp, "multiKill");
-    OFF_LogicPlayer_DoubleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "DoubleKillTimes");
-    OFF_LogicPlayer_TripleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "TripleKillTimes");
-    OFF_LogicPlayer_QuadraKillTimes = Il2CppGetFieldOffset(image, battle, lp, "QuadraKillTimes");
-    OFF_LogicPlayer_PentaKillTimes = Il2CppGetFieldOffset(image, battle, lp, "PentaKillTimes");
+    OFF_LogicPlayer_continueKill = Il2CppGetFieldOffset(image, battle, lp, "_continueKill");
+    OFF_LogicPlayer_multiKill = Il2CppGetFieldOffset(image, battle, lp, "_multiKill");
+    OFF_LogicPlayer_DoubleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "_DoubleKillTimes");
+    OFF_LogicPlayer_TripleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "_TripleKillTimes");
+    OFF_LogicPlayer_QuadraKillTimes = Il2CppGetFieldOffset(image, battle, lp, "_QuadraKillTimes");
+    OFF_LogicPlayer_PentaKillTimes = Il2CppGetFieldOffset(image, battle, lp, "_PentaKillTimes");
     OFF_LogicPlayer_multiKillAssistIDs = Il2CppGetFieldOffset(image, battle, lp, "multiKillAssistIDs");
     OFF_LogicPlayer_greenLightCanUse = Il2CppGetFieldOffset(image, battle, lp, "greenLightCanUse");
     OFF_LogicPlayer_greenLightStartTime = Il2CppGetFieldOffset(image, battle, lp, "greenLightStartTime");
