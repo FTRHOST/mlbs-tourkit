@@ -5,6 +5,7 @@ import Overlay from './components/Overlay';
 import ControlPanel from './ControlPanel';
 import { AppState } from './types';
 import { syncService } from './services/SyncService';
+import { DEFAULT_APP_STATE, DEFAULT_GAME_DATA } from './defaultData';
 
 // INITIAL_STATE is now managed by the server.
 // The client will receive it upon connection.
@@ -50,15 +51,23 @@ const App: React.FC = () => {
   };
 
   // Render a loading/connecting message until we have state
-  // Check if we have core data (e.g., blue team data) or if we are still connecting
-  if (!state || !state.blue) {
+  // Check if we are still connecting
+  if (!state || state.status !== 'connected') {
     return <div className="w-screen h-screen bg-slate-900 text-white flex items-center justify-center font-sans text-2xl">Connecting to server... {state?.status}</div>;
   }
 
+  // Fallback to default state if actual state is partial or missing data
+  // Explicitly handle gameData fallback since undefined overrides default in spread
+  const displayState: AppState = state ? {
+    ...DEFAULT_APP_STATE,
+    ...state,
+    gameData: state.gameData || DEFAULT_GAME_DATA
+  } : DEFAULT_APP_STATE;
+
   return (
     <Routes>
-      <Route path="/" element={<OverlayContainer state={state} />} />
-      <Route path="/control" element={<ControlPanel state={state} updateState={updateState} resetState={resetState} />} />
+      <Route path="/" element={<OverlayContainer state={displayState} />} />
+      <Route path="/control" element={<ControlPanel state={displayState} updateState={updateState} resetState={resetState} />} />
     </Routes>
   );
 };
