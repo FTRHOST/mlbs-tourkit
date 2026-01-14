@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { AppState, TeamData, AdConfig, RegisteredTeam, BracketMatch } from '../types';
+import { AppState, TeamData, AdConfig, RegisteredTeam, BracketMatch, SyncControl } from '../types';
 
 interface AdminPanelProps {
   state: AppState;
@@ -108,6 +108,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
              nextDraft.adConfig = state.adConfig;
              hasChanges = true;
         }
+        if (JSON.stringify(state.syncControl) !== JSON.stringify(prev.syncControl)) {
+             nextDraft.syncControl = state.syncControl;
+             hasChanges = true;
+        }
         if (JSON.stringify(state.registry) !== JSON.stringify(prev.registry)) {
              nextDraft.registry = state.registry;
              hasChanges = true;
@@ -129,12 +133,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     if (state.gameData) {
         setLastPacketTime(new Date());
         
-        // If Auto Sync is ON, we automatically process the data and update the UI (Draft & State)
-        if (state.game.visibility?.isAutoSync) {
-            processGameData(state.gameData);
-        }
+        // REMOVED: processGameData() call.
+        // We now rely on the backend (state_update) to drive the state.
+        // The Smart Sync effect (above) ensures that `draft` updates when `state` changes.
     }
-  }, [state.gameData, state.game.visibility?.isAutoSync]); // Trigger when new data arrives or mode changes
+  }, [state.gameData]); // Trigger when new data arrives
 
   const latestDraftRef = useRef(draft);
   const latestStateRef = useRef(state);
@@ -430,6 +433,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     });
   };
 
+  const updateSyncControl = (field: keyof SyncControl) => {
+    setDraft(prev => {
+        const currentCtrl = prev.syncControl || { isBanSyncEnabled: true, isPickSyncEnabled: true, isGoldSyncEnabled: true, isTeamNameSyncEnabled: true };
+        const newCtrl = { ...currentCtrl, [field]: !currentCtrl[field] };
+        setState(s => ({ ...s, syncControl: newCtrl }));
+        return { ...prev, syncControl: newCtrl };
+    });
+  };
+
   const applyTeamChanges = (side: 'blue' | 'red') => setState(prev => ({ ...prev, [side]: draft[side] }));
   const applyAdChanges = () => setState(prev => ({ ...prev, adConfig: draft.adConfig, ads: draft.ads }));
   const applyRegistryChanges = () => setState(prev => ({ ...prev, registry: draft.registry }));
@@ -652,7 +664,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
              <div className="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700">
                 <div className="flex flex-col gap-1">
                     <span className="text-sm font-black text-white">Live Data Sync</span>
-                    <span className="text-[10px] text-slate-500">Automatically update scores & picks from game data.</span>
+                    <span className="text-[10px] text-slate-500">Master switch for all automatic updates.</span>
                 </div>
                 <button 
                     onClick={() => updateVisibility('isAutoSync')} 
@@ -660,6 +672,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                 >
                     {state.game.visibility?.isAutoSync ? 'ENABLED (AUTO)' : 'DISABLED (MANUAL)'}
                 </button>
+             </div>
+
+             {/* Granular Sync Controls */}
+             <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-3">
+                <h4 className="text-xs font-bold text-slate-400 uppercase">Granular Sync Controls</h4>
+
+                <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-white font-bold">Pick Sync (Heroes)</span>
+                    <button
+                       onClick={() => updateSyncControl('isPickSyncEnabled')}
+                       className={`w-8 h-4 rounded-full transition-colors ${state.syncControl?.isPickSyncEnabled ? 'bg-emerald-500' : 'bg-slate-700'}`}
+                    />
+                </div>
+                <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-white font-bold">Ban Sync</span>
+                    <button
+                       onClick={() => updateSyncControl('isBanSyncEnabled')}
+                       className={`w-8 h-4 rounded-full transition-colors ${state.syncControl?.isBanSyncEnabled ? 'bg-emerald-500' : 'bg-slate-700'}`}
+                    />
+                </div>
+                <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-white font-bold">Team Name & Logo Auto-Match</span>
+                    <button
+                       onClick={() => updateSyncControl('isTeamNameSyncEnabled')}
+                       className={`w-8 h-4 rounded-full transition-colors ${state.syncControl?.isTeamNameSyncEnabled ? 'bg-emerald-500' : 'bg-slate-700'}`}
+                    />
+                </div>
              </div>
 
              <div className="space-y-2">

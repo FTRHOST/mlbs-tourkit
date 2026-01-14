@@ -78,52 +78,11 @@ const App: React.FC = () => {
     };
 
     // --- LOGIKA MAPPING DATA GAME C++ KE UI ---
-    // Only map if Auto Sync is ENABLED globally
-    const isAutoSync = current.game.visibility?.isAutoSync ?? true; 
+    // REMOVED: Frontend mapping is now handled by the Backend (processGameData)
+    // The AppState received from 'state_update' event already contains the mapped Picks/Bans/Timer.
     
-    // Robust check for nested data
-    const roomInfo = current.gameData?.data?.room_info || current.gameData?.room_info;
-    
-    if (isAutoSync && roomInfo && roomInfo.players) {
-      // Sort players to ensure consistent slot mapping
-      // REMOVED: .sort((a: any, b: any) => (a.lUid || 0) - (b.lUid || 0)) to prevent jumping
-      const sortedPlayers = [...roomInfo.players];
-      const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
-      const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
-
-      const processSide = (sidePlayers: any[], currentTeam: any) => {
-          const picks = Array(5).fill('0');
-          const bans = Array(5).fill('0');
-          const pNames = Array(5).fill('PLAYER');
-          const pIds = Array(5).fill('');
-
-          sidePlayers.forEach((p: any, idx: number) => {
-              if (idx < 5) {
-                  picks[idx] = String(p.heroid || 0);
-                  pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
-                  pIds[idx] = String(p.lUid || '');
-                  bans[idx] = String(p.banHero || 0);
-              }
-          });
-
-          return {
-              ...currentTeam,
-              picks,
-              bans,
-              pNames,
-              pIds
-          };
-      };
-
-      current.blue = processSide(blueTeamPlayers, current.blue);
-      current.red = processSide(redTeamPlayers, current.red);
-    }
-
-    // Battle Stats mapping (Timer)
-    const battleStats = current.gameData?.data?.battle_stats || current.gameData?.battle_stats;
-    if (battleStats && battleStats.time > 0) {
-        current.game = { ...current.game, timer: Math.floor(battleStats.time) };
-    }
+    // Legacy fallback or additional client-side overrides can go here if needed,
+    // but for now we rely on the server's truth.
 
     return current;
   }, [state]);

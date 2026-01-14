@@ -18,7 +18,7 @@ import { Database } from './services/Database.js'; // Assuming this exists or we
 
 // Types & Constants
 import { INITIAL_STATE, DEFAULT_GAME_DATA } from './types.js';
-import type { AppState, TeamLibraryEntry, GameData } from './types.js';
+import type { AppState, TeamLibraryEntry, GameData, TeamData } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -109,6 +109,117 @@ adbService.setupForwarding();
 const gameListener = new GameListener();
 gameListener.start(); // Starts connecting to localhost:12345
 
+// --- LOGIC HELPER: Process Raw Game Data to AppState ---
+const processGameData = (raw: GameData, currentState: AppState): Partial<AppState> => {
+    const roomInfo = raw.data?.room_info;
+    if (!roomInfo || !roomInfo.players) return {};
+
+    const syncControl = currentState.syncControl || INITIAL_STATE.syncControl;
+    const sortedPlayers = [...roomInfo.players];
+    const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
+    const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
+
+    const processSide = (sidePlayers: any[], currentTeam: TeamData): TeamData => {
+        const newTeam = { ...currentTeam };
+
+        // 1. Picks & Bans & Players
+        const picks = [...currentTeam.picks];
+        const bans = [...currentTeam.bans];
+        const pNames = [...currentTeam.pNames];
+        const pIds = [...currentTeam.pIds];
+
+        let teamIdToMatch = '';
+
+        sidePlayers.forEach((p: any, idx: number) => {
+            if (idx < 5) {
+                // Pick Sync
+                if (syncControl.isPickSyncEnabled) {
+                    picks[idx] = String(p.heroid || 0);
+                }
+
+                // Ban Sync
+                if (syncControl.isBanSyncEnabled) {
+                    bans[idx] = String(p.banHero || 0);
+                }
+
+                // Player Info is always synced if available (assuming correct slot mapping)
+                // But we could add a toggle if needed. For now, we sync it.
+                pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
+                pIds[idx] = String(p.lUid || '');
+
+                // Name/Logo Auto-Match Logic
+                if (syncControl.isTeamNameSyncEnabled && !teamIdToMatch) {
+                    const pUid = String(p.lUid || '');
+                    const pName = String(p._sName || '').trim().toLowerCase();
+
+                    // Registry Lookup
+                    const regTeam = currentState.registry?.find(t => {
+                        const leader = String(t.leaderId || '').trim().toLowerCase();
+                        return (pUid && leader === pUid) || (pName && leader === pName);
+                    });
+
+                    if (regTeam) {
+                        teamIdToMatch = regTeam.name;
+                    } else {
+                        // Library Lookup
+                        const libTeam = currentState.teamLibrary?.find(t => {
+                            const capId = String(t.captainId || '');
+                            return pUid && capId === pUid;
+                        });
+                        if (libTeam) {
+                            teamIdToMatch = libTeam.name;
+                        }
+                    }
+                }
+            }
+        });
+
+        newTeam.picks = picks;
+        newTeam.bans = bans;
+        newTeam.pNames = pNames;
+        newTeam.pIds = pIds;
+
+        // Apply Team Name/Logo if matched and different
+        if (syncControl.isTeamNameSyncEnabled && teamIdToMatch && teamIdToMatch !== currentTeam.name) {
+            const DEFAULT_TEAM_NAMES = ["BLUE TEAM", "RED TEAM", "MANSABA A", "MANSABA B", "NO TEAM", "PETWIR", "Computer"];
+            // Only overwrite if current name is generic or empty
+            if (DEFAULT_TEAM_NAMES.includes(currentTeam.name) || !currentTeam.name) {
+                 const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
+                 const regTeam = currentState.registry?.find(t => t.name === teamIdToMatch);
+
+                 if (regTeam) {
+                     newTeam.name = regTeam.name;
+                     newTeam.logo = regTeam.logo;
+                 } else if (libTeam) {
+                     newTeam.name = libTeam.name;
+                     newTeam.logo = libTeam.logoUrl;
+                 }
+            }
+        }
+
+        return newTeam;
+    };
+
+    const newBlue = processSide(blueTeamPlayers, currentState.blue);
+    const newRed = processSide(redTeamPlayers, currentState.red);
+
+    const changes: Partial<AppState> = {};
+
+    // Detect changes to reduce noise (optional, but good practice)
+    if (JSON.stringify(newBlue) !== JSON.stringify(currentState.blue)) changes.blue = newBlue;
+    if (JSON.stringify(newRed) !== JSON.stringify(currentState.red)) changes.red = newRed;
+
+    // Battle Stats (Timer)
+    const battleStats = raw.data?.battle_stats;
+    if (battleStats && battleStats.time > 0) {
+        if (currentState.game.timer !== Math.floor(battleStats.time)) {
+             changes.game = { ...currentState.game, timer: Math.floor(battleStats.time) };
+        }
+    }
+
+    return changes;
+};
+
 // Handle Game Data from Zygisk/GameListener
 gameListener.on('data', (incoming: any) => {
     // Merge logic to handle partial updates
@@ -135,7 +246,7 @@ gameListener.on('data', (incoming: any) => {
              if (incomingPlayers.length === 0 && currentPlayers.length > 0 && gameState !== 0) {
                  // Keep old players, but update other room info if any
                  incomingRoom.players = currentPlayers;
-                 incomingRoom.player_count = currentRoom.player_count; // Keep count too
+                 incomingRoom.player_count = currentRoom ? currentRoom.player_count : 0; // Keep count too
              }
         }
 
@@ -145,11 +256,26 @@ gameListener.on('data', (incoming: any) => {
         };
     }
 
-    // Update Internal State
+    // Update Internal GameData State
     appState.gameData = mergedData;
 
-    // Broadcast MERGED update to clients
-    io.emit('update', mergedData); 
+    // --- APPLY MAPPING LOGIC ---
+    // Only apply if AutoSync is globally enabled (legacy check) OR if we rely on granular SyncControl
+    // But since SyncControl is granular, we can just run it. SyncControl defaults to TRUE.
+    if (appState.game.visibility.isAutoSync) {
+        const mappedChanges = processGameData(mergedData, appState);
+
+        // Merge mapped changes into AppState
+        if (Object.keys(mappedChanges).length > 0) {
+            appState = { ...appState, ...mappedChanges };
+        }
+    }
+
+    // Broadcast FULL AppState update to clients (instead of just gameData)
+    // This allows frontend to use state.blue/red directly
+    io.emit('state_update', appState);
+
+    io.emit('update', mergedData); // Keep legacy stream of raw data
 });
 
 io.on('connection', (socket) => {

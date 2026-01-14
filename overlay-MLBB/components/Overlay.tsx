@@ -23,7 +23,7 @@ const PickSlot: React.FC<{
   side: 'blue' | 'red'; 
   index: number;
   delay?: string;
-}> = ({ pick, name, side, index, delay }) => {
+}> = React.memo(({ pick, name, side, index, delay }) => {
   const [animating, setAnimating] = useState(false);
   const prevPickRef = useRef(pick);
 
@@ -59,9 +59,9 @@ const PickSlot: React.FC<{
       </div>
     </div>
   );
-};
+});
 
-const BanSlot: React.FC<{ ban: string; delay?: string }> = ({ ban, delay }) => {
+const BanSlot: React.FC<{ ban: string; delay?: string }> = React.memo(({ ban, delay }) => {
   const isReset = (!ban || ban.trim() === "" || ban.trim() === "0");
   const imgSrc = isReset ? PLACEHOLDERS.ban : `${ASSETS}hero-icon/${ban}.png`;
   
@@ -75,10 +75,9 @@ const BanSlot: React.FC<{ ban: string; delay?: string }> = ({ ban, delay }) => {
        />
     </div>
   );
-};
+});
 
-const AdContent: React.FC<{ data: AppState }> = ({ data }) => {
-  const { adConfig, ads } = data;
+const AdContent: React.FC<{ adConfig: AppState['adConfig']; ads: AppState['ads'] }> = React.memo(({ adConfig, ads }) => {
   const [fadeIndex, setFadeIndex] = useState(0);
 
   useEffect(() => {
@@ -151,9 +150,12 @@ const AdContent: React.FC<{ data: AppState }> = ({ data }) => {
       </div>
     );
   }
-};
+}, (prev, next) => {
+  return JSON.stringify(prev.adConfig) === JSON.stringify(next.adConfig) &&
+         JSON.stringify(prev.ads) === JSON.stringify(next.ads);
+});
 
-const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = ({ turn }) => {
+const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = React.memo(({ turn }) => {
   const isRed = turn === 'red';
   const rot = isRed ? '0deg' : '180deg';
   const style = {
@@ -169,9 +171,9 @@ const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = ({ turn }) => {
       <div className="animate-arrow-3 text-[40px] leading-none text-white">▶</div>
     </div>
   );
-};
+});
 
-const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red' }> = ({ score, bestOf, side }) => {
+const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red' }> = React.memo(({ score, bestOf, side }) => {
   // bestOf 1 -> 1 slot (1 win)
   // bestOf 3 -> 2 slots (2 wins)
   // bestOf 5 -> 3 slots (3 wins)
@@ -188,7 +190,7 @@ const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | '
       ))}
     </div>
   );
-};
+});
 
 const Overlay: React.FC<OverlayProps> = ({ data }) => {
   const getAsset = (key: keyof AppState['assets'], fallback: string) => {
@@ -278,7 +280,7 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
         className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] bg-[#18252C] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
         style={isIntro ? { animationDelay: '8.5s' } : {}}
       >
-        <AdContent data={data} />
+        <AdContent adConfig={data.adConfig} ads={data.ads} />
       </div>
 
       {!isIntro && (

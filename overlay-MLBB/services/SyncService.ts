@@ -59,6 +59,11 @@ class SyncService {
     });
 
     // 2. Game Data Updates (Real-time from ADB/Zygisk)
+    // NOTE: Backend now sends fully mapped state via 'state_update'.
+    // The 'update' event (raw GameData) is legacy, but we keep listening
+    // to populate 'gameData' field for the Admin Panel's "Live Monitor" functionality
+    // (if it chooses to use raw data for debugging/logging).
+    // The AppState from 'state_update' handles the actual picks/bans.
     this.socket.on('update', (data: GameData) => {
       // console.log('🎮 Game Data received');
       this._updateInternalState({ gameData: data });

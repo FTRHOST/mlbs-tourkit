@@ -39,6 +39,13 @@ export interface AdConfig {
   speed: number;
 }
 
+export interface SyncControl {
+  isBanSyncEnabled: boolean;
+  isPickSyncEnabled: boolean;
+  isGoldSyncEnabled: boolean;
+  isTeamNameSyncEnabled: boolean;
+}
+
 export interface RegisteredTeam {
   id: string;
   name: string;
@@ -60,6 +67,7 @@ export interface AppState {
   game: GameState;
   ads: string[];
   adConfig: AdConfig;
+  syncControl: SyncControl;
   assets: AppAssets;
   registry: RegisteredTeam[];
   teamLibrary: TeamLibraryEntry[];
@@ -210,6 +218,12 @@ export const INITIAL_STATE: AppState = {
     effect: 'scroll',
     text: 'WELCOME TO THE TOURNAMENT! ENJOY THE MATCH!',
     speed: 25
+  },
+  syncControl: {
+    isBanSyncEnabled: true,
+    isPickSyncEnabled: true,
+    isGoldSyncEnabled: true,
+    isTeamNameSyncEnabled: true
   },
   assets: {
     union1: '',
