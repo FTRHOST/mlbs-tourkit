@@ -192,6 +192,29 @@ const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | '
   );
 });
 
+const ScoreBars: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red'; theme: AppState['theme'] }> = ({ score, bestOf, side, theme }) => {
+  const maxWins = Math.ceil(bestOf / 2);
+  const bars = Array.from({ length: maxWins }, (_, i) => i < score);
+
+  const activeColor = side === 'blue' ? theme.scoreActiveColorBlue : theme.scoreActiveColorRed;
+  const inactiveColor = side === 'blue' ? theme.scoreInactiveColorBlue : theme.scoreInactiveColorRed;
+
+  return (
+    <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+      {Array.from({ length: maxWins }).map((_, i) => {
+        const isActive = i < score;
+        return (
+          <div 
+            key={i} 
+            className="w-[10px] h-[35px] transition-all duration-500 shadow-[0_0_5px_rgba(0,0,0,0.5)] border border-white/20"
+            style={{ backgroundColor: isActive ? activeColor : inactiveColor }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 const Overlay: React.FC<OverlayProps> = ({ data }) => {
   const getAsset = (key: keyof AppState['assets'], fallback: string) => {
     return data.assets[key] || fallback;
@@ -209,6 +232,13 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   const isIntro = data.game.isIntroActive;
   const isRedTurn = data.game.turn === 'red';
   const isControlEnabled = data.game.isGameControlEnabled;
+  // Default theme fallback if undefined (for older states)
+  const theme = data.theme || {
+    scoreActiveColorBlue: '#22d3ee',
+    scoreInactiveColorBlue: '#1e293b',
+    scoreActiveColorRed: '#ef4444',
+    scoreInactiveColorRed: '#1e293b'
+  };
 
   return (
     <div className="relative w-[1920px] h-[1080px] text-white overflow-hidden pointer-events-none">
@@ -249,17 +279,22 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
         src={getAsset('logo', PLACEHOLDERS.logo)} 
       />
 
+      {/* BLUE TEAM BAR & SCORE */}
       <div 
         className={`absolute w-[168px] h-[53px] top-[704px] left-[674px] ${isIntro ? 'intro-item' : ''}`}
         style={isIntro ? { animationDelay: '6.6s' } : {}}
       >
         <img className="w-full h-full object-contain" src={getAsset('union1', PLACEHOLDERS.union1)} />
+        <ScoreBars score={data.blue.score} bestOf={data.game.bestOf} side="blue" theme={theme} />
       </div>
+
+      {/* RED TEAM BAR & SCORE */}
       <div 
         className={`absolute w-[168px] h-[53px] top-[704px] left-[1078px] ${isIntro ? 'intro-item' : ''}`}
         style={isIntro ? { animationDelay: '6.6s' } : {}}
       >
         <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union1', PLACEHOLDERS.union1)} />
+        <ScoreBars score={data.red.score} bestOf={data.game.bestOf} side="red" theme={theme} />
       </div>
 
       <div 

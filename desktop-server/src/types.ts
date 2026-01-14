@@ -61,31 +61,11 @@ export interface TeamLibraryEntry {
   captainId?: string;
 }
 
-export interface AppState {
-  blue: TeamData;
-  red: TeamData;
-  game: GameState;
-  ads: string[];
-  adConfig: AdConfig;
-  syncControl: SyncControl;
-  assets: AppAssets;
-  registry: RegisteredTeam[];
-  teamLibrary: TeamLibraryEntry[];
-  history: any[];
-  status?: string;
-  gameData?: GameData;
-}
-
-export interface BracketMatch {
-  id: string;
-  round: string;
-  matchTitle: string;
-  team1Id?: string;
-  team2Id?: string;
-  score1?: number;
-  score2?: number;
-  winnerId?: string;
-  nextMatchId?: string;
+export interface AppTheme {
+  scoreActiveColorBlue: string;
+  scoreInactiveColorBlue: string;
+  scoreActiveColorRed: string;
+  scoreInactiveColorRed: string;
 }
 
 // Interfaces matching C++ JSON output
@@ -145,6 +125,22 @@ export interface GameData {
         battle_stats?: BattleStats;
         battle_players?: any[];
     };
+}
+
+export interface AppState {
+  blue: TeamData;
+  red: TeamData;
+  game: GameState;
+  ads: string[];
+  adConfig: AdConfig;
+  syncControl: SyncControl;
+  assets: AppAssets;
+  theme: AppTheme;
+  registry: RegisteredTeam[];
+  teamLibrary: TeamLibraryEntry[];
+  history: any[];
+  status?: string;
+  gameData?: GameData;
 }
 
 export const DEFAULT_GAME_DATA: GameData = {
@@ -230,6 +226,12 @@ export const INITIAL_STATE: AppState = {
     union2: '',
     logo: '',
     gradient: ''
+  },
+  theme: {
+    scoreActiveColorBlue: '#22d3ee',
+    scoreInactiveColorBlue: '#1e293b',
+    scoreActiveColorRed: '#ef4444',
+    scoreInactiveColorRed: '#1e293b'
   },
   registry: [],
   teamLibrary: [],

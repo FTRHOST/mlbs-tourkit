@@ -238,6 +238,8 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
 
         // 3. Apply final name and logo based on match result
         if (syncControl.isTeamNameSyncEnabled) {
+            let matchedName = "";
+
             if (teamIdToMatch) {
                 // A registered team was found, so we ALWAYS use its data.
                 const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
@@ -245,13 +247,14 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
                 if (regTeam) {
                     resultingTeam.name = regTeam.name;
                     resultingTeam.logo = regTeam.logo;
+                    matchedName = regTeam.name;
                 } else if (libTeam) {
                     resultingTeam.name = libTeam.name;
                     resultingTeam.logo = libTeam.logoUrl;
+                    matchedName = libTeam.name;
                 }
             } else {
-                // No registered team found. If the PREVIOUS team was a registered one, reset it.
-                // This prevents a registered name from getting "stuck" in the next match.
+                // No registered team found. Check previous name.
                 const isCurrentNameRegistered = 
                     currentState.registry?.some(t => t.name === currentTeam.name) || 
                     currentState.teamLibrary?.some(t => t.name === currentTeam.name);
@@ -259,8 +262,28 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
                 if (isCurrentNameRegistered) {
                     resultingTeam.name = "NO TEAM";
                     resultingTeam.logo = "";
+                } else {
+                    // Keep manual name
+                    matchedName = resultingTeam.name;
                 }
-                // If the current name is not a registered one (e.g. "My Team"), we leave it as is.
+            }
+
+            // 4. Auto-Calculate Score from History
+            // Only update score if it is currently 0 (start of match) to prevent overriding manual edits during game
+            if (matchedName && matchedName !== "NO TEAM" && matchedName !== "BLUE TEAM" && matchedName !== "RED TEAM" && resultingTeam.score === 0) {
+                 const currentMatchTitle = currentState.game.matchTitle.trim();
+                 if (currentMatchTitle) {
+                     const wins = currentState.history?.filter(m => 
+                        m.matchTitle === currentMatchTitle && 
+                        (m.winner === 'blue' ? m.blue.name === matchedName : 
+                         m.winner === 'red' ? m.red.name === matchedName : false)
+                     ).length || 0;
+                     
+                     if (wins > 0) {
+                         resultingTeam.score = wins;
+                         console.log(`[AutoScore] ${matchedName} has ${wins} wins in ${currentMatchTitle}`);
+                     }
+                 }
             }
         }
 
@@ -397,7 +420,8 @@ app.post('/api/reset', (req, res) => {
         assets: appState.assets,
         syncControl: appState.syncControl,
         status: appState.status,
-        gameData: appState.gameData
+        gameData: appState.gameData,
+        theme: appState.theme
     };
 
     // Reset state but keep preserved data
@@ -408,6 +432,7 @@ app.post('/api/reset', (req, res) => {
         history: preserved.history,
         assets: preserved.assets,
         syncControl: preserved.syncControl,
+        theme: preserved.theme, // Preserve theme
         ...(preserved.gameData && { gameData: preserved.gameData }),
         ...(preserved.status && { status: preserved.status })
     };
@@ -448,6 +473,41 @@ app.post('/api/factory-reset', async (req, res) => {
         console.error('Factory reset failed:', error);
         res.status(500).json({ message: 'Factory reset failed.', error: error.message });
     }
+});
+
+// --- API Endpoints for History ---
+app.post('/api/save-history', (req, res) => {
+    const matchData = req.body;
+    if (!matchData) return res.status(400).json({ message: 'No data provided' });
+
+    // Add ID and Date if missing
+    const newMatch = {
+        ...matchData,
+        id: matchData.id || Date.now().toString(),
+        date: matchData.date || new Date().toISOString()
+    };
+
+    appState.history.push(newMatch);
+    saveState();
+    io.emit('state_update', appState);
+    
+    res.status(200).json({ message: 'Match history saved', match: newMatch });
+});
+
+app.post('/api/update-history', (req, res) => {
+    const { id, ...updates } = req.body;
+    if (!id) return res.status(400).json({ message: 'Match ID required' });
+
+    const matchIndex = appState.history.findIndex((m: any) => m.id === id);
+    if (matchIndex === -1) return res.status(404).json({ message: 'Match not found' });
+
+    // Update specific fields
+    appState.history[matchIndex] = { ...appState.history[matchIndex], ...updates };
+    
+    saveState();
+    io.emit('state_update', appState);
+
+    res.status(200).json({ message: 'Match updated', match: appState.history[matchIndex] });
 });
 
 // --- START SERVER ---

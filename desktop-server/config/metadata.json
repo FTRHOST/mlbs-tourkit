@@ -1,78 +1,78 @@
 {
   "blue": {
-    "name": "ftr",
+    "name": "PETWIR",
     "logo": "",
     "picks": [
-      "1",
-      "",
-      "",
-      "",
-      ""
+      "36",
+      "7",
+      "22",
+      "60",
+      "10"
     ],
     "pNames": [
       "macom07",
-      "PLAYER 2",
-      "PLAYER 3",
-      "PLAYER 4",
-      "PLAYER 5"
+      "Computer",
+      "Computer",
+      "Computer",
+      "Computer"
     ],
     "pIds": [
       "2055252516",
-      "",
-      "",
-      "",
-      ""
+      "6",
+      "7",
+      "8",
+      "9"
     ],
     "bans": [
       "0",
-      "",
-      "",
-      "",
-      ""
+      "0",
+      "0",
+      "0",
+      "0"
     ],
-    "score": 0
+    "score": 1
   },
   "red": {
-    "name": "NO TEAM",
+    "name": "COM",
     "logo": "",
     "picks": [
-      "7",
-      "",
-      "",
-      "",
-      ""
+      "116",
+      "66",
+      "77",
+      "60",
+      "10"
     ],
     "pNames": [
       "Computer",
-      "PLAYER 2",
-      "PLAYER 3",
-      "PLAYER 4",
-      "PLAYER 5"
+      "Computer",
+      "Computer",
+      "Computer",
+      "Computer"
     ],
     "pIds": [
       "1",
-      "",
-      "",
-      "",
-      ""
+      "2",
+      "3",
+      "4",
+      "5"
     ],
     "bans": [
       "0",
-      "",
-      "",
-      "",
-      ""
+      "0",
+      "0",
+      "0",
+      "0"
     ],
     "score": 0
   },
   "game": {
     "matchTitle": "MATCH DAY 1",
     "phase": "BANNING",
-    "timer": 695,
+    "timer": 172,
     "turn": "blue",
     "isIntroActive": false,
     "isGameControlEnabled": false,
-    "bestOf": 3,
+    "bestOf": 5,
     "visibility": {
       "phase": true,
       "timer": true,
@@ -104,63 +104,341 @@
     "logo": "",
     "gradient": ""
   },
+  "theme": {
+    "scoreActiveColorBlue": "#22d3ee",
+    "scoreInactiveColorBlue": "#7a8699",
+    "scoreActiveColorRed": "#22d3ee",
+    "scoreInactiveColorRed": "#7a8699"
+  },
   "registry": [
     {
-      "id": "1768376321039",
-      "name": "ftr",
+      "id": "1768383033530",
+      "name": "PETWIR",
       "leaderId": "2055252516",
+      "logo": ""
+    },
+    {
+      "id": "1768383043645",
+      "name": "COM",
+      "leaderId": "2",
       "logo": ""
     }
   ],
   "teamLibrary": [],
-  "history": [],
+  "history": [
+    {
+      "matchTitle": "MATCH DAY 1",
+      "blue": {
+        "name": "PETWIR",
+        "logo": "",
+        "picks": [
+          "36",
+          "7",
+          "22",
+          "60",
+          "10"
+        ],
+        "pNames": [
+          "macom07",
+          "Computer",
+          "Computer",
+          "Computer",
+          "Computer"
+        ],
+        "pIds": [
+          "2055252516",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "bans": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "score": 0
+      },
+      "red": {
+        "name": "COM",
+        "logo": "",
+        "picks": [
+          "116",
+          "66",
+          "77",
+          "60",
+          "10"
+        ],
+        "pNames": [
+          "Computer",
+          "Computer",
+          "Computer",
+          "Computer",
+          "Computer"
+        ],
+        "pIds": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "bans": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "score": 0
+      },
+      "game": {
+        "matchTitle": "MATCH DAY 1",
+        "phase": "BANNING",
+        "timer": 172,
+        "turn": "blue",
+        "isIntroActive": false,
+        "isGameControlEnabled": false,
+        "bestOf": 5,
+        "visibility": {
+          "phase": true,
+          "timer": true,
+          "turn": true,
+          "score": true,
+          "isAutoSync": true
+        }
+      },
+      "winner": "blue",
+      "date": "2026-01-14T09:35:33.909Z",
+      "id": "1768383333937"
+    }
+  ],
   "gameData": {
     "type": "heartbeat",
     "debug": {
       "manager_found": true,
-      "game_state": 0,
+      "game_state": 7,
       "feature_enabled": true
     },
     "data": {
       "room_info": {
-        "player_count": 2,
+        "player_count": 10,
         "players": [
           {
             "lUid": 2055252516,
             "_sName": "macom07",
             "iCamp": 1,
-            "heroid": 1,
+            "heroid": 36,
             "uiRankLevel": 0,
             "summonSkillId": 20050,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 19662,
-            "heroskin": 1011
+            "heroskin": 1361
           },
           {
             "lUid": 1,
             "_sName": "Computer",
             "iCamp": 2,
+            "heroid": 116,
+            "uiRankLevel": 0,
+            "summonSkillId": 20020,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 2167
+          },
+          {
+            "lUid": 2,
+            "_sName": "Computer",
+            "iCamp": 2,
+            "heroid": 66,
+            "uiRankLevel": 0,
+            "summonSkillId": 20040,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 1666
+          },
+          {
+            "lUid": 3,
+            "_sName": "Computer",
+            "iCamp": 2,
+            "heroid": 77,
+            "uiRankLevel": 0,
+            "summonSkillId": 20030,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 1777
+          },
+          {
+            "lUid": 4,
+            "_sName": "Computer",
+            "iCamp": 2,
+            "heroid": 60,
+            "uiRankLevel": 0,
+            "summonSkillId": 20020,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 0
+          },
+          {
+            "lUid": 5,
+            "_sName": "Computer",
+            "iCamp": 2,
+            "heroid": 10,
+            "uiRankLevel": 0,
+            "summonSkillId": 20040,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 1103
+          },
+          {
+            "lUid": 6,
+            "_sName": "Computer",
+            "iCamp": 1,
             "heroid": 7,
             "uiRankLevel": 0,
             "summonSkillId": 20020,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 19662,
-            "heroskin": 1072
+            "heroskin": 1078
+          },
+          {
+            "lUid": 7,
+            "_sName": "Computer",
+            "iCamp": 1,
+            "heroid": 22,
+            "uiRankLevel": 0,
+            "summonSkillId": 20150,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 1227
+          },
+          {
+            "lUid": 8,
+            "_sName": "Computer",
+            "iCamp": 1,
+            "heroid": 60,
+            "uiRankLevel": 0,
+            "summonSkillId": 20150,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 616031
+          },
+          {
+            "lUid": 9,
+            "_sName": "Computer",
+            "iCamp": 1,
+            "heroid": 10,
+            "uiRankLevel": 0,
+            "summonSkillId": 20030,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 611051
           }
         ],
-        "logic_players": []
+        "logic_players": [
+          {
+            "m_ID": 36,
+            "totalGold": 2398,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 2395
+          },
+          {
+            "m_ID": 7,
+            "totalGold": 1554,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1488
+          },
+          {
+            "m_ID": 22,
+            "totalGold": 1723,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1935
+          },
+          {
+            "m_ID": 60,
+            "totalGold": 1321,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1252
+          },
+          {
+            "m_ID": 10,
+            "totalGold": 1561,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1292
+          },
+          {
+            "m_ID": 116,
+            "totalGold": 1328,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1755
+          },
+          {
+            "m_ID": 66,
+            "totalGold": 1696,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1664
+          },
+          {
+            "m_ID": 77,
+            "totalGold": 1799,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 2295
+          },
+          {
+            "m_ID": 60,
+            "totalGold": 1041,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 934
+          },
+          {
+            "m_ID": 10,
+            "totalGold": 1571,
+            "_TripleKillTimes": 0,
+            "_QuadraKillTimes": 0,
+            "_PentaKillTimes": 0,
+            "m_TotalExp": 1547
+          }
+        ]
       },
       "battle_stats": {
-        "time": 695.481,
-        "m_iCampAKill": 0,
-        "m_iCampBKill": 0,
-        "m_CampAGold": 0,
-        "m_CampBGold": 0,
-        "m_CampAExp": 0,
-        "m_CampBExp": 0,
-        "m_CampAKillTower": 0,
+        "time": 172.256,
+        "m_iCampAKill": 7,
+        "m_iCampBKill": 5,
+        "m_CampAGold": 8557,
+        "m_CampBGold": 7435,
+        "m_CampAExp": 8362,
+        "m_CampBExp": 8195,
+        "m_CampAKillTower": 1,
         "m_CampBKillTower": 0,
         "m_CampAKillLingZhu": 0,
         "m_CampBKillLingZhu": 0,
@@ -169,5 +447,5 @@
       }
     }
   },
-  "status": "connected"
+  "status": "connecting"
 }
