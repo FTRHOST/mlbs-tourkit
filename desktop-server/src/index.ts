@@ -188,10 +188,15 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
     const blueTeamPlayers = players.filter((p: any) => p.iCamp === 1);
     const redTeamPlayers = players.filter((p: any) => p.iCamp === 2);
 
-    const processSide = (sidePlayers: any[], currentTeam: TeamData, currentState: AppState, syncControl: SyncControl): TeamData => {
+    const battleStats = raw.data?.battle_stats;
+
+    const processSide = (sidePlayers: any[], currentTeam: TeamData, currentState: AppState, syncControl: SyncControl, sideKills: number): TeamData => {
         const resultingTeam = { ...currentTeam };
 
-        // 1. Find a registered team match from the players on this side
+        // 1. Set Live Kills from API
+        resultingTeam.kills = sideKills;
+
+        // 2. Find a registered team match from the players on this side
         let teamIdToMatch: string | null = null;
         if (syncControl.isTeamNameSyncEnabled) {
             for (const p of sidePlayers) {
@@ -218,7 +223,7 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
             }
         }
         
-        // 2. Process player-specific data
+        // 3. Process player-specific data
         const picks: string[] = Array(5).fill('');
         const bans: string[] = Array(5).fill('');
         const pNames: string[] = Array(5).fill('').map((_, i) => `PLAYER ${i + 1}`);
@@ -236,7 +241,7 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
         resultingTeam.pNames = pNames;
         resultingTeam.pIds = pIds;
 
-        // 3. Apply final name and logo based on match result
+        // 4. Apply final name and logo based on match result
         if (syncControl.isTeamNameSyncEnabled) {
             let matchedName = "";
 
@@ -268,8 +273,8 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
                 }
             }
 
-            // 4. Auto-Calculate Score from History
-            // Only update score if it is currently 0 (start of match) to prevent overriding manual edits during game
+            // 5. Auto-Calculate Series Wins from History
+            // Only recalculate if current series win count is 0 (start of match)
             if (matchedName && matchedName !== "NO TEAM" && matchedName !== "BLUE TEAM" && matchedName !== "RED TEAM" && resultingTeam.score === 0) {
                  const currentMatchTitle = currentState.game.matchTitle.trim();
                  if (currentMatchTitle) {
@@ -281,7 +286,7 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
                      
                      if (wins > 0) {
                          resultingTeam.score = wins;
-                         console.log(`[AutoScore] ${matchedName} has ${wins} wins in ${currentMatchTitle}`);
+                         console.log(`[AutoScore] ${matchedName} has ${wins} series wins in ${currentMatchTitle}`);
                      }
                  }
             }
@@ -290,8 +295,8 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
         return resultingTeam;
     };
 
-    const newBlue = processSide(blueTeamPlayers, currentState.blue, currentState, syncControl);
-    const newRed = processSide(redTeamPlayers, currentState.red, currentState, syncControl);
+    const newBlue = processSide(blueTeamPlayers, currentState.blue, currentState, syncControl, battleStats?.m_iCampAKill || 0);
+    const newRed = processSide(redTeamPlayers, currentState.red, currentState, syncControl, battleStats?.m_iCampBKill || 0);
 
     const changes: Partial<AppState> = {};
 
@@ -299,8 +304,7 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
     if (JSON.stringify(newBlue) !== JSON.stringify(currentState.blue)) changes.blue = newBlue;
     if (JSON.stringify(newRed) !== JSON.stringify(currentState.red)) changes.red = newRed;
 
-    // Battle Stats (Timer)
-    const battleStats = raw.data?.battle_stats;
+    // Timer sync
     if (battleStats && battleStats.time > 0) {
         if (currentState.game.timer !== Math.floor(battleStats.time)) {
              changes.game = { ...currentState.game, timer: Math.floor(battleStats.time) };
@@ -397,6 +401,57 @@ io.on('connection', (socket) => {
         // Apply deep merge
         appState = merge(appState, newState);
         
+        // --- AUTO-CALCULATE SCORE ON TITLE CHANGE ---
+        if (newState.game && 'matchTitle' in newState.game) {
+            const currentTitle = appState.game.matchTitle.trim();
+            const blueName = appState.blue.name;
+            const redName = appState.red.name;
+            
+            console.log(`[AutoScore] Match Title changed to "${currentTitle}". Recalculating scores...`);
+
+            if (currentTitle) {
+                // Calculate Blue Wins
+                if (blueName && !["NO TEAM", "BLUE TEAM", "Computer"].includes(blueName)) {
+                    const wins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        ((m.winner === 'blue' && m.blue.name === blueName) || 
+                         (m.winner === 'red' && m.red.name === blueName)) // Handle swapping sides if needed, but usually winner stores the team
+                    ).length;
+                    
+                    // Actually, the history stores snapshot. 
+                    // Strict check: m.winner === 'blue' means the team in blue slot won.
+                    // We need to check if THAT team is the current blue team.
+                    
+                    const blueWins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        (
+                            (m.winner === 'blue' && m.blue.name === blueName) ||
+                            (m.winner === 'red' && m.red.name === blueName)
+                        )
+                    ).length;
+                    
+                    appState.blue.score = blueWins;
+                } else {
+                    appState.blue.score = 0;
+                }
+
+                // Calculate Red Wins
+                if (redName && !["NO TEAM", "RED TEAM", "Computer"].includes(redName)) {
+                    const redWins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        (
+                            (m.winner === 'blue' && m.blue.name === redName) ||
+                            (m.winner === 'red' && m.red.name === redName)
+                        )
+                    ).length;
+                    
+                    appState.red.score = redWins;
+                } else {
+                    appState.red.score = 0;
+                }
+            }
+        }
+
         saveState();
         
         // Broadcast to others (excluding sender)

@@ -9,7 +9,38 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) => {
   const [draft, setDraft] = useState<AppState>(state);
-  const [activeTab, setActiveTab] = useState<'teams' | 'history' | 'ads' | 'prepare' | 'settings'>('teams');
+  const [activeTab, setActiveTab] = useState<'teams' | 'history' | 'ads' | 'prepare' | 'settings' | 'battle'>('teams');
+
+  const GAME_STATE_LABELS: { [key: number]: string } = {
+    0: 'GS_Non',
+    1: 'GS_GameLobby',
+    2: 'GS_Matching',
+    3: 'GS_ChooseHero',
+    4: 'GS_BattleLoading',
+    5: 'GS_Battle',
+    6: 'GS_Victory',
+    7: 'GS_ClearingData',
+    8: 'GS_GameOverSelfData',
+    9: 'GS_GameOverAchievementData',
+    10: 'GS_TeamMatch',
+    11: 'GS_LevelUp',
+    12: 'GS_BattleAchivementShare',
+    13: 'GS_InviteFriend',
+    14: 'GS_TenantMode',
+    15: 'GS_MatchFail',
+    16: 'GS_SurvivalEnd',
+    17: 'GS_BattleEnd',
+    18: 'GS_WaitDownloadAdd',
+    19: 'GS_LogicBattleEnd',
+    20: 'GS_SeniorShare',
+    21: 'GS_StartBanPick',
+    22: 'GS_EnterBattle',
+    27: 'GS_RecInvite',
+    100: 'GS_AUTOREPLAY',
+    1000: 'GS_ParkGameLobby',
+    1001: 'GS_ParkMatch',
+    1002: 'GS_ParkClearing'
+  };
   
   // Local state for the Prepare tab form
   const [newTeamName, setNewTeamName] = useState('');
@@ -18,10 +49,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
 
   // History Modal State
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<any>(null);
+  const [selectedSeries, setSelectedSeries] = useState<any[]>([]);
+  const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
 
   // Stats
   const [lastPacketTime, setLastPacketTime] = useState<Date | null>(null);
+
+  // Helper to group matches
+  const groupMatchesBySeries = (history: any[]) => {
+      const groups: { [key: string]: any[] } = {};
+      history.forEach(match => {
+          const teams = [match.blue.name, match.red.name].sort().join(" vs ");
+          const key = `${match.matchTitle}::${teams}`;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(match);
+      });
+      return groups;
+  };
 
   // Helper for deep comparison
   const isTeamEqual = (a: TeamData, b: TeamData) => {
@@ -328,11 +372,111 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
               body: JSON.stringify(match)
           });
           const d = await res.json();
+          
+          // Update local state
           const newHistory = state.history.map(m => m.id === match.id ? match : m);
           setState(prev => ({ ...prev, history: newHistory }));
           setDraft(prev => ({ ...prev, history: newHistory }));
-          setShowHistoryModal(false);
+          
+          // Update the modal view
+          setSelectedSeries(prev => prev.map(m => m.id === match.id ? match : m));
+          setEditingMatchId(null);
+          
       } catch (e) { console.error(e); alert("Failed to update match."); }
+  };
+
+  const renderBattle = () => {
+      const stats = state.gameData?.data?.battle_stats;
+      return (
+        <div className="flex flex-col gap-6">
+            {/* Header / Scoreboard */}
+            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 flex justify-between items-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-red-900/20 pointer-events-none"/>
+                
+                {/* Blue Team Stats */}
+                <div className="flex flex-col items-center z-10 w-1/3">
+                    <span className="text-2xl font-black text-blue-400 mb-2">{state.blue.name}</span>
+                    <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-blue-500/30 w-24">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">KILLS</span>
+                            <span className="text-4xl font-black text-white">{state.blue.kills}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-slate-700 w-24">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">GOLD</span>
+                            <span className="text-xl font-bold text-amber-400">{(stats?.m_CampAGold || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-slate-700 w-20">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">TOWER</span>
+                            <span className="text-xl font-bold text-white">{stats?.m_CampAKillTower || 0}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Center Timer */}
+                <div className="flex flex-col items-center z-10">
+                    <div className="bg-slate-950 px-6 py-2 rounded-full border border-slate-800 mb-2">
+                        <span className="text-3xl font-mono font-black text-white">
+                            {Math.floor((stats?.time || 0) / 60).toString().padStart(2, '0')}:
+                            {Math.floor((stats?.time || 0) % 60).toString().padStart(2, '0')}
+                        </span>
+                    </div>
+                    <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest animate-pulse">LIVE BATTLE</span>
+                </div>
+
+                {/* Red Team Stats */}
+                <div className="flex flex-col items-center z-10 w-1/3">
+                    <span className="text-2xl font-black text-red-400 mb-2">{state.red.name}</span>
+                    <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-slate-700 w-20">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">TOWER</span>
+                            <span className="text-xl font-bold text-white">{stats?.m_CampBKillTower || 0}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-slate-700 w-24">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">GOLD</span>
+                            <span className="text-xl font-bold text-amber-400">{(stats?.m_CampBGold || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-slate-900 rounded-xl border border-red-500/30 w-24">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">KILLS</span>
+                            <span className="text-4xl font-black text-white">{state.red.kills}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Objective Stats (Optional/Placeholder) */}
+            <div className="grid grid-cols-2 gap-6">
+                <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase mb-3">Objective Control</h4>
+                    <div className="flex justify-between items-center bg-slate-900/50 p-2 rounded mb-2">
+                        <span className="text-xs font-bold text-purple-400">Lord Kills</span>
+                        <div className="flex gap-4">
+                            <span className="text-blue-400 font-bold">{stats?.m_CampAKillLingZhu || 0}</span>
+                            <span className="text-slate-600">-</span>
+                            <span className="text-red-400 font-bold">{stats?.m_CampBKillLingZhu || 0}</span>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center bg-slate-900/50 p-2 rounded">
+                        <span className="text-xs font-bold text-emerald-400">Turtle Kills</span>
+                        <div className="flex gap-4">
+                            <span className="text-blue-400 font-bold">{stats?.m_CampAKillShenGui || 0}</span>
+                            <span className="text-slate-600">-</span>
+                            <span className="text-red-400 font-bold">{stats?.m_CampBKillShenGui || 0}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700">
+                     <h4 className="text-xs font-bold text-slate-400 uppercase mb-3">Game Info</h4>
+                     <div className="grid grid-cols-2 gap-2 text-xs">
+                         <span className="text-slate-500">Game State:</span>
+                         <span className="text-white font-bold">{state.gameData?.debug?.game_state}</span>
+                         <span className="text-slate-500">Battle Time:</span>
+                         <span className="text-white font-bold">{stats?.time?.toFixed(1)}s</span>
+                     </div>
+                </div>
+            </div>
+        </div>
+      );
   };
 
   // --- RENDERERS ---
@@ -389,11 +533,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                  <datalist id={`team-list-${side}`}>{(state.teamLibrary || []).map(t => (<option key={t.id} value={t.name}>{t.shortName}</option>))}</datalist>
               </div>
               <div className="flex items-center gap-1 bg-slate-900 rounded p-1 border border-slate-700 ml-2">
-                 <button onClick={() => updateDraftTeam(side as any, 'score', Math.max(0, (draft[side as 'blue' | 'red'].score || 0) - 1))} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white font-black bg-slate-800 rounded text-[10px]">-</button>
-                 <span className="text-white font-black w-4 text-center text-xs">{draft[side as 'blue' | 'red'].score || 0}</span>
-                 <button onClick={() => updateDraftTeam(side as any, 'score', (draft[side as 'blue' | 'red'].score || 0) + 1)} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white font-black bg-slate-800 rounded text-[10px]">+</button>
+                 <button onClick={() => updateDraftTeam(side as any, 'kills', Math.max(0, (draft[side as 'blue' | 'red'].kills || 0) - 1))} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white font-black bg-slate-800 rounded text-[10px]">-</button>
+                 <span className="text-white font-black w-4 text-center text-xs">{draft[side as 'blue' | 'red'].kills || 0}</span>
+                 <button onClick={() => updateDraftTeam(side as any, 'kills', (draft[side as 'blue' | 'red'].kills || 0) + 1)} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white font-black bg-slate-800 rounded text-[10px]">+</button>
               </div>
             </div>
+            
+            <div className="flex flex-col items-end gap-1 ml-4">
+                <span className="text-[8px] font-bold text-slate-500 uppercase">Series Score</span>
+                <div className="flex gap-1">
+                    {Array.from({ length: Math.ceil(state.game.bestOf / 2) }).map((_, i) => (
+                        <div key={i} className={`w-1.5 h-4 rounded-full ${i < draft[side as 'blue' | 'red'].score ? (side === 'blue' ? 'bg-cyan-400' : 'bg-red-500') : 'bg-slate-700'}`} />
+                    ))}
+                </div>
+            </div>
+
             <button onClick={() => handleGameWin(side as any)} className="ml-2 text-[9px] font-black bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg active:scale-95 transition-all flex items-center gap-1"><span className="text-xs">🏆</span> WIN</button>
             {isTeamDirty(side as any) && <button onClick={() => applyTeamChanges(side as any)} className="ml-2 text-[9px] font-black bg-white/10 px-3 py-1 rounded-full">APPLY</button>}
           </div>
@@ -407,123 +561,315 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     </div>
   );
 
-  const renderHistory = () => (
+  const renderHistory = () => {
+    const groupedHistory = groupMatchesBySeries(state.history || []);
+    const sortedKeys = Object.keys(groupedHistory).sort().reverse();
+
+    return (
     <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center mb-2">
-            <h3 className="text-blue-400 font-black uppercase tracking-widest">Match History</h3>
+            <h3 className="text-blue-400 font-black uppercase tracking-widest">Match Series History</h3>
             <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg flex items-center gap-2">
                 <span>📂 IMPORT MATCH</span>
                 <input type="file" accept=".json" className="hidden" onChange={handleImportHistory} />
             </label>
         </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto custom-scrollbar p-1">
-            {state.history?.slice().reverse().map((match: any) => (
-                <div key={match.id} onClick={() => { setSelectedMatch(match); setShowHistoryModal(true); }} className={`bg-slate-800/50 p-4 rounded-xl border cursor-pointer hover:bg-slate-800 hover:border-slate-500 transition-all ${match.winner === 'blue' ? 'border-blue-500/30' : match.winner === 'red' ? 'border-red-500/30' : 'border-slate-700'}`}>
+            {sortedKeys.map((key) => {
+                const matches = groupedHistory[key];
+                const latestMatch = matches[matches.length - 1];
+                const [teamA, teamB] = key.split('::')[1].split(' vs ');
+                
+                let scoreA = 0;
+                let scoreB = 0;
+
+                matches.forEach(m => {
+                    const winnerName = m.winner === 'blue' ? m.blue.name : (m.winner === 'red' ? m.red.name : '');
+                    if (winnerName === teamA) scoreA++;
+                    if (winnerName === teamB) scoreB++;
+                });
+
+                return (
+                <div key={key} onClick={() => { setSelectedSeries(matches); setShowHistoryModal(true); }} className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-800 hover:border-blue-500/50 transition-all group">
                     <div className="flex justify-between items-center mb-3">
                         <div className="flex flex-col">
-                            <span className="text-[9px] text-slate-500 font-bold">{new Date(match.date).toLocaleDateString()}</span>
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{match.matchTitle || 'UNRANKED'}</span>
+                            <span className="text-[9px] text-slate-500 font-bold">{new Date(latestMatch.date).toLocaleDateString()}</span>
+                            <span className="text-[10px] text-slate-300 font-black uppercase tracking-wider">{latestMatch.matchTitle || 'UNRANKED'}</span>
                         </div>
-                        <div className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${match.winner === 'blue' ? 'bg-blue-900/50 text-blue-400' : match.winner === 'red' ? 'bg-red-900/50 text-red-400' : 'bg-slate-700 text-slate-400'}`}>
-                            {match.winner === 'blue' ? 'Blue Win' : match.winner === 'red' ? 'Red Win' : 'Draw'}
+                        <div className="px-2 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">
+                            BO {latestMatch.game?.bestOf || '?'}
                         </div>
                     </div>
                     
                     <div className="flex items-center justify-between">
-                        {/* Blue */}
                         <div className="flex flex-col items-center flex-1">
-                            {match.blue.logo && <img src={match.blue.logo.startsWith('assets') ? '/'+match.blue.logo : match.blue.logo} className="w-8 h-8 rounded mb-1 object-contain"/>}
-                            <span className="text-xs font-black text-white">{match.blue.name}</span>
-                            <span className="text-xl font-bold text-blue-400">{match.blue.score}</span>
+                            <span className="text-xs font-black text-white text-center mb-1">{teamA}</span>
+                            <span className={`text-2xl font-black ${scoreA > scoreB ? 'text-emerald-400' : 'text-slate-500'}`}>{scoreA}</span>
                         </div>
                         
-                        <span className="text-slate-600 font-black text-lg mx-2">VS</span>
+                        <div className="flex flex-col items-center px-4">
+                            <span className="text-[10px] font-bold text-slate-600">VS</span>
+                            <span className="text-[9px] text-slate-500 mt-1">{matches.length} Games</span>
+                        </div>
 
-                        {/* Red */}
                         <div className="flex flex-col items-center flex-1">
-                            {match.red.logo && <img src={match.red.logo.startsWith('assets') ? '/'+match.red.logo : match.red.logo} className="w-8 h-8 rounded mb-1 object-contain"/>}
-                            <span className="text-xs font-black text-white">{match.red.name}</span>
-                            <span className="text-xl font-bold text-red-400">{match.red.score}</span>
+                            <span className="text-xs font-black text-white text-center mb-1">{teamB}</span>
+                            <span className={`text-2xl font-black ${scoreB > scoreA ? 'text-emerald-400' : 'text-slate-500'}`}>{scoreB}</span>
                         </div>
                     </div>
                 </div>
-            ))}
-            {(!state.history || state.history.length === 0) && <div className="text-center text-slate-600 text-xs italic py-10 col-span-full">No match history yet. Finish a game (State 7) to auto-save.</div>}
+                );
+            })}
+            {sortedKeys.length === 0 && <div className="text-center text-slate-600 text-xs italic py-10 col-span-full">No match history yet. Finish a game (State 7) to auto-save.</div>}
         </div>
 
-        {/* EDIT MODAL */}
-        {showHistoryModal && selectedMatch && (
+        {/* SERIES DETAIL MODAL */}
+        {showHistoryModal && selectedSeries.length > 0 && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={() => setShowHistoryModal(false)}>
-                <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                <div className="bg-slate-900 border border-slate-700 w-full max-w-4xl max-h-[90vh] rounded-2xl p-6 shadow-2xl relative flex flex-col" onClick={e => e.stopPropagation()}>
                     <button className="absolute top-4 right-4 text-slate-500 hover:text-white" onClick={() => setShowHistoryModal(false)}>✕</button>
-                    <h3 className="text-xl font-black text-white mb-6 uppercase tracking-wider">Edit Match Details</h3>
                     
-                    <div className="grid grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label className="text-[10px] text-slate-500 font-bold uppercase">Match Title</label>
-                            <input value={selectedMatch.matchTitle} onChange={e => setSelectedMatch({...selectedMatch, matchTitle: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm font-bold text-white mt-1"/>
-                        </div>
-                        <div>
-                            <label className="text-[10px] text-slate-500 font-bold uppercase">Winner</label>
-                            <select value={selectedMatch.winner} onChange={e => setSelectedMatch({...selectedMatch, winner: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm font-bold text-white mt-1">
-                                <option value="draw">Draw</option>
-                                <option value="blue">Blue Team</option>
-                                <option value="red">Red Team</option>
-                            </select>
-                        </div>
+                    <div className="mb-6 border-b border-slate-800 pb-4">
+                        <h3 className="text-xl font-black text-white uppercase tracking-wider">{selectedSeries[0].matchTitle}</h3>
+                        <span className="text-xs text-slate-500 font-bold">Series History • {selectedSeries.length} Games Played</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8 p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                        {/* Blue Details */}
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-blue-400 font-bold text-xs uppercase">Blue Team</span>
-                                <input type="number" value={selectedMatch.blue.score} onChange={e => setSelectedMatch({...selectedMatch, blue: {...selectedMatch.blue, score: parseInt(e.target.value)}})} className="w-12 bg-slate-800 text-center text-sm font-bold rounded border border-slate-700"/>
-                            </div>
-                            <input value={selectedMatch.blue.name} onChange={e => setSelectedMatch({...selectedMatch, blue: {...selectedMatch.blue, name: e.target.value}})} className="w-full bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700"/>
-                            <div className="space-y-1">
-                                {selectedMatch.blue.picks.map((pick:string, i:number) => (
-                                    <div key={i} className="flex gap-2">
-                                        <div className="w-8 h-8 bg-slate-800 rounded flex items-center justify-center text-[8px] border border-slate-700">{pick || '?'}</div>
-                                        <input value={selectedMatch.blue.pNames[i]} onChange={e => {
-                                            const newNames = [...selectedMatch.blue.pNames]; newNames[i] = e.target.value;
-                                            setSelectedMatch({...selectedMatch, blue: {...selectedMatch.blue, pNames: newNames}});
-                                        }} className="flex-1 bg-transparent border-b border-slate-800 text-[10px] focus:outline-none focus:border-blue-500"/>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
+                        {selectedSeries.map((match, idx) => (
+                            <div key={match.id} className="bg-slate-950/50 rounded-xl border border-slate-800 p-4">
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-xs font-bold text-blue-400">GAME {idx + 1}</span>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => downloadJson(match, `match-${match.id}.json`)} className="text-[10px] bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded">Export JSON</button>
+                                        <button onClick={() => setEditingMatchId(editingMatchId === match.id ? null : match.id)} className={`text-[10px] px-3 py-1 rounded font-bold ${editingMatchId === match.id ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                            {editingMatchId === match.id ? 'Cancel Edit' : 'Edit Details'}
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                </div>
 
-                        {/* Red Details */}
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-red-400 font-bold text-xs uppercase">Red Team</span>
-                                <input type="number" value={selectedMatch.red.score} onChange={e => setSelectedMatch({...selectedMatch, red: {...selectedMatch.red, score: parseInt(e.target.value)}})} className="w-12 bg-slate-800 text-center text-sm font-bold rounded border border-slate-700"/>
-                            </div>
-                            <input value={selectedMatch.red.name} onChange={e => setSelectedMatch({...selectedMatch, red: {...selectedMatch.red, name: e.target.value}})} className="w-full bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700"/>
-                            <div className="space-y-1">
-                                {selectedMatch.red.picks.map((pick:string, i:number) => (
-                                    <div key={i} className="flex gap-2">
-                                        <div className="w-8 h-8 bg-slate-800 rounded flex items-center justify-center text-[8px] border border-slate-700">{pick || '?'}</div>
-                                        <input value={selectedMatch.red.pNames[i]} onChange={e => {
-                                            const newNames = [...selectedMatch.red.pNames]; newNames[i] = e.target.value;
-                                            setSelectedMatch({...selectedMatch, red: {...selectedMatch.red, pNames: newNames}});
-                                        }} className="flex-1 bg-transparent border-b border-slate-800 text-[10px] focus:outline-none focus:border-red-500"/>
+                                {editingMatchId === match.id ? (
+                                    <div className="space-y-4 bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="text-[9px] uppercase font-bold text-slate-500">Winner</label>
+                                                <select 
+                                                    value={match.winner} 
+                                                    onChange={(e) => {
+                                                        const updated = { ...match, winner: e.target.value };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }}
+                                                    className="w-full bg-slate-800 border-slate-600 rounded text-xs p-2 mt-1"
+                                                >
+                                                    <option value="blue">Blue Team ({match.blue.name})</option>
+                                                    <option value="red">Red Team ({match.red.name})</option>
+                                                    <option value="draw">Draw</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] uppercase font-bold text-slate-500">Scores</label>
+                                                <div className="flex gap-2 mt-1">
+                                                    <input type="number" value={match.blue.score} onChange={(e) => {
+                                                        const updated = { ...match, blue: { ...match.blue, score: parseInt(e.target.value) } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-16 bg-slate-800 border-slate-600 rounded text-xs p-2 text-center text-blue-400"/>
+                                                    <span className="text-slate-500 self-center">-</span>
+                                                    <input type="number" value={match.red.score} onChange={(e) => {
+                                                        const updated = { ...match, red: { ...match.red, score: parseInt(e.target.value) } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-16 bg-slate-800 border-slate-600 rounded text-xs p-2 text-center text-red-400"/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* BANS EDIT */}
+                                        <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                                            <div>
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 mb-1 block">Blue Bans</label>
+                                                <div className="flex gap-1">
+                                                    {match.blue.bans.map((ban: string, i: number) => (
+                                                        <input 
+                                                            key={i} 
+                                                            value={ban} 
+                                                            onChange={(e) => {
+                                                                const newBans = [...match.blue.bans];
+                                                                newBans[i] = e.target.value;
+                                                                const updated = { ...match, blue: { ...match.blue, bans: newBans } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1 text-center"
+                                                            placeholder="ID"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 mb-1 block">Red Bans</label>
+                                                <div className="flex gap-1">
+                                                    {match.red.bans.map((ban: string, i: number) => (
+                                                        <input 
+                                                            key={i} 
+                                                            value={ban} 
+                                                            onChange={(e) => {
+                                                                const newBans = [...match.red.bans];
+                                                                newBans[i] = e.target.value;
+                                                                const updated = { ...match, red: { ...match.red, bans: newBans } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1 text-center"
+                                                            placeholder="ID"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* PICKS EDIT */}
+                                        <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 block">Blue Picks</label>
+                                                {match.blue.pNames.map((pName: string, i: number) => (
+                                                    <div key={i} className="flex gap-2">
+                                                        <input 
+                                                            value={match.blue.picks[i]} 
+                                                            onChange={(e) => {
+                                                                const newPicks = [...match.blue.picks];
+                                                                newPicks[i] = e.target.value;
+                                                                const updated = { ...match, blue: { ...match.blue, picks: newPicks } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="w-10 bg-slate-800 border-slate-600 rounded text-[10px] p-1 text-center"
+                                                            placeholder="Hero"
+                                                        />
+                                                        <input 
+                                                            value={pName} 
+                                                            onChange={(e) => {
+                                                                const newNames = [...match.blue.pNames];
+                                                                newNames[i] = e.target.value;
+                                                                const updated = { ...match, blue: { ...match.blue, pNames: newNames } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="flex-1 bg-slate-800 border-slate-600 rounded text-[10px] p-1"
+                                                            placeholder="Player Name"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 block">Red Picks</label>
+                                                {match.red.pNames.map((pName: string, i: number) => (
+                                                    <div key={i} className="flex gap-2">
+                                                        <input 
+                                                            value={match.red.picks[i]} 
+                                                            onChange={(e) => {
+                                                                const newPicks = [...match.red.picks];
+                                                                newPicks[i] = e.target.value;
+                                                                const updated = { ...match, red: { ...match.red, picks: newPicks } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="w-10 bg-slate-800 border-slate-600 rounded text-[10px] p-1 text-center"
+                                                            placeholder="Hero"
+                                                        />
+                                                        <input 
+                                                            value={pName} 
+                                                            onChange={(e) => {
+                                                                const newNames = [...match.red.pNames];
+                                                                newNames[i] = e.target.value;
+                                                                const updated = { ...match, red: { ...match.red, pNames: newNames } };
+                                                                setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                            }}
+                                                            className="flex-1 bg-slate-800 border-slate-600 rounded text-[10px] p-1"
+                                                            placeholder="Player Name"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* BATTLE STATS EDIT */}
+                                        <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 block mb-2">Blue Battle Stats</label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAGold || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAGold: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillTower || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillTower: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillLingZhu || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillLingZhu: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillShenGui || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillShenGui: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase font-bold text-slate-500 block mb-2">Red Battle Stats</label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBGold || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBGold: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillTower || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillTower: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillLingZhu || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillLingZhu: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillShenGui || 0} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillShenGui: val } } } } };
+                                                        setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
+                                                    }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button onClick={() => updateHistoryItem(match)} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded font-bold text-xs">SAVE CHANGES</button>
                                     </div>
-                                ))}
+                                ) : (
+                                    <div className="flex items-center justify-between bg-slate-900 p-3 rounded-lg">
+                                        <div className={`flex-1 flex flex-col items-center ${match.winner === 'blue' ? 'opacity-100' : 'opacity-50'}`}>
+                                            <span className="text-xs font-black text-blue-400">{match.blue.name}</span>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[10px] text-slate-400">KDA: {match.blue.score}</span>
+                                                {match.winner === 'blue' && <span className="text-[8px] bg-blue-500 text-black px-1.5 rounded font-bold">WIN</span>}
+                                            </div>
+                                        </div>
+                                        <div className="px-4"><span className="text-xl font-black text-slate-700">VS</span></div>
+                                        <div className={`flex-1 flex flex-col items-center ${match.winner === 'red' ? 'opacity-100' : 'opacity-50'}`}>
+                                            <span className="text-xs font-black text-red-400">{match.red.name}</span>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                {match.winner === 'red' && <span className="text-[8px] bg-red-500 text-black px-1.5 rounded font-bold">WIN</span>}
+                                                <span className="text-[10px] text-slate-400">KDA: {match.red.score}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 flex justify-between">
-                        <button onClick={() => downloadJson(selectedMatch, `match-${selectedMatch.matchTitle}-${selectedMatch.id}.json`)} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold uppercase text-xs">Export JSON</button>
-                        <button onClick={() => updateHistoryItem(selectedMatch)} className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold uppercase text-xs shadow-lg">Save Changes</button>
+                        ))}
                     </div>
                 </div>
             </div>
         )}
     </div>
   );
+  };
 
   const renderSettings = () => (
     <div className="flex flex-col gap-6">
@@ -650,6 +996,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Game State Indicator */}
+          <div className="flex flex-col items-end mr-2 bg-slate-900/80 px-2 py-1 rounded border border-slate-700/50">
+             <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Game State</span>
+             <span className={`text-[9px] font-black tracking-wider ${state.gameData?.debug?.game_state === 5 ? 'text-emerald-400' : [6, 21, 3].includes(state.gameData?.debug?.game_state || 0) ? 'text-amber-400' : 'text-slate-400'}`}>
+                {state.gameData?.debug?.game_state ?? '-'} 
+                <span className="text-[8px] opacity-60 ml-1 font-bold">
+                  {state.gameData?.debug?.game_state !== undefined ? (GAME_STATE_LABELS[state.gameData.debug.game_state] || 'UNKNOWN') : ''}
+                </span>
+             </span>
+          </div>
+
           {/* Live Sync Toggle */}
           <button onClick={() => updateVisibility('isAutoSync')} className={`px-3 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest flex items-center gap-2 transition-all ${state.game.visibility?.isAutoSync ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-700 text-slate-400'}`}><div className={`w-2 h-2 rounded-full ${state.game.visibility?.isAutoSync ? 'bg-white' : 'bg-slate-500'}`}></div>{state.game.visibility?.isAutoSync ? 'LIVE SYNC ON' : 'SYNC OFF'}</button>
           
@@ -666,6 +1023,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
       <div className="flex gap-2 border-b border-slate-700/50">
         <button onClick={() => setActiveTab('teams')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'teams' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Teams & Players</button>
         <button onClick={() => setActiveTab('history')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'history' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Match History</button>
+        <button onClick={() => setActiveTab('battle')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'battle' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Battle Stats</button>
         <button onClick={() => setActiveTab('settings')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'settings' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Settings & Theme</button>
         <button onClick={() => setActiveTab('ads')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'ads' ? 'border-amber-500 text-amber-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Ads & Sponsors</button>
         <button onClick={() => setActiveTab('prepare')} className={`px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-2 ${activeTab === 'prepare' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>Prepare Data</button>
@@ -675,6 +1033,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
         {activeTab === 'teams' ? renderTeams() :
          activeTab === 'history' ? renderHistory() :
+         activeTab === 'battle' ? renderBattle() :
          activeTab === 'settings' ? renderSettings() :
          activeTab === 'ads' ? renderAds() :
          activeTab === 'prepare' ? renderPrepare() : null}

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { AppState } from '../types';
 
@@ -173,29 +172,8 @@ const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = React.memo(({ turn }) 
   );
 });
 
-const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red' }> = React.memo(({ score, bestOf, side }) => {
-  // bestOf 1 -> 1 slot (1 win)
-  // bestOf 3 -> 2 slots (2 wins)
-  // bestOf 5 -> 3 slots (3 wins)
-  const maxWins = Math.ceil(bestOf / 2); 
-  const dots = Array.from({ length: maxWins }, (_, i) => i < score);
-
-  return (
-    <div className={`flex gap-1 ${side === 'blue' ? 'flex-row-reverse' : 'flex-row'}`}>
-      {dots.map((active, i) => (
-        <div 
-          key={i} 
-          className={`w-3 h-3 rotate-45 border border-white transition-all duration-300 ${active ? (side === 'blue' ? 'bg-cyan-400 shadow-[0_0_10px_cyan]' : 'bg-red-500 shadow-[0_0_10px_red]') : 'bg-black/50'}`} 
-        />
-      ))}
-    </div>
-  );
-});
-
 const ScoreBars: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red'; theme: AppState['theme'] }> = ({ score, bestOf, side, theme }) => {
   const maxWins = Math.ceil(bestOf / 2);
-  const bars = Array.from({ length: maxWins }, (_, i) => i < score);
-
   const activeColor = side === 'blue' ? theme.scoreActiveColorBlue : theme.scoreActiveColorRed;
   const inactiveColor = side === 'blue' ? theme.scoreInactiveColorBlue : theme.scoreInactiveColorRed;
 
@@ -232,7 +210,6 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   const isIntro = data.game.isIntroActive;
   const isRedTurn = data.game.turn === 'red';
   const isControlEnabled = data.game.isGameControlEnabled;
-  // Default theme fallback if undefined (for older states)
   const theme = data.theme || {
     scoreActiveColorBlue: '#22d3ee',
     scoreInactiveColorBlue: '#1e293b',
@@ -332,12 +309,6 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
           <div className="absolute w-[150px] h-[24px] top-[886px] left-[745px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
             {data.blue.name}
           </div>
-          {/* Blue Score */}
-          {(data.game.visibility?.score ?? true) && (
-            <div className="absolute top-[865px] left-[745px] w-[150px] flex justify-end pr-2">
-              <ScoreIndicator score={data.blue.score} bestOf={data.game.bestOf} side="blue" />
-            </div>
-          )}
       </div>
 
       {/* Red Team Info */}
@@ -348,12 +319,6 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
           <div className="absolute w-[150px] h-[24px] top-[886px] left-[1021px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
             {data.red.name}
           </div>
-          {/* Red Score */}
-          {(data.game.visibility?.score ?? true) && (
-            <div className="absolute top-[865px] left-[1021px] w-[150px] flex justify-start pl-2">
-              <ScoreIndicator score={data.red.score} bestOf={data.game.bestOf} side="red" />
-            </div>
-          )}
       </div>
 
       <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7s' } : {}}>

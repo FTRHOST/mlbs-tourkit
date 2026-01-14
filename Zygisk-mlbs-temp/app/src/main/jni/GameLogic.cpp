@@ -366,13 +366,13 @@ void LoadConfig() {
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string content = buffer.str();
-    g_State.isModEnabled = (content.find("\"mod_enabled\": false") == std::string::npos);
+    g_State.isModEnabled = (content.find(\"mod_enabled\": false) == std::string::npos);
 }
 
 void MonitorBattleState() {
     static int configTick = 0;
     if (++configTick >= 180) { LoadConfig(); configTick = 0; }
-    if (!g_State.isModEnabled) return;
+    if (!g_State.isModEnabled) return; 
     
     static int logicTick = 0, infoTick = 0;
     logicTick++; infoTick++;
@@ -407,9 +407,4 @@ void MonitorBattleState() {
     static int frameTick = 0;
     if (++frameTick % 60 == 0) {
         std::stringstream ss;
-        ss << "{\"type\":\"heartbeat\",\"debug\":{\"manager_found\":" << (logicBattleManager?"true":"false") 
-           << ",\"game_state\":" << currentBattleState 
-           << ",\"feature_enabled\":true},\"data\":{";
-        {
-             std::lock_guard<std::mutex> lock(g_State.stateMutex);
-             ss << "\"room_info\":{\"player_count\":
+        ss << "{\"type\":\"heartbeat\",\"debug\":{\"manager_found\":

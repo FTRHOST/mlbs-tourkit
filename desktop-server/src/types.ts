@@ -6,6 +6,7 @@ export interface TeamData {
   pIds: string[];
   bans: string[];
   score: number;
+  kills: number;
 }
 
 export interface GameState {
@@ -181,7 +182,8 @@ export const INITIAL_STATE: AppState = {
     pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
-    score: 0
+    score: 0,
+    kills: 0
   },
   red: {
     name: 'MANSABA B',
@@ -190,7 +192,8 @@ export const INITIAL_STATE: AppState = {
     pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
-    score: 0
+    score: 0,
+    kills: 0
   },
   game: {
     matchTitle: 'MATCH DAY 1',
