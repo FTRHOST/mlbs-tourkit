@@ -1,26 +1,27 @@
 {
   "blue": {
-    "name": "BLUE TEAM",
+    "name": "blue",
+    "logo": "",
     "picks": [
-      "112",
-      "54",
+      "3",
       "0",
-      "0",
-      "0"
+      "66",
+      "22",
+      "6"
     ],
     "pNames": [
       "macom07",
       "Computer",
-      "PLAYER",
-      "PLAYER",
-      "PLAYER"
+      "Computer",
+      "Computer",
+      "Computer"
     ],
     "pIds": [
       "2055252516",
       "99",
-      "",
-      "",
-      ""
+      "7",
+      "8",
+      "9"
     ],
     "bans": [
       "0",
@@ -32,27 +33,28 @@
     "score": 0
   },
   "red": {
-    "name": "RED TEAM",
+    "name": "re",
+    "logo": "",
     "picks": [
-      "0",
-      "0",
-      "0",
-      "0",
-      "0"
+      "116",
+      "59",
+      "53",
+      "6",
+      "66"
     ],
     "pNames": [
-      "PLAYER",
-      "PLAYER",
-      "PLAYER",
-      "PLAYER",
-      "PLAYER"
+      "Computer",
+      "Computer",
+      "Computer",
+      "Computer",
+      "Computer"
     ],
     "pIds": [
-      "",
-      "",
-      "",
-      "",
-      ""
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
     ],
     "bans": [
       "0",
@@ -66,7 +68,7 @@
   "game": {
     "matchTitle": "MATCH TITLE",
     "phase": "PREPARING",
-    "timer": 230,
+    "timer": 4,
     "turn": "blue",
     "isIntroActive": false,
     "isGameControlEnabled": false,
@@ -86,13 +88,26 @@
     "text": "WAITING FOR DATA...",
     "speed": 10
   },
+  "syncControl": {
+    "isBanSyncEnabled": true,
+    "isPickSyncEnabled": true,
+    "isGoldSyncEnabled": true,
+    "isTeamNameSyncEnabled": true
+  },
   "assets": {
     "union1": "",
     "union2": "",
     "logo": "",
     "gradient": ""
   },
-  "registry": [],
+  "registry": [
+    {
+      "id": "1768367726910",
+      "name": "HALO",
+      "leaderId": "2055252516",
+      "logo": ""
+    }
+  ],
   "teamLibrary": [],
   "history": [],
   "gameData": {
@@ -110,31 +125,31 @@
             "lUid": 2055252516,
             "_sName": "macom07",
             "iCamp": 1,
-            "heroid": 112,
+            "heroid": 3,
             "uiRankLevel": 23,
-            "summonSkillId": 20050,
+            "summonSkillId": 20020,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 19662,
-            "heroskin": 2121
+            "heroskin": 1031
           },
           {
             "lUid": 99,
             "_sName": "Computer",
             "iCamp": 1,
-            "heroid": 57,
+            "heroid": 0,
             "uiRankLevel": 0,
-            "summonSkillId": 20050,
+            "summonSkillId": 0,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 0,
-            "heroskin": 1571
+            "heroskin": 0
           }
         ],
         "logic_players": []
       },
       "battle_stats": {
-        "time": 230.64,
+        "time": 4.73201,
         "m_iCampAKill": 0,
         "m_iCampBKill": 0,
         "m_CampAGold": 0,

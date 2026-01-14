@@ -123,10 +123,10 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
         const newTeam = { ...currentTeam };
 
         // 1. Picks & Bans & Players
-        const picks = [...currentTeam.picks];
-        const bans = [...currentTeam.bans];
-        const pNames = [...currentTeam.pNames];
-        const pIds = [...currentTeam.pIds];
+        const picks = [...(currentTeam.picks || [])];
+        const bans = [...(currentTeam.bans || [])];
+        const pNames = [...(currentTeam.pNames || [])];
+        const pIds = [...(currentTeam.pIds || [])];
 
         let teamIdToMatch = '';
 
@@ -194,6 +194,12 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
                      newTeam.name = libTeam.name;
                      newTeam.logo = libTeam.logoUrl;
                  }
+            }
+        } else if (syncControl.isTeamNameSyncEnabled && !teamIdToMatch) {
+            const DEFAULT_TEAM_NAMES = ["BLUE TEAM", "RED TEAM", "MANSABA A", "MANSABA B", "NO TEAM", "PETWIR", "Computer"];
+            if (DEFAULT_TEAM_NAMES.includes(currentTeam.name) || !currentTeam.name) {
+                newTeam.name = "NO TEAM";
+                newTeam.logo = ""; // Clear logo as well
             }
         }
 
@@ -263,6 +269,8 @@ gameListener.on('data', (incoming: any) => {
     // Only apply if AutoSync is globally enabled (legacy check) OR if we rely on granular SyncControl
     // But since SyncControl is granular, we can just run it. SyncControl defaults to TRUE.
     if (appState.game.visibility.isAutoSync) {
+        console.log('--- DEBUG: appState before processGameData ---');
+        console.log(JSON.stringify(appState.blue, null, 2));
         const mappedChanges = processGameData(mergedData, appState);
 
         // Merge mapped changes into AppState
@@ -293,10 +301,12 @@ io.on('connection', (socket) => {
 
             const output = { ...target };
             Object.keys(source).forEach(key => {
-                if (source[key] instanceof Object && key in target) {
-                    output[key] = merge(target[key], source[key]);
+                const sourceValue = source[key];
+                const targetValue = output[key];
+                if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue) && targetValue && typeof targetValue === 'object' && !Array.isArray(targetValue)) {
+                    output[key] = merge(targetValue, sourceValue);
                 } else {
-                    output[key] = source[key];
+                    output[key] = sourceValue;
                 }
             });
             return output;
