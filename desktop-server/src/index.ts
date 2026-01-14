@@ -18,7 +18,7 @@ import { Database } from './services/Database.js'; // Assuming this exists or we
 
 // Types & Constants
 import { INITIAL_STATE, DEFAULT_GAME_DATA } from './types.js';
-import type { AppState, TeamLibraryEntry, GameData, TeamData } from './types.js';
+import type { AppState, TeamLibraryEntry, GameData, TeamData, SyncControl } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -97,6 +97,67 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+app.post('/api/import-ads', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    try {
+        console.log('Received ads zip:', req.file.originalname);
+        const zip = new AdmZip(req.file.path);
+        const zipEntries = zip.getEntries();
+        const adAssetsDir = path.join(UPLOAD_DIR, 'ads');
+        fs.ensureDirSync(adAssetsDir);
+
+        let imageEntries = zipEntries.filter(entry =>
+            !entry.isDirectory &&
+            entry.entryName.toLowerCase().startsWith('images/') &&
+            /\.(png|jpg|jpeg|gif|webp)$/i.test(entry.entryName)
+        );
+
+        // Fallback for flat structure if no images are in the "images/" folder
+        if (imageEntries.length === 0) {
+            imageEntries = zipEntries.filter(entry =>
+                !entry.isDirectory &&
+                !entry.entryName.includes('/') &&
+                /\.(png|jpg|jpeg|gif|webp)$/i.test(entry.entryName)
+            );
+        }
+
+        if (imageEntries.length === 0) {
+            await fs.remove(req.file.path);
+            return res.status(400).json({ message: 'No images found in the "images/" folder or at the root of the zip file.' });
+        }
+
+        const newAdUrls: string[] = [];
+        for (const entry of imageEntries) {
+            const fileName = path.basename(entry.entryName);
+            const targetPath = path.join(adAssetsDir, fileName);
+            entry.getDataAsync((data, err) => {
+                if (data) {
+                    fs.writeFileSync(targetPath, data);
+                }
+            });
+            newAdUrls.push(path.join('/upload/ads', fileName).replace(/\\/g, '/'));
+        }
+
+        appState.ads = newAdUrls;
+        saveState();
+        io.emit('state_update', appState);
+
+        res.status(200).json({ message: `${newAdUrls.length} ad images imported successfully.`, ads: newAdUrls });
+
+    } catch (e) {
+        const error = e as Error;
+        console.error("Failed to process ads zip:", error);
+        res.status(500).json({ message: 'Error processing zip file.', error: error.message });
+    } finally {
+        if (req.file) {
+            await fs.remove(req.file.path); // Clean up uploaded zip
+        }
+    }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: "*", methods: ["GET", "POST"] }
@@ -107,107 +168,107 @@ const adbService = new AdbService();
 adbService.setupForwarding();
 
 const gameListener = new GameListener();
+
+gameListener.on('status', (status: string) => {
+    if (appState.status !== status) {
+        appState.status = status;
+        console.log(`Game connection status updated: ${status}`);
+        io.emit('state_update', { status });
+    }
+});
+
 gameListener.start(); // Starts connecting to localhost:12345
 
 // --- LOGIC HELPER: Process Raw Game Data to AppState ---
 const processGameData = (raw: GameData, currentState: AppState): Partial<AppState> => {
     const roomInfo = raw.data?.room_info;
-    if (!roomInfo || !roomInfo.players) return {};
+    const players = roomInfo?.players || [];
 
     const syncControl = currentState.syncControl || INITIAL_STATE.syncControl;
-    const sortedPlayers = [...roomInfo.players];
-    const blueTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 1);
-    const redTeamPlayers = sortedPlayers.filter((p: any) => p.iCamp === 2);
+    const blueTeamPlayers = players.filter((p: any) => p.iCamp === 1);
+    const redTeamPlayers = players.filter((p: any) => p.iCamp === 2);
 
-    const processSide = (sidePlayers: any[], currentTeam: TeamData): TeamData => {
-        const newTeam = { ...currentTeam };
+    const processSide = (sidePlayers: any[], currentTeam: TeamData, currentState: AppState, syncControl: SyncControl): TeamData => {
+        const resultingTeam = { ...currentTeam };
 
-        // 1. Picks & Bans & Players
-        const picks = [...(currentTeam.picks || [])];
-        const bans = [...(currentTeam.bans || [])];
-        const pNames = [...(currentTeam.pNames || [])];
-        const pIds = [...(currentTeam.pIds || [])];
+        // 1. Find a registered team match from the players on this side
+        let teamIdToMatch: string | null = null;
+        if (syncControl.isTeamNameSyncEnabled) {
+            for (const p of sidePlayers) {
+                if (!p._sName && !p.lUid) continue; // Skip empty player slots
+                const pUid = String(p.lUid || '');
+                const pName = String(p._sName || '').trim().toLowerCase();
 
-        let teamIdToMatch = '';
-
-        sidePlayers.forEach((p: any, idx: number) => {
+                const regTeam = currentState.registry?.find(t => {
+                    const leader = String(t.leaderId || '').trim().toLowerCase();
+                    return (pUid && leader === pUid) || (pName && pName.length > 2 && leader === pName);
+                });
+                if (regTeam) {
+                    teamIdToMatch = regTeam.name;
+                    break;
+                }
+                const libTeam = currentState.teamLibrary?.find(t => {
+                    const capId = String(t.captainId || '');
+                    return pUid && capId === pUid;
+                });
+                if (libTeam) {
+                    teamIdToMatch = libTeam.name;
+                    break;
+                }
+            }
+        }
+        
+        // 2. Process player-specific data
+        const picks: string[] = Array(5).fill('');
+        const bans: string[] = Array(5).fill('');
+        const pNames: string[] = Array(5).fill('').map((_, i) => `PLAYER ${i + 1}`);
+        const pIds: string[] = Array(5).fill('');
+        sidePlayers.forEach((p, idx) => {
             if (idx < 5) {
-                // Pick Sync
-                if (syncControl.isPickSyncEnabled) {
-                    picks[idx] = String(p.heroid || 0);
-                }
-
-                // Ban Sync
-                if (syncControl.isBanSyncEnabled) {
-                    bans[idx] = String(p.banHero || 0);
-                }
-
-                // Player Info is always synced if available (assuming correct slot mapping)
-                // But we could add a toggle if needed. For now, we sync it.
+                if (syncControl.isPickSyncEnabled) picks[idx] = String(p.heroid || 0);
+                if (syncControl.isBanSyncEnabled) bans[idx] = String(p.banHero || 0);
                 pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
                 pIds[idx] = String(p.lUid || '');
-
-                // Name/Logo Auto-Match Logic
-                if (syncControl.isTeamNameSyncEnabled && !teamIdToMatch) {
-                    const pUid = String(p.lUid || '');
-                    const pName = String(p._sName || '').trim().toLowerCase();
-
-                    // Registry Lookup
-                    const regTeam = currentState.registry?.find(t => {
-                        const leader = String(t.leaderId || '').trim().toLowerCase();
-                        return (pUid && leader === pUid) || (pName && leader === pName);
-                    });
-
-                    if (regTeam) {
-                        teamIdToMatch = regTeam.name;
-                    } else {
-                        // Library Lookup
-                        const libTeam = currentState.teamLibrary?.find(t => {
-                            const capId = String(t.captainId || '');
-                            return pUid && capId === pUid;
-                        });
-                        if (libTeam) {
-                            teamIdToMatch = libTeam.name;
-                        }
-                    }
-                }
             }
         });
+        resultingTeam.picks = picks;
+        resultingTeam.bans = bans;
+        resultingTeam.pNames = pNames;
+        resultingTeam.pIds = pIds;
 
-        newTeam.picks = picks;
-        newTeam.bans = bans;
-        newTeam.pNames = pNames;
-        newTeam.pIds = pIds;
+        // 3. Apply final name and logo based on match result
+        if (syncControl.isTeamNameSyncEnabled) {
+            if (teamIdToMatch) {
+                // A registered team was found, so we ALWAYS use its data.
+                const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
+                const regTeam = currentState.registry?.find(t => t.name === teamIdToMatch);
+                if (regTeam) {
+                    resultingTeam.name = regTeam.name;
+                    resultingTeam.logo = regTeam.logo;
+                } else if (libTeam) {
+                    resultingTeam.name = libTeam.name;
+                    resultingTeam.logo = libTeam.logoUrl;
+                }
+            } else {
+                // No registered team found. If the PREVIOUS team was a registered one, reset it.
+                // This prevents a registered name from getting "stuck" in the next match.
+                const isCurrentNameRegistered = 
+                    currentState.registry?.some(t => t.name === currentTeam.name) || 
+                    currentState.teamLibrary?.some(t => t.name === currentTeam.name);
 
-        // Apply Team Name/Logo if matched and different
-        if (syncControl.isTeamNameSyncEnabled && teamIdToMatch && teamIdToMatch !== currentTeam.name) {
-            const DEFAULT_TEAM_NAMES = ["BLUE TEAM", "RED TEAM", "MANSABA A", "MANSABA B", "NO TEAM", "PETWIR", "Computer"];
-            // Only overwrite if current name is generic or empty
-            if (DEFAULT_TEAM_NAMES.includes(currentTeam.name) || !currentTeam.name) {
-                 const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
-                 const regTeam = currentState.registry?.find(t => t.name === teamIdToMatch);
-
-                 if (regTeam) {
-                     newTeam.name = regTeam.name;
-                     newTeam.logo = regTeam.logo;
-                 } else if (libTeam) {
-                     newTeam.name = libTeam.name;
-                     newTeam.logo = libTeam.logoUrl;
-                 }
-            }
-        } else if (syncControl.isTeamNameSyncEnabled && !teamIdToMatch) {
-            const DEFAULT_TEAM_NAMES = ["BLUE TEAM", "RED TEAM", "MANSABA A", "MANSABA B", "NO TEAM", "PETWIR", "Computer"];
-            if (DEFAULT_TEAM_NAMES.includes(currentTeam.name) || !currentTeam.name) {
-                newTeam.name = "NO TEAM";
-                newTeam.logo = ""; // Clear logo as well
+                if (isCurrentNameRegistered) {
+                    resultingTeam.name = "NO TEAM";
+                    resultingTeam.logo = "";
+                }
+                // If the current name is not a registered one (e.g. "My Team"), we leave it as is.
             }
         }
 
-        return newTeam;
+        return resultingTeam;
     };
 
-    const newBlue = processSide(blueTeamPlayers, currentState.blue);
-    const newRed = processSide(redTeamPlayers, currentState.red);
+    const newBlue = processSide(blueTeamPlayers, currentState.blue, currentState, syncControl);
+    const newRed = processSide(redTeamPlayers, currentState.red, currentState, syncControl);
 
     const changes: Partial<AppState> = {};
 
@@ -269,8 +330,6 @@ gameListener.on('data', (incoming: any) => {
     // Only apply if AutoSync is globally enabled (legacy check) OR if we rely on granular SyncControl
     // But since SyncControl is granular, we can just run it. SyncControl defaults to TRUE.
     if (appState.game.visibility.isAutoSync) {
-        console.log('--- DEBUG: appState before processGameData ---');
-        console.log(JSON.stringify(appState.blue, null, 2));
         const mappedChanges = processGameData(mergedData, appState);
 
         // Merge mapped changes into AppState
@@ -324,6 +383,71 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         // console.log('Client Disconnected');
     });
+});
+
+// --- API Endpoints for Reset ---
+app.post('/api/reset', (req, res) => {
+    console.log('Received request to reset state.');
+    
+    // Preserve persistent data that shouldn't be wiped on a simple reset
+    const preserved = {
+        registry: appState.registry,
+        teamLibrary: appState.teamLibrary,
+        history: appState.history,
+        assets: appState.assets,
+        syncControl: appState.syncControl,
+        status: appState.status,
+        gameData: appState.gameData
+    };
+
+    // Reset state but keep preserved data
+    appState = {
+        ...INITIAL_STATE,
+        registry: preserved.registry,
+        teamLibrary: preserved.teamLibrary,
+        history: preserved.history,
+        assets: preserved.assets,
+        syncControl: preserved.syncControl,
+        ...(preserved.gameData && { gameData: preserved.gameData }),
+        ...(preserved.status && { status: preserved.status })
+    };
+
+    saveState();
+    io.emit('state_update', appState); // Force all clients to update
+    res.status(200).json({ message: 'State has been reset.' });
+});
+
+app.post('/api/factory-reset', async (req, res) => {
+    console.log('!!! FACTORY RESET INITIATED !!!');
+    try {
+        // Reset in-memory state to pristine defaults
+        appState = { ...INITIAL_STATE, ...(appState.status && { status: appState.status }) };
+        io.emit('state_update', appState);
+
+        // Delete configuration files
+        await fs.remove(METADATA_FILE);
+        await fs.remove(HISTORY_FILE);
+        await fs.remove(VISIBILITY_FILE);
+        console.log('Deleted config files.');
+
+        // Clear uploaded team logos and ad assets
+        const teamLogosDir = path.join(PUBLIC_DIR, 'assets', 'teams');
+        await fs.emptyDir(teamLogosDir);
+        await fs.emptyDir(UPLOAD_DIR);
+        console.log('Cleared team logos and upload directories.');
+
+        // Re-create cleared directories
+        fs.ensureDirSync(UPLOAD_DIR);
+        fs.ensureDirSync(teamLogosDir);
+        
+        saveState(); // This will create a fresh metadata.json
+
+        res.status(200).json({ message: 'Factory reset successful.' });
+    } catch (e) {
+        const error = e as Error;
+        console.error('Factory reset failed:', error);
+        res.status(500).json({ message: 'Factory reset failed.', error: error.message });
+    }
 });
 
 // --- START SERVER ---

@@ -366,6 +366,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     }
   };
 
+  const handleImportAds = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const apiHost = window.location.hostname;
+    
+    try {
+        const res = await fetch(`http://${apiHost}:3000/api/import-ads`, { 
+            method: 'POST', 
+            body: formData 
+        });
+        if (res.ok) {
+            const result = await res.json();
+            alert(result.message);
+            // Server broadcasts the state change, so no local state update is needed.
+        } else {
+            const err = await res.json();
+            alert('Import failed: ' + err.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred during upload.');
+    }
+    // Reset file input to allow uploading the same file again
+    e.target.value = '';
+  };
+
   const handleImageUpload = (side: 'blue' | 'red' | 'ads' | 'prepare', e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -523,10 +552,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
       <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-amber-400 font-black uppercase tracking-widest">Ad Images</h3>
-          <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg">
-            <span>+ ADD IMAGE</span>
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload('ads', e)} />
-          </label>
+          <div className="flex items-center gap-2">
+            <a href="/ads-template.zip" download className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg">
+                <span>⬇️ TEMPLATE</span>
+            </a>
+            <label className="text-[10px] font-black bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg">
+                <span>📂 IMPORT ZIP</span>
+                <input type="file" accept=".zip" className="hidden" onChange={handleImportAds} />
+            </label>
+            <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg">
+              <span>+ ADD IMAGE</span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload('ads', e)} />
+            </label>
+          </div>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">

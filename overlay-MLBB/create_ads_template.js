@@ -12,18 +12,18 @@ const createAdsTemplate = () => {
 
     const zip = new AdmZip();
     
-    // Create dummy text file instructions
-    zip.addFile("readme.txt", Buffer.from("Upload your Ad images (PNG/JPG) here. Ideally 1920x100 or similar aspect ratio for scrolling ticker."));
+    // Create an 'images' directory in the zip and add a readme file.
+    const readmeContent = "Place all your ad images (e.g., sponsor logos) inside this 'images' folder.\nSupported formats are PNG, JPG, GIF, WebP.";
+    zip.addFile("images/readme.txt", Buffer.from(readmeContent));
 
-    // Try to add existing logo as a sample ad
+    // Try to add an existing logo as a sample ad inside the 'images' folder
     const sourceImage = path.join(__dirname, 'public/assets/logo.png');
     try {
         if (fs.existsSync(sourceImage)) {
-            zip.addLocalFile(sourceImage, "", "sample-ad-1.png");
-            zip.addLocalFile(sourceImage, "", "sample-ad-2.png");
+            zip.addLocalFile(sourceImage, "images", "sample-sponsor-logo.png");
         }
     } catch (e) {
-        console.log("Warning: Could not add sample images.", e);
+        console.log("Warning: Could not add a sample ad image.", e);
     }
 
     const outputDir = path.join(__dirname, 'public');

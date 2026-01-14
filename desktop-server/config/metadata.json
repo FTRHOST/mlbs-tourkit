@@ -1,74 +1,74 @@
 {
   "blue": {
-    "name": "blue",
+    "name": "ftr",
     "logo": "",
     "picks": [
-      "3",
-      "0",
-      "66",
-      "22",
-      "6"
+      "1",
+      "",
+      "",
+      "",
+      ""
     ],
     "pNames": [
       "macom07",
-      "Computer",
-      "Computer",
-      "Computer",
-      "Computer"
+      "PLAYER 2",
+      "PLAYER 3",
+      "PLAYER 4",
+      "PLAYER 5"
     ],
     "pIds": [
       "2055252516",
-      "99",
-      "7",
-      "8",
-      "9"
+      "",
+      "",
+      "",
+      ""
     ],
     "bans": [
       "0",
-      "0",
-      "0",
-      "0",
-      "0"
+      "",
+      "",
+      "",
+      ""
     ],
     "score": 0
   },
   "red": {
-    "name": "re",
+    "name": "NO TEAM",
     "logo": "",
     "picks": [
-      "116",
-      "59",
-      "53",
-      "6",
-      "66"
+      "7",
+      "",
+      "",
+      "",
+      ""
     ],
     "pNames": [
       "Computer",
-      "Computer",
-      "Computer",
-      "Computer",
-      "Computer"
+      "PLAYER 2",
+      "PLAYER 3",
+      "PLAYER 4",
+      "PLAYER 5"
     ],
     "pIds": [
       "1",
-      "2",
-      "3",
-      "4",
-      "5"
+      "",
+      "",
+      "",
+      ""
     ],
     "bans": [
       "0",
-      "0",
-      "0",
-      "0",
-      "0"
+      "",
+      "",
+      "",
+      ""
     ],
     "score": 0
   },
   "game": {
-    "matchTitle": "MATCH TITLE",
-    "phase": "PREPARING",
-    "timer": 4,
+    "matchTitle": "MATCH DAY 1",
+    "phase": "BANNING",
+    "timer": 695,
     "turn": "blue",
     "isIntroActive": false,
     "isGameControlEnabled": false,
@@ -81,12 +81,16 @@
       "isAutoSync": true
     }
   },
-  "ads": [],
+  "ads": [
+    "AD 1",
+    "AD 2",
+    "AD 3"
+  ],
   "adConfig": {
-    "type": "text",
+    "type": "images",
     "effect": "scroll",
-    "text": "WAITING FOR DATA...",
-    "speed": 10
+    "text": "WELCOME TO THE TOURNAMENT! ENJOY THE MATCH!",
+    "speed": 25
   },
   "syncControl": {
     "isBanSyncEnabled": true,
@@ -102,8 +106,8 @@
   },
   "registry": [
     {
-      "id": "1768367726910",
-      "name": "HALO",
+      "id": "1768376321039",
+      "name": "ftr",
       "leaderId": "2055252516",
       "logo": ""
     }
@@ -114,7 +118,7 @@
     "type": "heartbeat",
     "debug": {
       "manager_found": true,
-      "game_state": 3,
+      "game_state": 0,
       "feature_enabled": true
     },
     "data": {
@@ -125,31 +129,31 @@
             "lUid": 2055252516,
             "_sName": "macom07",
             "iCamp": 1,
-            "heroid": 3,
-            "uiRankLevel": 23,
+            "heroid": 1,
+            "uiRankLevel": 0,
+            "summonSkillId": 20050,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 19662,
+            "heroskin": 1011
+          },
+          {
+            "lUid": 1,
+            "_sName": "Computer",
+            "iCamp": 2,
+            "heroid": 7,
+            "uiRankLevel": 0,
             "summonSkillId": 20020,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 19662,
-            "heroskin": 1031
-          },
-          {
-            "lUid": 99,
-            "_sName": "Computer",
-            "iCamp": 1,
-            "heroid": 0,
-            "uiRankLevel": 0,
-            "summonSkillId": 0,
-            "banHero": 0,
-            "iRoad": 0,
-            "uiZoneId": 0,
-            "heroskin": 0
+            "heroskin": 1072
           }
         ],
         "logic_players": []
       },
       "battle_stats": {
-        "time": 4.73201,
+        "time": 695.481,
         "m_iCampAKill": 0,
         "m_iCampBKill": 0,
         "m_CampAGold": 0,
@@ -165,5 +169,5 @@
       }
     }
   },
-  "status": "connecting"
+  "status": "connected"
 }

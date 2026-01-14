@@ -181,7 +181,7 @@ export const DEFAULT_APP_STATE: AppState = {
   blue: {
     name: 'BLUE TEAM',
     picks: ['0', '0', '0', '0', '0'],
-    pNames: ['', '', '', '', ''],
+    pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['0', '0', '0', '0', '0'],
     score: 0
@@ -189,7 +189,7 @@ export const DEFAULT_APP_STATE: AppState = {
   red: {
     name: 'RED TEAM',
     picks: ['0', '0', '0', '0', '0'],
-    pNames: ['', '', '', '', ''],
+    pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['0', '0', '0', '0', '0'],
     score: 0
