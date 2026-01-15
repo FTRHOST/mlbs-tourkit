@@ -983,5 +983,5 @@
       }
     }
   },
-  "status": "connecting"
+  "status": "reconnecting"
 }
