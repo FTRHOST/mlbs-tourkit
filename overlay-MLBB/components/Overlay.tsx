@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { AppState } from '../types';
+import BattleOverlay from './BattleOverlay';
 
 interface OverlayProps {
   data: AppState;
@@ -206,6 +207,54 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
     }
     return `${ASSETS}${logo}.png`;
   };
+
+  // Logic for switching overlays
+  const gameState = data.gameData?.debug?.game_state;
+  const [showBattleOverlay, setShowBattleOverlay] = useState(false);
+  const prevGameState = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const current = gameState;
+    const previous = prevGameState.current;
+
+    // Only run logic if state actually changed or it's the first run
+    if (current !== previous) {
+        if (current === 6) {
+          // If previous was undefined, it means we just loaded the page and state is ALREADY 6.
+          // In this case, show immediately (no delay).
+          if (previous === undefined) {
+             setShowBattleOverlay(true);
+          } else {
+             // We transitioned from something else (e.g. 5) to 6. This is a live event.
+             // Wait 15 seconds.
+             const timer = setTimeout(() => {
+                setShowBattleOverlay(true);
+             }, 15000);
+             return () => clearTimeout(timer);
+          }
+        } else {
+          // For any other state, hide it immediately
+          setShowBattleOverlay(false);
+        }
+    }
+    
+    prevGameState.current = current;
+  }, [gameState]);
+
+  // If Game State is 5 (Battle) or higher, we hide the Draft Pick overlay.
+  // Unless it's state 6 and we are waiting for the 15s delay? 
+  // "overlay draft pick sebelumnya menghilang saat game state 5" -> Gone at 5.
+  const isDraftVisible = gameState === undefined || gameState < 5;
+
+  if (showBattleOverlay) {
+    return <BattleOverlay data={data} />;
+  }
+
+  // If Draft is not visible and Battle Overlay is not yet visible (e.g. state 5 or state 6 waiting), 
+  // render empty (or maybe just the background if desired, but user said "menghilang" -> disappear).
+  if (!isDraftVisible) {
+      return null; 
+  }
 
   const isIntro = data.game.isIntroActive;
   const isRedTurn = data.game.turn === 'red';

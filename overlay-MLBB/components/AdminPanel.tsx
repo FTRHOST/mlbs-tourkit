@@ -996,14 +996,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Game State Indicator */}
+          {/* Game State Indicator & Simulation */}
           <div className="flex flex-col items-end mr-2 bg-slate-900/80 px-2 py-1 rounded border border-slate-700/50">
-             <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Game State</span>
-             <span className={`text-[9px] font-black tracking-wider ${state.gameData?.debug?.game_state === 5 ? 'text-emerald-400' : [6, 21, 3].includes(state.gameData?.debug?.game_state || 0) ? 'text-amber-400' : 'text-slate-400'}`}>
-                {state.gameData?.debug?.game_state ?? '-'} 
-                <span className="text-[8px] opacity-60 ml-1 font-bold">
+             <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-0.5">Game State Sim</span>
+             <select 
+                value={state.gameData?.debug?.game_state ?? 0} 
+                onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    setState(prev => {
+                        const newData = { ...(prev.gameData || { type: 'init', debug: { manager_found: true, game_state: 0, feature_enabled: true }, data: {} }) };
+                        if (!newData.debug) newData.debug = { manager_found: true, game_state: 0, feature_enabled: true };
+                        newData.debug.game_state = val;
+                        return { ...prev, gameData: newData as any };
+                    });
+                }}
+                className="bg-slate-800 text-[9px] font-black tracking-wider text-white border-none rounded px-1 py-0.5 focus:ring-0 cursor-pointer text-right w-24"
+             >
+                <option value="0">0 - None</option>
+                <option value="1">1 - Lobby</option>
+                <option value="2">2 - Matching</option>
+                <option value="3">3 - Pick/Ban</option>
+                <option value="4">4 - Loading</option>
+                <option value="5">5 - Battle (Hide Draft)</option>
+                <option value="6">6 - Victory (15s Delay)</option>
+                <option value="7">7 - Clearing</option>
+                <option value="22">22 - Enter Battle</option>
+             </select>
+             <span className="text-[8px] opacity-60 font-bold text-slate-400">
                   {state.gameData?.debug?.game_state !== undefined ? (GAME_STATE_LABELS[state.gameData.debug.game_state] || 'UNKNOWN') : ''}
-                </span>
              </span>
           </div>
 
