@@ -176,6 +176,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                   blue: currentState.blue,
                   red: currentState.red,
                   game: currentState.game,
+                  gameData: currentState.gameData,
                   winner: winner,
                   date: new Date().toISOString()
               };
@@ -383,6 +384,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
           setEditingMatchId(null);
           
       } catch (e) { console.error(e); alert("Failed to update match."); }
+  };
+
+  const deleteHistoryItem = async (matchId: string) => {
+      if (!confirm("Are you sure you want to delete this match record?")) return;
+      try {
+          const res = await fetch(`http://${window.location.hostname}:3000/api/delete-history`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: matchId })
+          });
+          
+          if (res.ok) {
+              // Update local state
+              const newHistory = state.history.filter(m => m.id !== matchId);
+              setState(prev => ({ ...prev, history: newHistory }));
+              setDraft(prev => ({ ...prev, history: newHistory }));
+              
+              // Update the modal view
+              const newSeries = selectedSeries.filter(m => m.id !== matchId);
+              setSelectedSeries(newSeries);
+              
+              // If series is empty, close modal
+              if (newSeries.length === 0) {
+                  setShowHistoryModal(false);
+              }
+          } else {
+              alert("Failed to delete match.");
+          }
+      } catch (e) { console.error(e); alert("Failed to delete match."); }
   };
 
   const renderBattle = () => {
@@ -641,6 +671,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-xs font-bold text-blue-400">GAME {idx + 1}</span>
                                     <div className="flex gap-2">
+                                        <button onClick={() => deleteHistoryItem(match.id)} className="text-[10px] bg-red-900/50 hover:bg-red-800 text-red-200 px-3 py-1 rounded">Delete</button>
                                         <button onClick={() => downloadJson(match, `match-${match.id}.json`)} className="text-[10px] bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded">Export JSON</button>
                                         <button onClick={() => setEditingMatchId(editingMatchId === match.id ? null : match.id)} className={`text-[10px] px-3 py-1 rounded font-bold ${editingMatchId === match.id ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>
                                             {editingMatchId === match.id ? 'Cancel Edit' : 'Edit Details'}
@@ -791,24 +822,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                                             <div className="space-y-2">
                                                 <label className="text-[9px] uppercase font-bold text-slate-500 block mb-2">Blue Battle Stats</label>
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAGold || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampAGold || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAGold: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampAGold: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillTower || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampAKillTower || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillTower: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampAKillTower: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillLingZhu || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampAKillLingZhu || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillLingZhu: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampAKillLingZhu: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampAKillShenGui || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampAKillShenGui || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampAKillShenGui: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampAKillShenGui: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
                                                 </div>
@@ -816,24 +847,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                                             <div className="space-y-2">
                                                 <label className="text-[9px] uppercase font-bold text-slate-500 block mb-2">Red Battle Stats</label>
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBGold || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Gold</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampBGold || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBGold: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampBGold: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillTower || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Tower</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampBKillTower || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillTower: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampBKillTower: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillLingZhu || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Lord</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampBKillLingZhu || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillLingZhu: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampBKillLingZhu: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
-                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.game.gameData?.data?.battle_stats?.m_CampBKillShenGui || 0} onChange={(e) => {
+                                                    <div><span className="text-[8px] text-slate-600 block">Turtle</span><input type="number" value={match.gameData?.data?.battle_stats?.m_CampBKillShenGui || 0} onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        const updated = { ...match, game: { ...match.game, gameData: { ...match.game.gameData, data: { ...match.game.gameData?.data, battle_stats: { ...match.game.gameData?.data?.battle_stats, m_CampBKillShenGui: val } } } } };
+                                                        const updated = { ...match, gameData: { ...match.gameData, data: { ...match.gameData?.data, battle_stats: { ...match.gameData?.data?.battle_stats, m_CampBKillShenGui: val } } } };
                                                         setSelectedSeries(prev => prev.map(m => m.id === match.id ? updated : m));
                                                     }} className="w-full bg-slate-800 border-slate-600 rounded text-[10px] p-1"/></div>
                                                 </div>

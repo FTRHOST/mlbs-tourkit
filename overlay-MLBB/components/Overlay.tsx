@@ -79,6 +79,9 @@ const BanSlot: React.FC<{ ban: string; delay?: string }> = React.memo(({ ban, de
 
 const AdContent: React.FC<{ adConfig: AppState['adConfig']; ads: AppState['ads'] }> = React.memo(({ adConfig, ads }) => {
   const [fadeIndex, setFadeIndex] = useState(0);
+  const [shouldScroll, setShouldScroll] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (adConfig.effect === 'fade') {
@@ -91,13 +94,50 @@ const AdContent: React.FC<{ adConfig: AppState['adConfig']; ads: AppState['ads']
     }
   }, [adConfig.effect, adConfig.type, ads.length]);
 
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (containerRef.current && contentRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const contentWidth = contentRef.current.scrollWidth;
+        // Aktifkan scroll hanya jika konten lebih lebar dari container
+        setShouldScroll(contentWidth > containerWidth);
+      }
+    };
+
+    if (adConfig.effect === 'scroll') {
+      checkOverflow();
+      // Beri waktu sedikit untuk logo termuat sebelum menghitung lebar
+      const timer = setTimeout(checkOverflow, 1000);
+      window.addEventListener('resize', checkOverflow);
+      return () => {
+        window.removeEventListener('resize', checkOverflow);
+        clearTimeout(timer);
+      };
+    } else {
+      setShouldScroll(false);
+    }
+  }, [adConfig, ads]);
+
   const renderMarquee = (children: React.ReactNode) => (
     <div 
+      ref={containerRef}
       className="marquee-wrapper"
       style={{ '--speed': `${adConfig.speed}s` } as any}
     >
-      <div className="marquee-content">{children}</div>
-      <div className="marquee-content">{children}</div>
+      <div 
+        className={`marquee-content ${!shouldScroll ? 'w-full !justify-center !animate-none' : ''}`}
+      >
+        <div ref={contentRef} className="flex items-center">
+          {children}
+        </div>
+      </div>
+      {shouldScroll && (
+        <div className="marquee-content">
+          <div className="flex items-center">
+            {children}
+          </div>
+        </div>
+      )}
     </div>
   );
 

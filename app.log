@@ -1,0 +1,43 @@
+
+> mlbs-tourkit-unified@2.0.0 start
+> concurrently --kill-others "npm run start:server" "npm run start:web"
+
+[0] 
+[0] > mlbs-tourkit-unified@2.0.0 start:server
+[0] > cd desktop-server && npm run start
+[0] 
+[1] 
+[1] > mlbs-tourkit-unified@2.0.0 start:web
+[1] > cd overlay-MLBB && npm run dev -- --host
+[1] 
+[0] 
+[0] > desktop-server@1.0.0 start
+[0] > node dist/index.js
+[0] 
+[1] 
+[1] > esports-overlay-pro@0.0.0 dev
+[1] > vite --host
+[1] 
+[1] 
+[1]   VITE v6.4.1  ready in 289 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: http://192.168.40.2:5173/
+[0] Starting ADB Forwarding service...
+[0] Game listener started. Trying to connect...
+[0] 
+[0]     ==================================================
+[0]     🚀 MLBS UNIFIED SERVER RUNNING
+[0]     ==================================================
+[0]     - API/Socket:   http://localhost:3000
+[0]     - ADB Bridge:   Active (Listening on tcp:12345)
+[0]     - Public Dir:   /home/petwirkepo/mlbs-tourkit/desktop-server/public
+[0]     ==================================================
+[0]     
+[0] Connected to Game (via ADB Forward)
+[0] Game connection status updated: connected
+[0] ADB forwarding is active. Waiting for device connection...
+[0] Client Connected: nRbkT7ksZa_L7qPoAAAB
+[0] npm run start:server exited with code SIGHUP
+--> Sending SIGTERM to other processes..
+[1] npm run start:web exited with code SIGHUP

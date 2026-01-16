@@ -565,6 +565,23 @@ app.post('/api/update-history', (req, res) => {
     res.status(200).json({ message: 'Match updated', match: appState.history[matchIndex] });
 });
 
+app.post('/api/delete-history', (req, res) => {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ message: 'Match ID required' });
+
+    const initialLength = appState.history.length;
+    appState.history = appState.history.filter((m: any) => m.id !== id);
+
+    if (appState.history.length === initialLength) {
+        return res.status(404).json({ message: 'Match not found' });
+    }
+
+    saveState();
+    io.emit('state_update', appState);
+
+    res.status(200).json({ message: 'Match deleted' });
+});
+
 // --- START SERVER ---
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`
