@@ -16,14 +16,56 @@ const PLACEHOLDERS = {
 };
 
 const OverviewDraft: React.FC<OverviewDraftProps> = ({ data }) => {
-  const bluePicks = data.blue.picks;
-  const redPicks = data.red.picks;
-  const blueNames = data.blue.pNames;
-  const redNames = data.red.pNames;
-  const blueSpells = data.blue.spells || [];
-  const blueLanes = data.blue.lanes || [];
-  const redSpells = data.red.spells || [];
-  const redLanes = data.red.lanes || [];
+  // --- RAW DATA MAPPING (Fallback/Direct Connection) ---
+  // This ensures OverviewDraft works even if isAutoSync is disabled on the backend,
+  // by mapping the raw gameData directly if the main AppState seems empty.
+  const derivedData = useMemo(() => {
+      const room = data.gameData?.data?.room_info;
+      if (!room || !room.players || room.players.length === 0) return null;
+
+      const processSide = (camp: number) => {
+          const players = room.players.filter((p: any) => p.iCamp === camp);
+          const picks = Array(5).fill('0');
+          const spells = Array(5).fill('0');
+          const lanes = Array(5).fill('0');
+          const names = Array(5).fill('');
+          const bans = Array(5).fill('0');
+
+          players.forEach((p: any, i: number) => {
+              if (i < 5) {
+                  picks[i] = String(p.heroid || '0');
+                  spells[i] = String(p.summonSkillId || '0');
+                  lanes[i] = String(p.iRoad || '0');
+                  names[i] = p._sName || `PLAYER ${i+1}`;
+                  bans[i] = String(p.banHero || '0');
+              }
+          });
+          return { picks, spells, lanes, pNames: names, bans };
+      };
+
+      return {
+          blue: processSide(1),
+          red: processSide(2)
+      };
+  }, [data.gameData]);
+
+  // Determine which data to use. 
+  // If AppState (data.blue/red) has meaningful picks (not all '0'), use it (supports manual override).
+  // Otherwise, fallback to derivedData from raw JSON.
+  const isBlueEmpty = data.blue.picks.every(p => p === '0' || p === '');
+  const isRedEmpty = data.red.picks.every(p => p === '0' || p === '');
+  
+  const blueSource = (!isBlueEmpty || !derivedData) ? data.blue : derivedData.blue;
+  const redSource = (!isRedEmpty || !derivedData) ? data.red : derivedData.red;
+
+  const bluePicks = blueSource.picks;
+  const redPicks = redSource.picks;
+  const blueNames = blueSource.pNames;
+  const redNames = redSource.pNames;
+  const blueSpells = blueSource.spells || [];
+  const blueLanes = blueSource.lanes || [];
+  const redSpells = redSource.spells || [];
+  const redLanes = redSource.lanes || [];
 
   const getHeroImg = (heroId: string, side: 'blue' | 'red') => {
     if (!heroId || heroId === '0' || heroId === "") return PLACEHOLDERS[side];
@@ -37,7 +79,7 @@ const OverviewDraft: React.FC<OverviewDraftProps> = ({ data }) => {
 
   const getSpellImg = (spellId: string | undefined) => {
     if (!spellId || spellId === '0' || spellId === "") return null;
-    return `${ASSETS_PATH}battlespell/${spellId}.png`;
+    return `${ASSETS_PATH}battlespell/${spellId}.webp`;
   };
 
   const getBanImg = (heroId: string) => {
@@ -158,7 +200,7 @@ const OverviewDraft: React.FC<OverviewDraftProps> = ({ data }) => {
 
       {/* Blue Bans */}
       <div className="ban-blue">
-        {data.blue.bans.map((ban, i) => (
+        {blueSource.bans.map((ban, i) => (
             <div key={i} className="ban-item">
                 <img 
                     src={getBanImg(ban)} 
@@ -172,7 +214,7 @@ const OverviewDraft: React.FC<OverviewDraftProps> = ({ data }) => {
 
       {/* Red Bans */}
       <div className="ban-red">
-         {data.red.bans.map((ban, i) => (
+         {redSource.bans.map((ban, i) => (
             <div key={i} className="ban-item">
                 <img 
                     src={getBanImg(ban)} 

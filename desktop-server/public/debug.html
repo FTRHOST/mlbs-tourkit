@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADB Raw Debugger</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #61dafb;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #controls {
+            font-size: 0.9rem;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #444;
+        }
+        #log-container {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85rem;
+        }
+        .entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+        }
+        .timestamp {
+            color: #569cd6;
+            margin-right: 10px;
+        }
+        .json {
+            color: #ce9178;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>
+        ADB Raw Data Stream
+        <div id="controls">
+            <span id="status" style="color: orange; margin-right: 10px;">Connecting...</span>
+            <button onclick="clearLog()">Clear</button>
+            <button onclick="togglePause()" id="pauseBtn">Pause</button>
+        </div>
+    </h1>
+
+    <div id="log-container"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const logContainer = document.getElementById('log-container');
+        const statusSpan = document.getElementById('status');
+        const pauseBtn = document.getElementById('pauseBtn');
+        let isPaused = false;
+
+        socket.on('connect', () => {
+            statusSpan.textContent = 'Connected';
+            statusSpan.style.color = '#4caf50';
+            addLog('System', 'Connected to Socket Server');
+        });
+
+        socket.on('disconnect', () => {
+            statusSpan.textContent = 'Disconnected';
+            statusSpan.style.color = '#f44336';
+            addLog('System', 'Disconnected from Socket Server');
+        });
+
+        socket.on('debug_stream', (data) => {
+            if (isPaused) return;
+
+            // Log to console as requested
+            console.log('%c[ADB Raw]', 'color: #61dafb', data);
+
+            // Display on screen
+            addLog('ADB', data);
+        });
+
+        function addLog(source, data) {
+            const entry = document.createElement('div');
+            entry.className = 'entry';
+
+            const time = new Date().toLocaleTimeString();
+            const jsonString = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+
+            entry.innerHTML = `<span class="timestamp">[${time}]</span><span class="json">${escapeHtml(jsonString)}</span>`;
+            
+            logContainer.appendChild(entry);
+            
+            // Auto scroll to bottom
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+            pauseBtn.style.backgroundColor = isPaused ? '#5a1e1e' : '#333';
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

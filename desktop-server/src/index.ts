@@ -322,6 +322,9 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
 
 // Handle Game Data from Zygisk/GameListener
 gameListener.on('data', (incoming: any) => {
+    // Emit raw stream for debugging tools
+    io.emit('debug_stream', incoming);
+
     // Merge logic to handle partial updates
     const current = appState.gameData || DEFAULT_GAME_DATA;
     
@@ -470,6 +473,10 @@ io.on('connection', (socket) => {
 });
 
 // --- API Endpoints for Reset ---
+app.get('/api/game-data', (req, res) => {
+    res.json(appState.gameData || DEFAULT_GAME_DATA);
+});
+
 app.post('/api/reset', (req, res) => {
     console.log('Received request to reset state.');
     

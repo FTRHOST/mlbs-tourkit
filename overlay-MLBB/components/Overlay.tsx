@@ -252,6 +252,8 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   // Logic for switching overlays
   const gameState = data.gameData?.debug?.game_state;
   const [showBattleOverlay, setShowBattleOverlay] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+  const [isFading, setIsFading] = useState(false);
   const prevGameState = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -260,22 +262,44 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
 
     // Only run logic if state actually changed or it's the first run
     if (current !== previous) {
-        if (current === 6) {
+        if (current === 4 || current === 5) {
+             setShowOverview(true);
+             setIsFading(false);
+             setShowBattleOverlay(false);
+        } else if (current === 6) {
           // If previous was undefined, it means we just loaded the page and state is ALREADY 6.
           // In this case, show immediately (no delay).
           if (previous === undefined) {
              setShowBattleOverlay(true);
-          } else {
-             // We transitioned from something else (e.g. 5) to 6. This is a live event.
-             // Wait 15 seconds.
-             const timer = setTimeout(() => {
+             setShowOverview(false);
+          } else if (previous === 4 || previous === 5) {
+             // We transitioned from state 4/5 to 6. This is a live event.
+             // 1. Start fade out of Overview
+             setIsFading(true);
+             
+             // 2. After fade duration (1s), hide Overview
+             const fadeTimer = setTimeout(() => {
+                 setShowOverview(false);
+             }, 1000);
+
+             // 3. Wait 18 seconds before showing Battle Overlay
+             const battleTimer = setTimeout(() => {
                 setShowBattleOverlay(true);
-             }, 15000);
-             return () => clearTimeout(timer);
+             }, 18000);
+             
+             return () => {
+                 clearTimeout(fadeTimer);
+                 clearTimeout(battleTimer);
+             };
+          } else {
+             // Transition from other states (unexpected for 6), just show battle
+             setShowBattleOverlay(true);
+             setShowOverview(false);
           }
         } else {
-          // For any other state, hide it immediately
+          // For any other state (< 4 or > 6), hide these specific overlays
           setShowBattleOverlay(false);
+          setShowOverview(false);
         }
     }
     
@@ -293,8 +317,16 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   }
 
   // If gameState is 4 or 5, or (6 and waiting), show OverviewDraft
-  if (gameState !== undefined && (gameState === 4 || gameState === 5 || gameState === 6)) {
-      return <OverviewDraft data={data} />;
+  if (showOverview) {
+      return (
+        <div style={{ 
+            opacity: isFading ? 0 : 1, 
+            transition: 'opacity 1s ease-out',
+            width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 50
+        }}>
+            <OverviewDraft data={data} />
+        </div>
+      );
   }
 
   // If Draft is not visible (which means logic above handled it or state is weird), return null.

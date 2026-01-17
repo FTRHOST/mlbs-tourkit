@@ -7,7 +7,9 @@
     "build": "cd overlay-MLBB && npm run build",
     "start": "concurrently --kill-others \"npm run start:server\" \"npm run start:web\"",
     "start:server": "cd desktop-server && npm run start",
-    "start:web": "cd overlay-MLBB && npm run dev -- --host"
+    "start:web": "cd overlay-MLBB && npm run dev -- --host",
+    "mlbs": "concurrently --kill-others \"cd desktop-server && npm run build && npm run start\" \"cd overlay-MLBB && npm run dev -- --host\"",
+    "test": "cd desktop-server && npm run test"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

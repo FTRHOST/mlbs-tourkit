@@ -214,7 +214,7 @@ export const INITIAL_STATE: AppState = {
       timer: true,
       turn: true,
       score: true,
-      isAutoSync: false
+      isAutoSync: true
     }
   },
   ads: ['AD 1', 'AD 2', 'AD 3'],
