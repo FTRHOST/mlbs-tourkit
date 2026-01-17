@@ -226,18 +226,24 @@ const processGameData = (raw: GameData, currentState: AppState): Partial<AppStat
         // 3. Process player-specific data
         const picks: string[] = Array(5).fill('');
         const bans: string[] = Array(5).fill('');
+        const spells: string[] = Array(5).fill('');
+        const lanes: string[] = Array(5).fill('');
         const pNames: string[] = Array(5).fill('').map((_, i) => `PLAYER ${i + 1}`);
         const pIds: string[] = Array(5).fill('');
         sidePlayers.forEach((p, idx) => {
             if (idx < 5) {
                 if (syncControl.isPickSyncEnabled) picks[idx] = String(p.heroid || 0);
                 if (syncControl.isBanSyncEnabled) bans[idx] = String(p.banHero || 0);
+                spells[idx] = String(p.summonSkillId || 0);
+                lanes[idx] = String(p.iRoad || 0);
                 pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
                 pIds[idx] = String(p.lUid || '');
             }
         });
         resultingTeam.picks = picks;
         resultingTeam.bans = bans;
+        resultingTeam.spells = spells;
+        resultingTeam.lanes = lanes;
         resultingTeam.pNames = pNames;
         resultingTeam.pIds = pIds;
 

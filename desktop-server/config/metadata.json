@@ -119,7 +119,7 @@
     "type": "init",
     "debug": {
       "manager_found": false,
-      "game_state": 0,
+      "game_state": 4,
       "feature_enabled": false
     },
     "data": {

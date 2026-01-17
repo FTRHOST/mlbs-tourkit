@@ -7,6 +7,8 @@ export interface TeamData {
   bans: string[];
   score: number;
   kills: number;
+  spells: string[];
+  lanes: string[];
 }
 
 export interface GameState {
@@ -182,7 +184,9 @@ export const DEFAULT_APP_STATE: AppState = {
     pIds: ['', '', '', '', ''],
     bans: ['0', '0', '0', '0', '0'],
     score: 0,
-    kills: 0
+    kills: 0,
+    spells: ['0', '0', '0', '0', '0'],
+    lanes: ['0', '0', '0', '0', '0']
   },
   red: {
     name: 'RED TEAM',
@@ -191,7 +195,9 @@ export const DEFAULT_APP_STATE: AppState = {
     pIds: ['', '', '', '', ''],
     bans: ['0', '0', '0', '0', '0'],
     score: 0,
-    kills: 0
+    kills: 0,
+    spells: ['0', '0', '0', '0', '0'],
+    lanes: ['0', '0', '0', '0', '0']
   },
   game: {
     matchTitle: 'MATCH TITLE',

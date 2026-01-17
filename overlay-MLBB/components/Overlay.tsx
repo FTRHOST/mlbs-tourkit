@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { AppState } from '../types';
 import BattleOverlay from './BattleOverlay';
+import OverviewDraft from './OverviewDraft';
 
 interface OverlayProps {
   data: AppState;
@@ -282,16 +283,26 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   }, [gameState]);
 
   // If Game State is 5 (Battle) or higher, we hide the Draft Pick overlay.
-  // Unless it's state 6 and we are waiting for the 15s delay? 
-  // "overlay draft pick sebelumnya menghilang saat game state 5" -> Gone at 5.
-  const isDraftVisible = gameState === undefined || gameState < 5;
+  // We now introduce OverviewDraft for state 4 and 5.
+  // Standard Draft: state < 4
+  // Overview Draft: state 4 or 5 (or 6 while waiting)
+  // Battle Overlay: state 6 (active)
 
   if (showBattleOverlay) {
     return <BattleOverlay data={data} />;
   }
 
-  // If Draft is not visible and Battle Overlay is not yet visible (e.g. state 5 or state 6 waiting), 
-  // render empty (or maybe just the background if desired, but user said "menghilang" -> disappear).
+  // If gameState is 4 or 5, or (6 and waiting), show OverviewDraft
+  if (gameState !== undefined && (gameState === 4 || gameState === 5 || gameState === 6)) {
+      return <OverviewDraft data={data} />;
+  }
+
+  // If Draft is not visible (which means logic above handled it or state is weird), return null.
+  // But wait, the logic above handles 4, 5, 6. 
+  // What about 0, 1, 2, 3? That's the standard Draft Overlay below.
+  // So we just continue if state < 4.
+  const isDraftVisible = gameState === undefined || gameState < 4;
+
   if (!isDraftVisible) {
       return null; 
   }

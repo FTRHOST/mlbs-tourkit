@@ -7,6 +7,8 @@ export interface TeamData {
   bans: string[];
   score: number;
   kills: number;
+  spells: string[];
+  lanes: string[];
 }
 
 export interface GameState {
@@ -183,7 +185,9 @@ export const INITIAL_STATE: AppState = {
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
     score: 0,
-    kills: 0
+    kills: 0,
+    spells: ['', '', '', '', ''],
+    lanes: ['', '', '', '', '']
   },
   red: {
     name: 'MANSABA B',
@@ -193,7 +197,9 @@ export const INITIAL_STATE: AppState = {
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
     score: 0,
-    kills: 0
+    kills: 0,
+    spells: ['', '', '', '', ''],
+    lanes: ['', '', '', '', '']
   },
   game: {
     matchTitle: 'MATCH DAY 1',
