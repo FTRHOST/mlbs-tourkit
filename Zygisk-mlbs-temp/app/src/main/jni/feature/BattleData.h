@@ -60,15 +60,4 @@ struct BattleStats {
     uint32_t m_iFirstBldKiller;
 };
 
-struct BanPickState {
-    std::vector<int32_t> banList;
-    std::vector<int32_t> pickList;
-    int32_t banOrder;
-    int32_t pickOrder;
-    float startBanTime;
-    float startSelectTime;
-    int32_t banTimeSpan;
-    int32_t pickTimeSpan;
-};
-
 BattleStats GetBattleStats();

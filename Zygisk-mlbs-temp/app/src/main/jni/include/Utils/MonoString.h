@@ -43,6 +43,14 @@ struct monoList {
     int getVersion(){
         return version;
     }
+
+    std::vector<T> toCPPlist() {
+        std::vector<T> ret;
+        for (int i = 0; i < size; i++) {
+            ret.push_back(items->vector[i]);
+        }
+        return ret;
+    }
 };
 
 // From mlbs/include/Utils/MonoString.h

@@ -367,7 +367,7 @@ void LoadConfig() {
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string content = buffer.str();
-    g_State.isModEnabled = (content.find(\"mod_enabled\": false) == std::string::npos);
+    g_State.isModEnabled = (content.find("\"mod_enabled\": false") == std::string::npos);
 }
 
 void MonitorBattleState() {
