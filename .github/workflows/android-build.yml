@@ -2,9 +2,7 @@ name: Build Android Magisk Module
 
 on:
   push:
-    branches: [ "master", "main", "jules/**" ]
   pull_request:
-    branches: [ "master", "main" ]
   workflow_dispatch:
 
 jobs:
