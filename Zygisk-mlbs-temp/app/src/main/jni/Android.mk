@@ -1,60 +1,66 @@
 LOCAL_PATH := $(call my-dir)
 
-# --- Prebuilt Dobby Library ---
+# --- 1. Prebuilt Dobby Library ---
 include $(CLEAR_VARS)
 LOCAL_MODULE := dobby
 LOCAL_SRC_FILES := dobby/libraries/$(TARGET_ARCH_ABI)/libdobby.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/dobby/
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/dobby/include
 include $(PREBUILT_STATIC_LIBRARY)
 
-# --- Main Module ---
+# --- 2. Main Module (Zygisk Module) ---
 include $(CLEAR_VARS)
+LOCAL_MODULE := mlbs_tourkit
 
-LOCAL_MODULE := libzygisk_mlbs
-
-LOCAL_CFLAGS := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w
-LOCAL_CFLAGS += -fno-rtti -fno-exceptions -fpermissive
-LOCAL_CPPFLAGS := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++17
-LOCAL_CPPFLAGS += -Wno-error=c++11-narrowing -fms-extensions -fno-rtti -fno-exceptions -fpermissive
-LOCAL_LDFLAGS += -Wl,--gc-sections,--strip-all, -llog
-LOCAL_ARM_MODE := arm
-LOCAL_LDLIBS := -llog -landroid -lEGL -lGLESv3 -lGLESv2 -lGLESv1_CM -lz
-
-LOCAL_C_INCLUDES := \
-    $(LOCAL_PATH) \
-    $(LOCAL_PATH)/include \
-    $(LOCAL_PATH)/include/Utils \
-    $(LOCAL_PATH)/include/Utils/Unity \
-    $(LOCAL_PATH)/KittyMemory \
-    $(LOCAL_PATH)/xDL \
-    $(LOCAL_PATH)/dobby
-
+# Daftar Source Code (C/C++)
 LOCAL_SRC_FILES := \
-    struct/MonoString.cpp \
+    main.cpp \
+    GameLogic.cpp \
+    Il2Cpp.cpp \
+    IpcServer.cpp \
+    hack.cpp \
+    utils.cpp \
+    utils_safe.cpp \
+    PathManager.cpp \
+    fake_dlfcn.cpp \
+    DynamicOffsets.cpp \
+    Il2Cpp/il2cpp_dump.cpp \
+    Il2Cpp/BNMUtils.h \
+    Utils/Unity/ByNameModding/Il2Cpp.cpp \
+    Utils/Unity/ByNameModding/Tools.cpp \
+    Utils/Unity/ByNameModding/fake_dlfcn.cpp \
+    KittyMemory/KittyMemory.cpp \
+    KittyMemory/KittyScanner.cpp \
+    KittyMemory/KittyUtils.cpp \
+    KittyMemory/KittyArm64.cpp \
+    KittyMemory/MemoryBackup.cpp \
+    KittyMemory/MemoryPatch.cpp \
+    KittyMemory/SubstrateDebug.cpp \
+    KittyMemory/SubstrateHook.cpp \
+    KittyMemory/SubstratePosixMemory.cpp \
+    KittyMemory/SymbolFinder.cpp \
+    KittyMemory/hde64.c \
     xDL/xdl.c \
     xDL/xdl_iterate.c \
     xDL/xdl_linker.c \
     xDL/xdl_lzma.c \
-    xDL/xdl_util.c \
-    KittyMemory/KittyArm64.cpp \
-    KittyMemory/KittyMemory.cpp \
-    KittyMemory/KittyScanner.cpp \
-    KittyMemory/KittyUtils.cpp \
-    KittyMemory/MemoryPatch.cpp \
-    KittyMemory/MemoryBackup.cpp \
-    fake_dlfcn.cpp \
-    Il2Cpp.cpp \
-    utils.cpp \
-    hack.cpp \
-    main.cpp \
-    IpcServer.cpp \
-    PathManager.cpp \
-    GameLogic.cpp \
-    utils_safe.cpp \
-    DynamicOffsets.cpp \
-    include/Utils/Unity/ByNameModding/Tools.cpp
+    xDL/xdl_util.c
 
-LOCAL_STATIC_LIBRARIES := libdobby
-LOCAL_CPP_FEATURES := exceptions
+# Include Headers
+LOCAL_C_INCLUDES := \
+    $(LOCAL_PATH) \
+    $(LOCAL_PATH)/include \
+    $(LOCAL_PATH)/KittyMemory \
+    $(LOCAL_PATH)/xDL \
+    $(LOCAL_PATH)/dobby \
+    $(LOCAL_PATH)/Il2Cpp \
+    $(LOCAL_PATH)/Utils
+
+# Compiler Flags
+LOCAL_CFLAGS := -Wno-error=format-security -fvisibility=hidden
+LOCAL_CPPFLAGS := -Wno-error=format-security -fvisibility=hidden -std=c++17 -fexceptions
+
+# Libraries
+LOCAL_LDLIBS := -llog -landroid -lEGL -lGLESv2
+LOCAL_STATIC_LIBRARIES := dobby
 
 include $(BUILD_SHARED_LIBRARY)
