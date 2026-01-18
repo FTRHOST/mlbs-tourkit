@@ -3,1086 +3,1077 @@
 #include "obfuscate.h"
 
 // Define Variables
-#define IMPL_OFFSET(name) uintptr_t OFF_##name = 0;
+uintptr_t OFF_LogicPlayer_m_ID = 0;
+uintptr_t OFF_LogicPlayer_m_LoigcBezierBullet = 0;
+uintptr_t OFF_LogicPlayer_moveControllers = 0;
+uintptr_t OFF_LogicPlayer_totalGold = 0;
+uintptr_t OFF_LogicPlayer_m_copyHurtCount = 0;
+uintptr_t OFF_LogicPlayer_m_HurtTotalValue = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroValue = 0;
+uintptr_t OFF_LogicPlayer_m_ATKHero = 0;
+uintptr_t OFF_LogicPlayer_m_iCommonAttackHeroCount = 0;
+uintptr_t OFF_LogicPlayer_m_iNormalSkillHeroCount = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroReel = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroAD = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroAP = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroByEquip = 0;
+uintptr_t OFF_LogicPlayer_m_HurtHeroByEmblem = 0;
+uintptr_t OFF_LogicPlayer_m_HurtTowerValue = 0;
+uintptr_t OFF_LogicPlayer_m_HurtSoliderValue = 0;
+uintptr_t OFF_LogicPlayer_m_iInjuredShield = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredValue = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredTower = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredTotal = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredSoldier = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredAD = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredAP = 0;
+uintptr_t OFF_LogicPlayer_m_InjuredReal = 0;
+uintptr_t OFF_LogicPlayer_m_RealInjuredVal = 0;
+uintptr_t OFF_LogicPlayer_m_iBeCuredValue = 0;
+uintptr_t OFF_LogicPlayer_m_CureHero = 0;
+uintptr_t OFF_LogicPlayer_m_CureTeammate = 0;
+uintptr_t OFF_LogicPlayer_m_CureSelf = 0;
+uintptr_t OFF_LogicPlayer_m_CureHeroJustSkill = 0;
+uintptr_t OFF_LogicPlayer_m_iSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iCommonAtkUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iCommonAtkUseCount_AllSkillCD = 0;
+uintptr_t OFF_LogicPlayer_m_iNormalSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iNormalSkillHasDraggedCount = 0;
+uintptr_t OFF_LogicPlayer_m_iFirstSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iSecondSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iThirdSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iFourthSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iEquipSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iCureSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iBackHomeSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iSummonSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iHuntSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iGankSkillUseCount = 0;
+uintptr_t OFF_LogicPlayer_m_iKillMageCount = 0;
+uintptr_t OFF_LogicPlayer_m_iKillMarksmanCount = 0;
+uintptr_t OFF_LogicPlayer_m_iEnterHeroBattleFromGrass = 0;
+uintptr_t OFF_LogicPlayer_m_iEnterGrassTimes = 0;
+uintptr_t OFF_LogicPlayer_m_dictFirstHitHeroTime = 0;
+uintptr_t OFF_LogicPlayer_m_listTimeSpent4Kill = 0;
+uintptr_t OFF_LogicPlayer_KillTowerTimes = 0;
+uintptr_t OFF_LogicPlayer_KillSoldierTimes = 0;
+uintptr_t OFF_LogicPlayer_m_arrSavedPositions = 0;
+uintptr_t OFF_LogicPlayer_m_nSavedPositionsStart = 0;
+uintptr_t OFF_LogicPlayer_m_nSavedPositionsCount = 0;
+uintptr_t OFF_LogicPlayer_hurtInfos = 0;
+uintptr_t OFF_LogicPlayer_m_uLossOfSightTime = 0;
+uintptr_t OFF_LogicPlayer_enemySightLoss = 0;
+uintptr_t OFF_LogicPlayer_endedSightValue = 0;
+uintptr_t OFF_LogicPlayer_ongoingSightValue = 0;
+uintptr_t OFF_LogicPlayer_sightIdGenerator = 0;
+uintptr_t OFF_LogicPlayer_continueKill = 0;
+uintptr_t OFF_LogicPlayer_multiKill = 0;
+uintptr_t OFF_LogicPlayer_DoubleKillTimes = 0;
+uintptr_t OFF_LogicPlayer_TripleKillTimes = 0;
+uintptr_t OFF_LogicPlayer_QuadraKillTimes = 0;
+uintptr_t OFF_LogicPlayer_PentaKillTimes = 0;
+uintptr_t OFF_LogicPlayer_multiKillAssistIDs = 0;
+uintptr_t OFF_LogicPlayer_greenLightCanUse = 0;
+uintptr_t OFF_LogicPlayer_greenLightStartTime = 0;
+uintptr_t OFF_LogicPlayer_greenLightTimeSpan = 0;
+uintptr_t OFF_LogicPlayer_greenLightIgnoreCountDown = 0;
+uintptr_t OFF_LogicPlayer_m_LogicGuLianBulletManger = 0;
+uintptr_t OFF_LogicPlayer_bMonitoringSoloBreakLane = 0;
+uintptr_t OFF_LogicPlayer_uMonitoringTowerGuid = 0;
+uintptr_t OFF_LogicPlayer_uMonitoringTimeout = 0;
+uintptr_t OFF_LogicPlayer_m_magicTranSpellSideEffect = 0;
+uintptr_t OFF_LogicPlayer_m_magicTranSpellStageEffect = 0;
+uintptr_t OFF_LogicPlayer_lastReceiveMoveOptTime = 0;
+uintptr_t OFF_LogicPlayer_moveProtectTime = 0;
+uintptr_t OFF_LogicPlayer_m_bMoveProtectAIState = 0;
+uintptr_t OFF_LogicPlayer_uCheckStarLightTaskTimer = 0;
+uintptr_t OFF_LogicPlayer_uLastGuideSoldier2Tower = 0;
+uintptr_t OFF_LogicPlayer_m_iGuideSoldier2Tower = 0;
+uintptr_t OFF_LogicPlayer_m_TwinPlayer = 0;
+uintptr_t OFF_LogicPlayer_m_bIsTwinMain = 0;
+uintptr_t OFF_LogicPlayer_m_bIsTwinControl = 0;
+uintptr_t OFF_LogicPlayer_m_summonTwinAI = 0;
+uintptr_t OFF_LogicPlayer_m_AFKTurnAIComponent = 0;
+uintptr_t OFF_LogicPlayer_bMLAIState = 0;
+uintptr_t OFF_LogicPlayer_bShowConnectMsg = 0;
+uintptr_t OFF_LogicPlayer_m_IsRobotPlayer = 0;
+uintptr_t OFF_LogicPlayer_m_uiWaitTrunAITime = 0;
+uintptr_t OFF_LogicPlayer_uiQuicklyTrunToAITime = 0;
+uintptr_t OFF_LogicPlayer_uiNomalTurnAITime = 0;
+uintptr_t OFF_LogicPlayer_uIgnoreTurnAITime = 0;
+uintptr_t OFF_LogicPlayer_iIgnoreOpered = 0;
+uintptr_t OFF_LogicPlayer_m_bForceAi = 0;
+uintptr_t OFF_LogicPlayer_m_bWeakNetWork = 0;
+uintptr_t OFF_LogicPlayer_m_uiAFKHoldCDRangeTimes = 0;
+uintptr_t OFF_LogicPlayer_m_uLastTimePlayerOpered = 0;
+uintptr_t OFF_LogicPlayer_bWaitTurnAI = 0;
+uintptr_t OFF_LogicPlayer_m_SynFightData = 0;
+uintptr_t OFF_LogicPlayer_uplandRangeDistance = 0;
+uintptr_t OFF_LogicPlayer_dicIgnoreOpered = 0;
+uintptr_t OFF_LogicPlayer_m_bConnected = 0;
+uintptr_t OFF_LogicPlayer_m_uiVoiceParam = 0;
+uintptr_t OFF_LogicPlayer_m_RelativeScore = 0;
+uintptr_t OFF_LogicPlayer_dicTalentSkill = 0;
+uintptr_t OFF_LogicPlayer_dicRuneSkill2023 = 0;
+uintptr_t OFF_LogicPlayer_lsMissions = 0;
+uintptr_t OFF_LogicPlayer_easterEggMissions = 0;
+uintptr_t OFF_LogicPlayer_m_lsEmoji = 0;
+uintptr_t OFF_LogicPlayer_m_lsAutoEmoji = 0;
+uintptr_t OFF_LogicPlayer_m_lsAnima = 0;
+uintptr_t OFF_LogicPlayer_m_lsGraffiti = 0;
+uintptr_t OFF_LogicPlayer_m_iHolyStatueSkillID = 0;
+uintptr_t OFF_LogicPlayer_m_uHolyStatueID = 0;
+uintptr_t OFF_LogicPlayer_m_uHolyStatueIDIfUsed = 0;
+uintptr_t OFF_LogicPlayer_m_TotalExp = 0;
+uintptr_t OFF_LogicPlayer_m_PlayerData = 0;
+uintptr_t OFF_LogicPlayer_m_ConfigData = 0;
+uintptr_t OFF_LogicPlayer_m_HeroCostType = 0;
+uintptr_t OFF_LogicPlayer_m_BattleConfig = 0;
+uintptr_t OFF_LogicPlayer_m_TowerTurnData = 0;
+uintptr_t OFF_LogicPlayer_m_OperateTimeMonitor = 0;
+uintptr_t OFF_LogicPlayer_m_CheckNearComponent = 0;
+uintptr_t OFF_LogicPlayer_m_EstimateAttrComponent = 0;
+uintptr_t OFF_LogicPlayer_m_StoreSkillComp = 0;
+uintptr_t OFF_LogicPlayer_m_operCache = 0;
+uintptr_t OFF_LogicPlayer_m_HighLightComp = 0;
+uintptr_t OFF_LogicPlayer_m_GankShoeRewardComp = 0;
+uintptr_t OFF_LogicPlayer_m_bGankEquip = 0;
+uintptr_t OFF_LogicPlayer_m_bHuntSkill = 0;
+uintptr_t OFF_LogicPlayer_m_bLowestMoneyOrExp = 0;
+uintptr_t OFF_LogicPlayer_m_ShareMoneyEx = 0;
+uintptr_t OFF_LogicPlayer_m_ShareExpEx = 0;
+uintptr_t OFF_LogicPlayer_m_RewardMoney = 0;
+uintptr_t OFF_LogicPlayer_m_iBaseMoney = 0;
+uintptr_t OFF_LogicPlayer_m_KillBounty = 0;
+uintptr_t OFF_LogicPlayer_m_bBountyOverThreshold = 0;
+uintptr_t OFF_LogicPlayer_m_uLastBountyOverThreshold = 0;
+uintptr_t OFF_LogicPlayer_m_iContinueDeadSub = 0;
+uintptr_t OFF_LogicPlayer_m_iContinueKillNum = 0;
+uintptr_t OFF_LogicPlayer_m_iContinueKillAdd = 0;
+uintptr_t OFF_LogicPlayer_m_RewardExp = 0;
+uintptr_t OFF_LogicPlayer_m_iBaseExp = 0;
+uintptr_t OFF_LogicPlayer_m_iLevelExp = 0;
+uintptr_t OFF_LogicPlayer_m_iLvExpRate = 0;
+uintptr_t OFF_LogicPlayer_m_fContinueDeadPara = 0;
+uintptr_t OFF_LogicPlayer_DeadAndKillTimes = 0;
+uintptr_t OFF_LogicPlayer_m_AssistTimesReward = 0;
+uintptr_t OFF_LogicPlayer_m_bReqMoveUpdate = 0;
+uintptr_t OFF_LogicPlayer_m_ReqMoveDir = 0;
+uintptr_t OFF_LogicPlayer_m_ReqMovePos = 0;
+uintptr_t OFF_LogicPlayer_bDeathHoldKillCount = 0;
+uintptr_t OFF_LogicPlayer_mShutDown = 0;
+uintptr_t OFF_LogicPlayer_lastKillTime = 0;
+uintptr_t OFF_LogicPlayer_mutiKillUsefulTime = 0;
+uintptr_t OFF_LogicPlayer_mutiKillUsefulTimeOn5kill = 0;
+uintptr_t OFF_LogicPlayer_listKillTime = 0;
+uintptr_t OFF_LogicPlayer_m_vDelayRemoveSkillIds = 0;
+uintptr_t OFF_LogicPlayer_m_uiLastMoveTime = 0;
+uintptr_t OFF_LogicPlayer_m_GetGoldTimesBySoldier = 0;
+uintptr_t OFF_LogicPlayer_m_BeyondGodlike = 0;
+uintptr_t OFF_LogicPlayer_m_MaxMutiKill = 0;
+uintptr_t OFF_LogicPlayer_m_MaxContinueKill = 0;
+uintptr_t OFF_LogicPlayer_m_singleKill = 0;
+uintptr_t OFF_LogicPlayer_m_KillLingZhu = 0;
+uintptr_t OFF_LogicPlayer_m_AssistLingZhu = 0;
+uintptr_t OFF_LogicPlayer_KillWildTimes = 0;
+uintptr_t OFF_LogicPlayer_m_HitHeroTimes_SkillGuid = 0;
+uintptr_t OFF_LogicPlayer_m_WeekKill = 0;
+uintptr_t OFF_LogicPlayer_m_KillShenGui = 0;
+uintptr_t OFF_LogicPlayer_m_AssistShenGui = 0;
+uintptr_t OFF_LogicPlayer_m_KillCdMonster = 0;
+uintptr_t OFF_LogicPlayer_m_KillAtkMonster = 0;
+uintptr_t OFF_LogicPlayer_m_KillMePlayerCount = 0;
+uintptr_t OFF_LogicPlayer_m_CurZoneId = 0;
+uintptr_t OFF_LogicPlayer_m_HurtTurtle = 0;
+uintptr_t OFF_LogicPlayer_m_HurtLord = 0;
+uintptr_t OFF_LogicPlayer_m_ShieldCureHero = 0;
+uintptr_t OFF_LogicPlayer_m_ShieldCureSelf = 0;
+uintptr_t OFF_LogicPlayer_m_ShieldTeammate = 0;
+uintptr_t OFF_LogicPlayer_m_SufferControlTime = 0;
+uintptr_t OFF_LogicPlayer_m_SufferSlowTime = 0;
+uintptr_t OFF_LogicPlayer_m_ControlTime = 0;
+uintptr_t OFF_LogicPlayer_m_KillsWithRedAndBlueBuff = 0;
+uintptr_t OFF_LogicPlayer_m_MoveDis = 0;
+uintptr_t OFF_LogicPlayer_m_MoveDisTickCount = 0;
+uintptr_t OFF_LogicPlayer_m_MoveCountPrePosX = 0;
+uintptr_t OFF_LogicPlayer_m_MoveCountPrePosY = 0;
+uintptr_t OFF_LogicPlayer_m_GoldByWild = 0;
+uintptr_t OFF_LogicPlayer_m_GoldBySoldier = 0;
+uintptr_t OFF_LogicPlayer_m_GoldByHero = 0;
+uintptr_t OFF_LogicPlayer_iAllHurtVal = 0;
+uintptr_t OFF_LogicPlayer_m_CrlTimes = 0;
+uintptr_t OFF_LogicPlayer_m_iPoisonValue = 0;
+uintptr_t OFF_LogicPlayer_m_hurtEnemyWild = 0;
+uintptr_t OFF_LogicPlayer_m_hurtWildValue = 0;
+uintptr_t OFF_LogicPlayer_m_dStealValue = 0;
+uintptr_t OFF_LogicPlayer_m_TrunSpeed = 0;
+uintptr_t OFF_LogicPlayer_m_GreatGuid = 0;
+uintptr_t OFF_LogicPlayer_m_bRefuseSelectAIType = 0;
+uintptr_t OFF_LogicPlayer_m_uiLastOperFrameTime = 0;
+uintptr_t OFF_LogicPlayer_SummonSkillId = 0;
+uintptr_t OFF_LogicPlayer_m_SummonStartSkillId = 0;
+uintptr_t OFF_LogicPlayer_m_RankLv = 0;
+uintptr_t OFF_LogicPlayer_m_bigRankLv = 0;
+uintptr_t OFF_LogicPlayer_m_rankStar = 0;
+uintptr_t OFF_LogicPlayer_m_rankNum = 0;
+uintptr_t OFF_LogicPlayer_m_AutoAttackAI = 0;
+uintptr_t OFF_LogicPlayer_m_LogicPunish = 0;
+uintptr_t OFF_LogicPlayer_m_lastReliveTime = 0;
+uintptr_t OFF_LogicPlayer_m_ReviveTimeMs = 0;
+uintptr_t OFF_LogicPlayer_m_bFastDie = 0;
+uintptr_t OFF_LogicPlayer_m_EatFruit = 0;
+uintptr_t OFF_LogicPlayer_m_KillByFruit = 0;
+uintptr_t OFF_LogicPlayer_m_GetFruitOnMin = 0;
+uintptr_t OFF_LogicPlayer_bAllowRelive = 0;
+uintptr_t OFF_LogicPlayer_m_uiRoleLevel = 0;
+uintptr_t OFF_LogicPlayer_m_Killer = 0;
+uintptr_t OFF_LogicPlayer_m_iAddGoldValue = 0;
+uintptr_t OFF_LogicPlayer_iMaxHurtValue = 0;
+uintptr_t OFF_LogicPlayer_m_iSkinId = 0;
+uintptr_t OFF_LogicPlayer_m_iDragonCrystalId = 0;
+uintptr_t OFF_LogicPlayer_m_uUserMapID = 0;
+uintptr_t OFF_LogicPlayer_m_DevourData = 0;
+uintptr_t OFF_LogicPlayer_iLastGiveupEquip = 0;
+uintptr_t OFF_LogicPlayer_m_ControlSummer = 0;
+uintptr_t OFF_LogicPlayer_m_vSkillLogicFighter = 0;
+uintptr_t OFF_LogicPlayer_m_iSurvivalTime = 0;
+uintptr_t OFF_LogicPlayer_m_iChickenRanking = 0;
+uintptr_t OFF_LogicPlayer_m_bEmojiBirthday = 0;
+uintptr_t OFF_LogicPlayer_logAttackSpeed = 0;
+uintptr_t OFF_LogicPlayer_doAttackSpeed = 0;
+uintptr_t OFF_LogicPlayer_m_CommATK_RunTimer = 0;
+uintptr_t OFF_LogicPlayer_m_dCommATKSingTime_Mod = 0;
+uintptr_t OFF_LogicPlayer_m_CommATKSingTime_LastTimer = 0;
+uintptr_t OFF_LogicPlayer_m_dCommATKCD_Mod = 0;
+uintptr_t OFF_LogicPlayer_m_CommATKCD_LastTimer = 0;
+uintptr_t OFF_LogicPlayer_m_vPlayerDeadInfo = 0;
+uintptr_t OFF_LogicPlayer_m_PriorEquip = 0;
+uintptr_t OFF_LogicPlayer_m_RecmendEquips = 0;
+uintptr_t OFF_LogicPlayer_m_uHeroEnhanceLevel = 0;
+uintptr_t OFF_LogicPlayer_m_bGhostHasDied = 0;
+uintptr_t OFF_LogicPlayer_m_v2StarDir = 0;
+uintptr_t OFF_LogicPlayer_shopData = 0;
+uintptr_t OFF_LogicPlayer_v2LastCheckPos = 0;
+uintptr_t OFF_LogicPlayer_lastCheckDirSymbol = 0;
+uintptr_t OFF_LogicPlayer_lastCheckMoveDir = 0;
+uintptr_t OFF_LogicPlayer_right = 0;
+uintptr_t OFF_LogicPlayer_lastFailedAutoAiSpellCast = 0;
+uintptr_t OFF_LogicPlayer_lastFailedAutoAiSpellCastTime = 0;
+uintptr_t OFF_LogicPlayer_ownNormalSkillCache = 0;
+uintptr_t OFF_LogicPlayer_autoTime = 0;
+uintptr_t OFF_LogicPlayer_m_dXpGrowthDecimal = 0;
+uintptr_t OFF_LogicPlayer_lEatFruits = 0;
+uintptr_t OFF_LogicPlayer_bBornedBoss = 0;
+uintptr_t OFF_LogicPlayer_iPreMutiKillValue = 0;
+uintptr_t OFF_LogicPlayer_iPreContinueKillValue = 0;
+uintptr_t OFF_LogicPlayer_iPreKillLingZhu = 0;
+uintptr_t OFF_LogicPlayer_iPreKillShenGui = 0;
+uintptr_t OFF_LogicPlayer_iPreShutDown = 0;
+uintptr_t OFF_LogicPlayer_bCheckFirstBlood = 0;
+uintptr_t OFF_LogicPlayer_iCurrentResult = 0;
+uintptr_t OFF_LogicPlayer_iPreGetResultTime = 0;
+uintptr_t OFF_LogicPlayer_iCurKilledResult = 0;
+uintptr_t OFF_LogicPlayer_iPreKilledResultTime = 0;
 
-// LogicPlayer
-IMPL_OFFSET(LogicPlayer_m_ID)
-IMPL_OFFSET(LogicPlayer_m_LoigcBezierBullet)
-IMPL_OFFSET(LogicPlayer_moveControllers)
-IMPL_OFFSET(LogicPlayer_totalGold)
-IMPL_OFFSET(LogicPlayer_m_copyHurtCount)
-IMPL_OFFSET(LogicPlayer_m_HurtTotalValue)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroValue)
-IMPL_OFFSET(LogicPlayer_m_ATKHero)
-IMPL_OFFSET(LogicPlayer_m_iCommonAttackHeroCount)
-IMPL_OFFSET(LogicPlayer_m_iNormalSkillHeroCount)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroReel)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroAD)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroAP)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroByEquip)
-IMPL_OFFSET(LogicPlayer_m_HurtHeroByEmblem)
-IMPL_OFFSET(LogicPlayer_m_HurtTowerValue)
-IMPL_OFFSET(LogicPlayer_m_HurtSoliderValue)
-IMPL_OFFSET(LogicPlayer_m_iInjuredShield)
-IMPL_OFFSET(LogicPlayer_m_InjuredValue)
-IMPL_OFFSET(LogicPlayer_m_InjuredTower)
-IMPL_OFFSET(LogicPlayer_m_InjuredTotal)
-IMPL_OFFSET(LogicPlayer_m_InjuredSoldier)
-IMPL_OFFSET(LogicPlayer_m_InjuredAD)
-IMPL_OFFSET(LogicPlayer_m_InjuredAP)
-IMPL_OFFSET(LogicPlayer_m_InjuredReal)
-IMPL_OFFSET(LogicPlayer_m_RealInjuredVal)
-IMPL_OFFSET(LogicPlayer_m_iBeCuredValue)
-IMPL_OFFSET(LogicPlayer_m_CureHero)
-IMPL_OFFSET(LogicPlayer_m_CureTeammate)
-IMPL_OFFSET(LogicPlayer_m_CureSelf)
-IMPL_OFFSET(LogicPlayer_m_CureHeroJustSkill)
-IMPL_OFFSET(LogicPlayer_m_iSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iCommonAtkUseCount)
-IMPL_OFFSET(LogicPlayer_m_iCommonAtkUseCount_AllSkillCD)
-IMPL_OFFSET(LogicPlayer_m_iNormalSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iNormalSkillHasDraggedCount)
-IMPL_OFFSET(LogicPlayer_m_iFirstSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iSecondSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iThirdSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iFourthSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iEquipSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iCureSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iBackHomeSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iSummonSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iHuntSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iGankSkillUseCount)
-IMPL_OFFSET(LogicPlayer_m_iKillMageCount)
-IMPL_OFFSET(LogicPlayer_m_iKillMarksmanCount)
-IMPL_OFFSET(LogicPlayer_m_iEnterHeroBattleFromGrass)
-IMPL_OFFSET(LogicPlayer_m_iEnterGrassTimes)
-IMPL_OFFSET(LogicPlayer_m_dictFirstHitHeroTime)
-IMPL_OFFSET(LogicPlayer_m_listTimeSpent4Kill)
-IMPL_OFFSET(LogicPlayer_KillTowerTimes)
-IMPL_OFFSET(LogicPlayer_KillSoldierTimes)
-IMPL_OFFSET(LogicPlayer_m_arrSavedPositions)
-IMPL_OFFSET(LogicPlayer_m_nSavedPositionsStart)
-IMPL_OFFSET(LogicPlayer_m_nSavedPositionsCount)
-IMPL_OFFSET(LogicPlayer_hurtInfos)
-IMPL_OFFSET(LogicPlayer_m_uLossOfSightTime)
-IMPL_OFFSET(LogicPlayer_enemySightLoss)
-IMPL_OFFSET(LogicPlayer_endedSightValue)
-IMPL_OFFSET(LogicPlayer_ongoingSightValue)
-IMPL_OFFSET(LogicPlayer_sightIdGenerator)
-IMPL_OFFSET(LogicPlayer_continueKill)
-IMPL_OFFSET(LogicPlayer_multiKill)
-IMPL_OFFSET(LogicPlayer_DoubleKillTimes)
-IMPL_OFFSET(LogicPlayer_TripleKillTimes)
-IMPL_OFFSET(LogicPlayer_QuadraKillTimes)
-IMPL_OFFSET(LogicPlayer_PentaKillTimes)
-IMPL_OFFSET(LogicPlayer_multiKillAssistIDs)
-IMPL_OFFSET(LogicPlayer_greenLightCanUse)
-IMPL_OFFSET(LogicPlayer_greenLightStartTime)
-IMPL_OFFSET(LogicPlayer_greenLightTimeSpan)
-IMPL_OFFSET(LogicPlayer_greenLightIgnoreCountDown)
-IMPL_OFFSET(LogicPlayer_m_LogicGuLianBulletManger)
-IMPL_OFFSET(LogicPlayer_bMonitoringSoloBreakLane)
-IMPL_OFFSET(LogicPlayer_uMonitoringTowerGuid)
-IMPL_OFFSET(LogicPlayer_uMonitoringTimeout)
-IMPL_OFFSET(LogicPlayer_m_magicTranSpellSideEffect)
-IMPL_OFFSET(LogicPlayer_m_magicTranSpellStageEffect)
-IMPL_OFFSET(LogicPlayer_lastReceiveMoveOptTime)
-IMPL_OFFSET(LogicPlayer_moveProtectTime)
-IMPL_OFFSET(LogicPlayer_m_bMoveProtectAIState)
-IMPL_OFFSET(LogicPlayer_uCheckStarLightTaskTimer)
-IMPL_OFFSET(LogicPlayer_uLastGuideSoldier2Tower)
-IMPL_OFFSET(LogicPlayer_m_iGuideSoldier2Tower)
-IMPL_OFFSET(LogicPlayer_m_TwinPlayer)
-IMPL_OFFSET(LogicPlayer_m_bIsTwinMain)
-IMPL_OFFSET(LogicPlayer_m_bIsTwinControl)
-IMPL_OFFSET(LogicPlayer_m_summonTwinAI)
-IMPL_OFFSET(LogicPlayer_m_AFKTurnAIComponent)
-IMPL_OFFSET(LogicPlayer_bMLAIState)
-IMPL_OFFSET(LogicPlayer_bShowConnectMsg)
-IMPL_OFFSET(LogicPlayer_m_IsRobotPlayer)
-IMPL_OFFSET(LogicPlayer_m_uiWaitTrunAITime)
-IMPL_OFFSET(LogicPlayer_uiQuicklyTrunToAITime)
-IMPL_OFFSET(LogicPlayer_uiNomalTurnAITime)
-IMPL_OFFSET(LogicPlayer_uIgnoreTurnAITime)
-IMPL_OFFSET(LogicPlayer_iIgnoreOpered)
-IMPL_OFFSET(LogicPlayer_m_bForceAi)
-IMPL_OFFSET(LogicPlayer_m_bWeakNetWork)
-IMPL_OFFSET(LogicPlayer_m_uiAFKHoldCDRangeTimes)
-IMPL_OFFSET(LogicPlayer_m_uLastTimePlayerOpered)
-IMPL_OFFSET(LogicPlayer_bWaitTurnAI)
-IMPL_OFFSET(LogicPlayer_m_SynFightData)
-IMPL_OFFSET(LogicPlayer_uplandRangeDistance)
-IMPL_OFFSET(LogicPlayer_dicIgnoreOpered)
-IMPL_OFFSET(LogicPlayer_m_bConnected)
-IMPL_OFFSET(LogicPlayer_m_uiVoiceParam)
-IMPL_OFFSET(LogicPlayer_m_RelativeScore)
-IMPL_OFFSET(LogicPlayer_dicTalentSkill)
-IMPL_OFFSET(LogicPlayer_dicRuneSkill2023)
-IMPL_OFFSET(LogicPlayer_lsMissions)
-IMPL_OFFSET(LogicPlayer_easterEggMissions)
-IMPL_OFFSET(LogicPlayer_m_lsEmoji)
-IMPL_OFFSET(LogicPlayer_m_lsAutoEmoji)
-IMPL_OFFSET(LogicPlayer_m_lsAnima)
-IMPL_OFFSET(LogicPlayer_m_lsGraffiti)
-IMPL_OFFSET(LogicPlayer_m_iHolyStatueSkillID)
-IMPL_OFFSET(LogicPlayer_m_uHolyStatueID)
-IMPL_OFFSET(LogicPlayer_m_uHolyStatueIDIfUsed)
-IMPL_OFFSET(LogicPlayer_m_TotalExp)
-IMPL_OFFSET(LogicPlayer_m_PlayerData)
-IMPL_OFFSET(LogicPlayer_m_ConfigData)
-IMPL_OFFSET(LogicPlayer_m_HeroCostType)
-IMPL_OFFSET(LogicPlayer_m_BattleConfig)
-IMPL_OFFSET(LogicPlayer_m_TowerTurnData)
-IMPL_OFFSET(LogicPlayer_m_OperateTimeMonitor)
-IMPL_OFFSET(LogicPlayer_m_CheckNearComponent)
-IMPL_OFFSET(LogicPlayer_m_EstimateAttrComponent)
-IMPL_OFFSET(LogicPlayer_m_StoreSkillComp)
-IMPL_OFFSET(LogicPlayer_m_operCache)
-IMPL_OFFSET(LogicPlayer_m_HighLightComp)
-IMPL_OFFSET(LogicPlayer_m_GankShoeRewardComp)
-IMPL_OFFSET(LogicPlayer_m_bGankEquip)
-IMPL_OFFSET(LogicPlayer_m_bHuntSkill)
-IMPL_OFFSET(LogicPlayer_m_bLowestMoneyOrExp)
-IMPL_OFFSET(LogicPlayer_m_ShareMoneyEx)
-IMPL_OFFSET(LogicPlayer_m_ShareExpEx)
-IMPL_OFFSET(LogicPlayer_m_RewardMoney)
-IMPL_OFFSET(LogicPlayer_m_iBaseMoney)
-IMPL_OFFSET(LogicPlayer_m_KillBounty)
-IMPL_OFFSET(LogicPlayer_m_bBountyOverThreshold)
-IMPL_OFFSET(LogicPlayer_m_uLastBountyOverThreshold)
-IMPL_OFFSET(LogicPlayer_m_iContinueDeadSub)
-IMPL_OFFSET(LogicPlayer_m_iContinueKillNum)
-IMPL_OFFSET(LogicPlayer_m_iContinueKillAdd)
-IMPL_OFFSET(LogicPlayer_m_RewardExp)
-IMPL_OFFSET(LogicPlayer_m_iBaseExp)
-IMPL_OFFSET(LogicPlayer_m_iLevelExp)
-IMPL_OFFSET(LogicPlayer_m_iLvExpRate)
-IMPL_OFFSET(LogicPlayer_m_fContinueDeadPara)
-IMPL_OFFSET(LogicPlayer_DeadAndKillTimes)
-IMPL_OFFSET(LogicPlayer_m_AssistTimesReward)
-IMPL_OFFSET(LogicPlayer_m_bReqMoveUpdate)
-IMPL_OFFSET(LogicPlayer_m_ReqMoveDir)
-IMPL_OFFSET(LogicPlayer_m_ReqMovePos)
-IMPL_OFFSET(LogicPlayer_bDeathHoldKillCount)
-IMPL_OFFSET(LogicPlayer_mShutDown)
-IMPL_OFFSET(LogicPlayer_lastKillTime)
-IMPL_OFFSET(LogicPlayer_mutiKillUsefulTime)
-IMPL_OFFSET(LogicPlayer_mutiKillUsefulTimeOn5kill)
-IMPL_OFFSET(LogicPlayer_listKillTime)
-IMPL_OFFSET(LogicPlayer_m_vDelayRemoveSkillIds)
-IMPL_OFFSET(LogicPlayer_m_uiLastMoveTime)
-IMPL_OFFSET(LogicPlayer_m_GetGoldTimesBySoldier)
-IMPL_OFFSET(LogicPlayer_m_BeyondGodlike)
-IMPL_OFFSET(LogicPlayer_m_MaxMutiKill)
-IMPL_OFFSET(LogicPlayer_m_MaxContinueKill)
-IMPL_OFFSET(LogicPlayer_m_singleKill)
-IMPL_OFFSET(LogicPlayer_m_KillLingZhu)
-IMPL_OFFSET(LogicPlayer_m_AssistLingZhu)
-IMPL_OFFSET(LogicPlayer_KillWildTimes)
-IMPL_OFFSET(LogicPlayer_m_HitHeroTimes_SkillGuid)
-IMPL_OFFSET(LogicPlayer_m_WeekKill)
-IMPL_OFFSET(LogicPlayer_m_KillShenGui)
-IMPL_OFFSET(LogicPlayer_m_AssistShenGui)
-IMPL_OFFSET(LogicPlayer_m_KillCdMonster)
-IMPL_OFFSET(LogicPlayer_m_KillAtkMonster)
-IMPL_OFFSET(LogicPlayer_m_KillMePlayerCount)
-IMPL_OFFSET(LogicPlayer_m_CurZoneId)
-IMPL_OFFSET(LogicPlayer_m_HurtTurtle)
-IMPL_OFFSET(LogicPlayer_m_HurtLord)
-IMPL_OFFSET(LogicPlayer_m_ShieldCureHero)
-IMPL_OFFSET(LogicPlayer_m_ShieldCureSelf)
-IMPL_OFFSET(LogicPlayer_m_ShieldTeammate)
-IMPL_OFFSET(LogicPlayer_m_SufferControlTime)
-IMPL_OFFSET(LogicPlayer_m_SufferSlowTime)
-IMPL_OFFSET(LogicPlayer_m_ControlTime)
-IMPL_OFFSET(LogicPlayer_m_KillsWithRedAndBlueBuff)
-IMPL_OFFSET(LogicPlayer_m_MoveDis)
-IMPL_OFFSET(LogicPlayer_m_MoveDisTickCount)
-IMPL_OFFSET(LogicPlayer_m_MoveCountPrePosX)
-IMPL_OFFSET(LogicPlayer_m_MoveCountPrePosY)
-IMPL_OFFSET(LogicPlayer_m_GoldByWild)
-IMPL_OFFSET(LogicPlayer_m_GoldBySoldier)
-IMPL_OFFSET(LogicPlayer_m_GoldByHero)
-IMPL_OFFSET(LogicPlayer_iAllHurtVal)
-IMPL_OFFSET(LogicPlayer_m_CrlTimes)
-IMPL_OFFSET(LogicPlayer_m_iPoisonValue)
-IMPL_OFFSET(LogicPlayer_m_hurtEnemyWild)
-IMPL_OFFSET(LogicPlayer_m_hurtWildValue)
-IMPL_OFFSET(LogicPlayer_m_dStealValue)
-IMPL_OFFSET(LogicPlayer_m_TrunSpeed)
-IMPL_OFFSET(LogicPlayer_m_GreatGuid)
-IMPL_OFFSET(LogicPlayer_m_bRefuseSelectAIType)
-IMPL_OFFSET(LogicPlayer_m_uiLastOperFrameTime)
-IMPL_OFFSET(LogicPlayer_SummonSkillId)
-IMPL_OFFSET(LogicPlayer_m_SummonStartSkillId)
-IMPL_OFFSET(LogicPlayer_m_RankLv)
-IMPL_OFFSET(LogicPlayer_m_bigRankLv)
-IMPL_OFFSET(LogicPlayer_m_rankStar)
-IMPL_OFFSET(LogicPlayer_m_rankNum)
-IMPL_OFFSET(LogicPlayer_m_AutoAttackAI)
-IMPL_OFFSET(LogicPlayer_m_LogicPunish)
-IMPL_OFFSET(LogicPlayer_m_lastReliveTime)
-IMPL_OFFSET(LogicPlayer_m_ReviveTimeMs)
-IMPL_OFFSET(LogicPlayer_m_bFastDie)
-IMPL_OFFSET(LogicPlayer_m_EatFruit)
-IMPL_OFFSET(LogicPlayer_m_KillByFruit)
-IMPL_OFFSET(LogicPlayer_m_GetFruitOnMin)
-IMPL_OFFSET(LogicPlayer_bAllowRelive)
-IMPL_OFFSET(LogicPlayer_m_uiRoleLevel)
-IMPL_OFFSET(LogicPlayer_m_Killer)
-IMPL_OFFSET(LogicPlayer_m_iAddGoldValue)
-IMPL_OFFSET(LogicPlayer_iMaxHurtValue)
-IMPL_OFFSET(LogicPlayer_m_iSkinId)
-IMPL_OFFSET(LogicPlayer_m_iDragonCrystalId)
-IMPL_OFFSET(LogicPlayer_m_uUserMapID)
-IMPL_OFFSET(LogicPlayer_m_DevourData)
-IMPL_OFFSET(LogicPlayer_iLastGiveupEquip)
-IMPL_OFFSET(LogicPlayer_m_ControlSummer)
-IMPL_OFFSET(LogicPlayer_m_vSkillLogicFighter)
-IMPL_OFFSET(LogicPlayer_m_iSurvivalTime)
-IMPL_OFFSET(LogicPlayer_m_iChickenRanking)
-IMPL_OFFSET(LogicPlayer_m_bEmojiBirthday)
-IMPL_OFFSET(LogicPlayer_logAttackSpeed)
-IMPL_OFFSET(LogicPlayer_doAttackSpeed)
-IMPL_OFFSET(LogicPlayer_m_CommATK_RunTimer)
-IMPL_OFFSET(LogicPlayer_m_dCommATKSingTime_Mod)
-IMPL_OFFSET(LogicPlayer_m_CommATKSingTime_LastTimer)
-IMPL_OFFSET(LogicPlayer_m_dCommATKCD_Mod)
-IMPL_OFFSET(LogicPlayer_m_CommATKCD_LastTimer)
-IMPL_OFFSET(LogicPlayer_m_vPlayerDeadInfo)
-IMPL_OFFSET(LogicPlayer_m_PriorEquip)
-IMPL_OFFSET(LogicPlayer_m_RecmendEquips)
-IMPL_OFFSET(LogicPlayer_m_uHeroEnhanceLevel)
-IMPL_OFFSET(LogicPlayer_m_bGhostHasDied)
-IMPL_OFFSET(LogicPlayer_m_v2StarDir)
-IMPL_OFFSET(LogicPlayer_shopData)
-IMPL_OFFSET(LogicPlayer_v2LastCheckPos)
-IMPL_OFFSET(LogicPlayer_lastCheckDirSymbol)
-IMPL_OFFSET(LogicPlayer_lastCheckMoveDir)
-IMPL_OFFSET(LogicPlayer_right)
-IMPL_OFFSET(LogicPlayer_lastFailedAutoAiSpellCast)
-IMPL_OFFSET(LogicPlayer_lastFailedAutoAiSpellCastTime)
-IMPL_OFFSET(LogicPlayer_ownNormalSkillCache)
-IMPL_OFFSET(LogicPlayer_autoTime)
-IMPL_OFFSET(LogicPlayer_m_dXpGrowthDecimal)
-IMPL_OFFSET(LogicPlayer_lEatFruits)
-IMPL_OFFSET(LogicPlayer_bBornedBoss)
-IMPL_OFFSET(LogicPlayer_iPreMutiKillValue)
-IMPL_OFFSET(LogicPlayer_iPreContinueKillValue)
-IMPL_OFFSET(LogicPlayer_iPreKillLingZhu)
-IMPL_OFFSET(LogicPlayer_iPreKillShenGui)
-IMPL_OFFSET(LogicPlayer_iPreShutDown)
-IMPL_OFFSET(LogicPlayer_bCheckFirstBlood)
-IMPL_OFFSET(LogicPlayer_iCurrentResult)
-IMPL_OFFSET(LogicPlayer_iPreGetResultTime)
-IMPL_OFFSET(LogicPlayer_iCurKilledResult)
-IMPL_OFFSET(LogicPlayer_iPreKilledResultTime)
+uintptr_t OFF_ShowFightDataTiny_m_levelOnSixMin = 0;
+uintptr_t OFF_ShowFightDataTiny_m_LevelOnTwelveMin = 0;
+uintptr_t OFF_ShowFightDataTiny_m_EmojiCarryList = 0;
+uintptr_t OFF_ShowFightDataTiny_m_TDFighteData = 0;
+uintptr_t OFF_ShowFightDataTiny_m_DeathInfoList = 0;
+uintptr_t OFF_ShowFightDataTiny_m_DeathAttackInfoDict = 0;
+uintptr_t OFF_ShowFightDataTiny_m_lNotLinkEffect = 0;
+uintptr_t OFF_ShowFightDataTiny_m_dicKeyCancelDis = 0;
+uintptr_t OFF_ShowFightDataTiny_m_KillerCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_FighterDyData = 0;
+uintptr_t OFF_ShowFightDataTiny_m_KillNumCrossTower = 0;
+uintptr_t OFF_ShowFightDataTiny_m_RevengeKillNum = 0;
+uintptr_t OFF_ShowFightDataTiny_m_ExtremeBackHomeNum = 0;
+uintptr_t OFF_ShowFightDataTiny_m_selfBeAttackTIme = 0;
+uintptr_t OFF_ShowFightDataTiny_m_heroNumAroundSelf = 0;
+uintptr_t OFF_ShowFightDataTiny_m_EnemyhurtSelf = 0;
+uintptr_t OFF_ShowFightDataTiny_lastLockGuid = 0;
+uintptr_t OFF_ShowFightDataTiny_bLockGuidChanged = 0;
+uintptr_t OFF_ShowFightDataTiny_m_BackHomeCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_RecoverSuccessfullyCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_ReplaceHeroSkill = 0;
+uintptr_t OFF_ShowFightDataTiny_m_arenaWinVoice = 0;
+uintptr_t OFF_ShowFightDataTiny_m_arenaLoseVoice = 0;
+uintptr_t OFF_ShowFightDataTiny_m_BuyEquipCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_BuyEquipTime = 0;
+uintptr_t OFF_ShowFightDataTiny_m_BannedList = 0;
+uintptr_t OFF_ShowFightDataTiny_m_VoiceBannedList = 0;
+uintptr_t OFF_ShowFightDataTiny_m_ForbidTalkList = 0;
+uintptr_t OFF_ShowFightDataTiny_m_BuyEquipTimes = 0;
+uintptr_t OFF_ShowFightDataTiny_m_GreatIDs = 0;
+uintptr_t OFF_ShowFightDataTiny_m_FighterSplitEnergyBar = 0;
+uintptr_t OFF_ShowFightDataTiny_m_uSurvivalCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_uPlayerCount = 0;
+uintptr_t OFF_ShowFightDataTiny_m_iCampAKill = 0;
+uintptr_t OFF_ShowFightDataTiny_m_iCampBKill = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAGold = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBGold = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAExp = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBExp = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAKillTower = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBKillTower = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAKillLingZhu = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBKillLingZhu = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAKillShenGui = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBKillShenGui = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampAKillLingzhuOnSuperior = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBKillLingzhuOnSuperior = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampASuperiorTime = 0;
+uintptr_t OFF_ShowFightDataTiny_m_CampBSuperiorTime = 0;
+uintptr_t OFF_ShowFightDataTiny_m_iFirstBldTime = 0;
+uintptr_t OFF_ShowFightDataTiny_m_iFirstBldKiller = 0;
 
-// ShowFightDataTiny Fields (BattleStats)
-IMPL_OFFSET(ShowFightDataTiny_m_levelOnSixMin)
-IMPL_OFFSET(ShowFightDataTiny_m_LevelOnTwelveMin)
-IMPL_OFFSET(ShowFightDataTiny_m_EmojiCarryList)
-IMPL_OFFSET(ShowFightDataTiny_m_TDFighteData)
-IMPL_OFFSET(ShowFightDataTiny_m_DeathInfoList)
-IMPL_OFFSET(ShowFightDataTiny_m_DeathAttackInfoDict)
-IMPL_OFFSET(ShowFightDataTiny_m_lNotLinkEffect)
-IMPL_OFFSET(ShowFightDataTiny_m_dicKeyCancelDis)
-IMPL_OFFSET(ShowFightDataTiny_m_KillerCount)
-IMPL_OFFSET(ShowFightDataTiny_m_FighterDyData)
-IMPL_OFFSET(ShowFightDataTiny_m_KillNumCrossTower)
-IMPL_OFFSET(ShowFightDataTiny_m_RevengeKillNum)
-IMPL_OFFSET(ShowFightDataTiny_m_ExtremeBackHomeNum)
-IMPL_OFFSET(ShowFightDataTiny_m_selfBeAttackTIme)
-IMPL_OFFSET(ShowFightDataTiny_m_heroNumAroundSelf)
-IMPL_OFFSET(ShowFightDataTiny_m_EnemyhurtSelf)
-IMPL_OFFSET(ShowFightDataTiny_lastLockGuid)
-IMPL_OFFSET(ShowFightDataTiny_bLockGuidChanged)
-IMPL_OFFSET(ShowFightDataTiny_m_BackHomeCount)
-IMPL_OFFSET(ShowFightDataTiny_m_RecoverSuccessfullyCount)
-IMPL_OFFSET(ShowFightDataTiny_m_ReplaceHeroSkill)
-IMPL_OFFSET(ShowFightDataTiny_m_arenaWinVoice)
-IMPL_OFFSET(ShowFightDataTiny_m_arenaLoseVoice)
-IMPL_OFFSET(ShowFightDataTiny_m_BuyEquipCount)
-IMPL_OFFSET(ShowFightDataTiny_m_BuyEquipTime)
-IMPL_OFFSET(ShowFightDataTiny_m_BannedList)
-IMPL_OFFSET(ShowFightDataTiny_m_VoiceBannedList)
-IMPL_OFFSET(ShowFightDataTiny_m_ForbidTalkList)
-IMPL_OFFSET(ShowFightDataTiny_m_BuyEquipTimes)
-IMPL_OFFSET(ShowFightDataTiny_m_GreatIDs)
-IMPL_OFFSET(ShowFightDataTiny_m_FighterSplitEnergyBar)
-IMPL_OFFSET(ShowFightDataTiny_m_uSurvivalCount)
-IMPL_OFFSET(ShowFightDataTiny_m_uPlayerCount)
-IMPL_OFFSET(ShowFightDataTiny_m_iCampAKill)
-IMPL_OFFSET(ShowFightDataTiny_m_iCampBKill)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAGold)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBGold)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAExp)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBExp)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAKillTower)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBKillTower)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAKillLingZhu)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBKillLingZhu)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAKillShenGui)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBKillShenGui)
-IMPL_OFFSET(ShowFightDataTiny_m_CampAKillLingzhuOnSuperior)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBKillLingzhuOnSuperior)
-IMPL_OFFSET(ShowFightDataTiny_m_CampASuperiorTime)
-IMPL_OFFSET(ShowFightDataTiny_m_CampBSuperiorTime)
-IMPL_OFFSET(ShowFightDataTiny_m_iFirstBldTime)
-IMPL_OFFSET(ShowFightDataTiny_m_iFirstBldKiller)
+uintptr_t OFF_BattleData_heroInfoList = 0;
 
-// BattleData Fields
-IMPL_OFFSET(BattleData_heroInfoList)
+uintptr_t OFF_FightHeroInfo_m_KillNum = 0;
+uintptr_t OFF_FightHeroInfo_m_DeadNum = 0;
+uintptr_t OFF_FightHeroInfo_m_AssistNum = 0;
+uintptr_t OFF_FightHeroInfo_m_Gold = 0;
+uintptr_t OFF_FightHeroInfo_m_TotalGold = 0;
+uintptr_t OFF_FightHeroInfo_m_PlayerName = 0;
+uintptr_t OFF_FightHeroInfo_m_uGuid = 0;
+uintptr_t OFF_FightHeroInfo_m_CampType = 0;
 
-// FightHeroInfo Fields
-IMPL_OFFSET(FightHeroInfo_m_KillNum)
-IMPL_OFFSET(FightHeroInfo_m_DeadNum)
-IMPL_OFFSET(FightHeroInfo_m_AssistNum)
-IMPL_OFFSET(FightHeroInfo_m_Gold)
-IMPL_OFFSET(FightHeroInfo_m_TotalGold)
-IMPL_OFFSET(FightHeroInfo_m_PlayerName)
-IMPL_OFFSET(FightHeroInfo_m_uGuid)
-IMPL_OFFSET(FightHeroInfo_m_CampType)
+uintptr_t OFF_SystemData_RoomData_lUid = 0;
+uintptr_t OFF_SystemData_RoomData_bUid = 0;
+uintptr_t OFF_SystemData_RoomData_iCamp = 0;
+uintptr_t OFF_SystemData_RoomData_iPos = 0;
+uintptr_t OFF_SystemData_RoomData__sName = 0;
+uintptr_t OFF_SystemData_RoomData_heroid = 0;
+uintptr_t OFF_SystemData_RoomData_heroskin = 0;
+uintptr_t OFF_SystemData_RoomData_summonSkillId = 0;
+uintptr_t OFF_SystemData_RoomData_runeId = 0;
+uintptr_t OFF_SystemData_RoomData_runeLv = 0;
+uintptr_t OFF_SystemData_RoomData_uiRankLevel = 0;
+uintptr_t OFF_SystemData_RoomData_iMythPoint = 0;
+uintptr_t OFF_SystemData_RoomData_uiZoneId = 0;
+uintptr_t OFF_SystemData_RoomData_banHero = 0;
+uintptr_t OFF_SystemData_RoomData_bRobot = 0;
+uintptr_t OFF_SystemData_RoomData_bNewPlayer = 0;
+uintptr_t OFF_SystemData_RoomData_uiHeroIDChoose = 0;
+uintptr_t OFF_SystemData_RoomData_bAutoConditionNew = 0;
+uintptr_t OFF_SystemData_RoomData_bShowSeasonAchieve = 0;
+uintptr_t OFF_SystemData_RoomData_iStyleBoardId = 0;
+uintptr_t OFF_SystemData_RoomData_iMatchEffectId = 0;
+uintptr_t OFF_SystemData_RoomData_iDayBreakNo1Count = 0;
+uintptr_t OFF_SystemData_RoomData_bAutoReadySelect = 0;
+uintptr_t OFF_SystemData_RoomData_headID = 0;
+uintptr_t OFF_SystemData_RoomData_uiSex = 0;
+uintptr_t OFF_SystemData_RoomData_country = 0;
+uintptr_t OFF_SystemData_RoomData_facePath = 0;
+uintptr_t OFF_SystemData_RoomData_faceBorder = 0;
+uintptr_t OFF_SystemData_RoomData_bStarVip = 0;
+uintptr_t OFF_SystemData_RoomData_bMCStarVip = 0;
+uintptr_t OFF_SystemData_RoomData_bMCStarVipPlus = 0;
+uintptr_t OFF_SystemData_RoomData_ulRoomID = 0;
+uintptr_t OFF_SystemData_RoomData_iConBlackRoomId = 0;
+uintptr_t OFF_SystemData_RoomData_uiBattlePlayerType = 0;
+uintptr_t OFF_SystemData_RoomData_sThisLoginCountry = 0;
+uintptr_t OFF_SystemData_RoomData_sCreateRoleCountry = 0;
+uintptr_t OFF_SystemData_RoomData_uiLanguage = 0;
+uintptr_t OFF_SystemData_RoomData_bIsOpenLive = 0;
+uintptr_t OFF_SystemData_RoomData_iTeamId = 0;
+uintptr_t OFF_SystemData_RoomData_iTeamNationId = 0;
+uintptr_t OFF_SystemData_RoomData__steamName = 0;
+uintptr_t OFF_SystemData_RoomData__steamSimpleName = 0;
+uintptr_t OFF_SystemData_RoomData_iCertify = 0;
+uintptr_t OFF_SystemData_RoomData_uiPVPRank = 0;
+uintptr_t OFF_SystemData_RoomData_bRankReview = 0;
+uintptr_t OFF_SystemData_RoomData_iElo = 0;
+uintptr_t OFF_SystemData_RoomData_uiRoleLevel = 0;
+uintptr_t OFF_SystemData_RoomData_iRoad = 0;
+uintptr_t OFF_SystemData_RoomData_uiSkinSource = 0;
+uintptr_t OFF_SystemData_RoomData_iFighterType = 0;
+uintptr_t OFF_SystemData_RoomData_iWorldCupSupportCountry = 0;
+uintptr_t OFF_SystemData_RoomData_iHeroLevel = 0;
+uintptr_t OFF_SystemData_RoomData_iHeroSubLevel = 0;
+uintptr_t OFF_SystemData_RoomData_iHeroPowerLevel = 0;
+uintptr_t OFF_SystemData_RoomData_iActCamp = 0;
+uintptr_t OFF_SystemData_RoomData_mHeroMission = 0;
+uintptr_t OFF_SystemData_RoomData_mSkinPaint = 0;
+uintptr_t OFF_SystemData_RoomData_sClientVersion = 0;
+uintptr_t OFF_SystemData_RoomData_uiHolyStatue = 0;
+uintptr_t OFF_SystemData_RoomData_uiKamon = 0;
+uintptr_t OFF_SystemData_RoomData_uiUserMapID = 0;
+uintptr_t OFF_SystemData_RoomData_iSurviveRank = 0;
+uintptr_t OFF_SystemData_RoomData_iDefenceRankID = 0;
+uintptr_t OFF_SystemData_RoomData_iLeagueWCNum = 0;
+uintptr_t OFF_SystemData_RoomData_iLeagueFCNum = 0;
+uintptr_t OFF_SystemData_RoomData_iMPLCertifyTime = 0;
+uintptr_t OFF_SystemData_RoomData_iMPLCertifyID = 0;
+uintptr_t OFF_SystemData_RoomData_iHeroUseCount = 0;
+uintptr_t OFF_SystemData_RoomData_bMythEvaled = 0;
+uintptr_t OFF_SystemData_RoomData_iDefenceFlag = 0;
+uintptr_t OFF_SystemData_RoomData_iDefenPoint = 0;
+uintptr_t OFF_SystemData_RoomData_iDefenceMap = 0;
+uintptr_t OFF_SystemData_RoomData_iAIType = 0;
+uintptr_t OFF_SystemData_RoomData_iAISeed = 0;
+uintptr_t OFF_SystemData_RoomData_sAiName = 0;
+uintptr_t OFF_SystemData_RoomData_iWarmValue = 0;
+uintptr_t OFF_SystemData_RoomData_uiAircraftIDChooose = 0;
+uintptr_t OFF_SystemData_RoomData_uiHeroSkinIDChoose = 0;
+uintptr_t OFF_SystemData_RoomData_uiMapIDChoose = 0;
+uintptr_t OFF_SystemData_RoomData_uiMapSkinIDChoose = 0;
+uintptr_t OFF_SystemData_RoomData_uiDefenceRankScore = 0;
+uintptr_t OFF_SystemData_RoomData_bBanChat = 0;
+uintptr_t OFF_SystemData_RoomData_iChatBanFinishTime = 0;
+uintptr_t OFF_SystemData_RoomData_iChatBanBattleNum = 0;
+uintptr_t OFF_SystemData_RoomData_mapTalentTree = 0;
+uintptr_t OFF_SystemData_RoomData_mRuneSkill2023 = 0;
+uintptr_t OFF_SystemData_RoomData_skinlist = 0;
+uintptr_t OFF_SystemData_RoomData_vCanSelectHero = 0;
+uintptr_t OFF_SystemData_RoomData_vCanPickHero = 0;
+uintptr_t OFF_SystemData_RoomData_lsEffectSkins = 0;
+uintptr_t OFF_SystemData_RoomData_lsComEffSkins = 0;
+uintptr_t OFF_SystemData_RoomData_vMissions = 0;
+uintptr_t OFF_SystemData_RoomData_vTitle = 0;
+uintptr_t OFF_SystemData_RoomData_vEmoji = 0;
+uintptr_t OFF_SystemData_RoomData_vItemBuff = 0;
+uintptr_t OFF_SystemData_RoomData_vMapPaint = 0;
+uintptr_t OFF_SystemData_RoomData_mapBattleAttr = 0;
+uintptr_t OFF_SystemData_RoomData_vFastChat = 0;
+uintptr_t OFF_SystemData_RoomData_vWantSelectHero = 0;
+uintptr_t OFF_SystemData_RoomData_bForbidUseFaceName = 0;
+uintptr_t OFF_SystemData_RoomData_sClientIp = 0;
+uintptr_t OFF_SystemData_RoomData_iRoomOrder = 0;
+uintptr_t OFF_SystemData_RoomData_vRougeTotalSkill = 0;
+uintptr_t OFF_SystemData_RoomData_vRougeOMGSkill = 0;
+uintptr_t OFF_SystemData_RoomData_vRecommendEquipList = 0;
+uintptr_t OFF_SystemData_RoomData_sRecommendEquipVersion = 0;
+uintptr_t OFF_SystemData_RoomData_vPingParamDetail = 0;
+uintptr_t OFF_SystemData_RoomData_uiPlayerPing = 0;
+uintptr_t OFF_SystemData_RoomData_mSkinRankSeasonTag = 0;
+uintptr_t OFF_SystemData_RoomData_mSkinNumTag = 0;
+uintptr_t OFF_SystemData_RoomData_bFullSkillaber = 0;
+uintptr_t OFF_SystemData_RoomData_uiCommanderSkinAttackEffect = 0;
+uintptr_t OFF_SystemData_RoomData_uiDailyFreeRandomNum = 0;
+uintptr_t OFF_SystemData_RoomData_bIllustrateCornerEffectClose = 0;
+uintptr_t OFF_SystemData_RoomData_bTagedBackOf2022 = 0;
+uintptr_t OFF_SystemData_RoomData_iTapConflictTipNum = 0;
+uintptr_t OFF_SystemData_RoomData_iNameShowType = 0;
+uintptr_t OFF_SystemData_RoomData_bOpenHighLight = 0;
+uintptr_t OFF_SystemData_RoomData_mMCBanPickCommander = 0;
+uintptr_t OFF_SystemData_RoomData_vForbidBanCommander = 0;
+uintptr_t OFF_SystemData_RoomData_iTeamLevel = 0;
+uintptr_t OFF_SystemData_RoomData_vAdditionalHero = 0;
+uintptr_t OFF_SystemData_RoomData_uiDisorderPublicHeroScore = 0;
+uintptr_t OFF_SystemData_RoomData_bPlayerBirthdayToday = 0;
+uintptr_t OFF_SystemData_RoomData_iTeamHeadId = 0;
+uintptr_t OFF_SystemData_RoomData_mapHeroBattleNum = 0;
+uintptr_t OFF_SystemData_RoomData_vCurSeasonRealRoadInfo = 0;
+uintptr_t OFF_SystemData_RoomData_vCultivateRoadShow = 0;
+uintptr_t OFF_SystemData_RoomData_uiCommanderLevel = 0;
+uintptr_t OFF_SystemData_RoomData_bOpenSubRankID = 0;
+uintptr_t OFF_SystemData_RoomData_iSubRankID = 0;
+uintptr_t OFF_SystemData_RoomData_iSingleLv = 0;
+uintptr_t OFF_SystemData_RoomData_stArenaMatchBattleInfo = 0;
+uintptr_t OFF_SystemData_RoomData_stArenaMatchShowInfo = 0;
+uintptr_t OFF_SystemData_RoomData_stSkinAttach = 0;
+uintptr_t OFF_SystemData_RoomData_iMatchTeamId = 0;
+uintptr_t OFF_SystemData_RoomData_iFlowBackTYpe = 0;
+uintptr_t OFF_SystemData_RoomData_bRoadAdditionCover = 0;
+uintptr_t OFF_SystemData_RoomData_iRoadAdditionCoverTimes = 0;
+uintptr_t OFF_SystemData_RoomData_iRoomPos = 0;
+uintptr_t OFF_SystemData_RoomData_stEasterEggInfo = 0;
+uintptr_t OFF_SystemData_RoomData_sMatchTeamName = 0;
+uintptr_t OFF_SystemData_RoomData_iMatchTeamFaceId = 0;
 
-// SystemData.RoomData Fields
-IMPL_OFFSET(SystemData_RoomData_lUid)
-IMPL_OFFSET(SystemData_RoomData_bUid)
-IMPL_OFFSET(SystemData_RoomData_iCamp)
-IMPL_OFFSET(SystemData_RoomData_iPos)
-IMPL_OFFSET(SystemData_RoomData__sName)
-IMPL_OFFSET(SystemData_RoomData_heroid)
-IMPL_OFFSET(SystemData_RoomData_heroskin)
-IMPL_OFFSET(SystemData_RoomData_summonSkillId)
-IMPL_OFFSET(SystemData_RoomData_runeId)
-IMPL_OFFSET(SystemData_RoomData_runeLv)
-IMPL_OFFSET(SystemData_RoomData_uiRankLevel)
-IMPL_OFFSET(SystemData_RoomData_iMythPoint)
-IMPL_OFFSET(SystemData_RoomData_uiZoneId)
-IMPL_OFFSET(SystemData_RoomData_banHero)
-IMPL_OFFSET(SystemData_RoomData_bRobot)
-IMPL_OFFSET(SystemData_RoomData_bNewPlayer)
-IMPL_OFFSET(SystemData_RoomData_uiHeroIDChoose)
-IMPL_OFFSET(SystemData_RoomData_bAutoConditionNew)
-IMPL_OFFSET(SystemData_RoomData_bShowSeasonAchieve)
-IMPL_OFFSET(SystemData_RoomData_iStyleBoardId)
-IMPL_OFFSET(SystemData_RoomData_iMatchEffectId)
-IMPL_OFFSET(SystemData_RoomData_iDayBreakNo1Count)
-IMPL_OFFSET(SystemData_RoomData_bAutoReadySelect)
-IMPL_OFFSET(SystemData_RoomData_headID)
-IMPL_OFFSET(SystemData_RoomData_uiSex)
-IMPL_OFFSET(SystemData_RoomData_country)
-IMPL_OFFSET(SystemData_RoomData_facePath)
-IMPL_OFFSET(SystemData_RoomData_faceBorder)
-IMPL_OFFSET(SystemData_RoomData_bStarVip)
-IMPL_OFFSET(SystemData_RoomData_bMCStarVip)
-IMPL_OFFSET(SystemData_RoomData_bMCStarVipPlus)
-IMPL_OFFSET(SystemData_RoomData_ulRoomID)
-IMPL_OFFSET(SystemData_RoomData_iConBlackRoomId)
-IMPL_OFFSET(SystemData_RoomData_uiBattlePlayerType)
-IMPL_OFFSET(SystemData_RoomData_sThisLoginCountry)
-IMPL_OFFSET(SystemData_RoomData_sCreateRoleCountry)
-IMPL_OFFSET(SystemData_RoomData_uiLanguage)
-IMPL_OFFSET(SystemData_RoomData_bIsOpenLive)
-IMPL_OFFSET(SystemData_RoomData_iTeamId)
-IMPL_OFFSET(SystemData_RoomData_iTeamNationId)
-IMPL_OFFSET(SystemData_RoomData__steamName)
-IMPL_OFFSET(SystemData_RoomData__steamSimpleName)
-IMPL_OFFSET(SystemData_RoomData_iCertify)
-IMPL_OFFSET(SystemData_RoomData_uiPVPRank)
-IMPL_OFFSET(SystemData_RoomData_bRankReview)
-IMPL_OFFSET(SystemData_RoomData_iElo)
-IMPL_OFFSET(SystemData_RoomData_uiRoleLevel)
-IMPL_OFFSET(SystemData_RoomData_iRoad)
-IMPL_OFFSET(SystemData_RoomData_uiSkinSource)
-IMPL_OFFSET(SystemData_RoomData_iFighterType)
-IMPL_OFFSET(SystemData_RoomData_iWorldCupSupportCountry)
-IMPL_OFFSET(SystemData_RoomData_iHeroLevel)
-IMPL_OFFSET(SystemData_RoomData_iHeroSubLevel)
-IMPL_OFFSET(SystemData_RoomData_iHeroPowerLevel)
-IMPL_OFFSET(SystemData_RoomData_iActCamp)
-IMPL_OFFSET(SystemData_RoomData_mHeroMission)
-IMPL_OFFSET(SystemData_RoomData_mSkinPaint)
-IMPL_OFFSET(SystemData_RoomData_sClientVersion)
-IMPL_OFFSET(SystemData_RoomData_uiHolyStatue)
-IMPL_OFFSET(SystemData_RoomData_uiKamon)
-IMPL_OFFSET(SystemData_RoomData_uiUserMapID)
-IMPL_OFFSET(SystemData_RoomData_iSurviveRank)
-IMPL_OFFSET(SystemData_RoomData_iDefenceRankID)
-IMPL_OFFSET(SystemData_RoomData_iLeagueWCNum)
-IMPL_OFFSET(SystemData_RoomData_iLeagueFCNum)
-IMPL_OFFSET(SystemData_RoomData_iMPLCertifyTime)
-IMPL_OFFSET(SystemData_RoomData_iMPLCertifyID)
-IMPL_OFFSET(SystemData_RoomData_iHeroUseCount)
-IMPL_OFFSET(SystemData_RoomData_bMythEvaled)
-IMPL_OFFSET(SystemData_RoomData_iDefenceFlag)
-IMPL_OFFSET(SystemData_RoomData_iDefenPoint)
-IMPL_OFFSET(SystemData_RoomData_iDefenceMap)
-IMPL_OFFSET(SystemData_RoomData_iAIType)
-IMPL_OFFSET(SystemData_RoomData_iAISeed)
-IMPL_OFFSET(SystemData_RoomData_sAiName)
-IMPL_OFFSET(SystemData_RoomData_iWarmValue)
-IMPL_OFFSET(SystemData_RoomData_uiAircraftIDChooose)
-IMPL_OFFSET(SystemData_RoomData_uiHeroSkinIDChoose)
-IMPL_OFFSET(SystemData_RoomData_uiMapIDChoose)
-IMPL_OFFSET(SystemData_RoomData_uiMapSkinIDChoose)
-IMPL_OFFSET(SystemData_RoomData_uiDefenceRankScore)
-IMPL_OFFSET(SystemData_RoomData_bBanChat)
-IMPL_OFFSET(SystemData_RoomData_iChatBanFinishTime)
-IMPL_OFFSET(SystemData_RoomData_iChatBanBattleNum)
-IMPL_OFFSET(SystemData_RoomData_mapTalentTree)
-IMPL_OFFSET(SystemData_RoomData_mRuneSkill2023)
-IMPL_OFFSET(SystemData_RoomData_skinlist)
-IMPL_OFFSET(SystemData_RoomData_vCanSelectHero)
-IMPL_OFFSET(SystemData_RoomData_vCanPickHero)
-IMPL_OFFSET(SystemData_RoomData_lsEffectSkins)
-IMPL_OFFSET(SystemData_RoomData_lsComEffSkins)
-IMPL_OFFSET(SystemData_RoomData_vMissions)
-IMPL_OFFSET(SystemData_RoomData_vTitle)
-IMPL_OFFSET(SystemData_RoomData_vEmoji)
-IMPL_OFFSET(SystemData_RoomData_vItemBuff)
-IMPL_OFFSET(SystemData_RoomData_vMapPaint)
-IMPL_OFFSET(SystemData_RoomData_mapBattleAttr)
-IMPL_OFFSET(SystemData_RoomData_vFastChat)
-IMPL_OFFSET(SystemData_RoomData_vWantSelectHero)
-IMPL_OFFSET(SystemData_RoomData_bForbidUseFaceName)
-IMPL_OFFSET(SystemData_RoomData_sClientIp)
-IMPL_OFFSET(SystemData_RoomData_iRoomOrder)
-IMPL_OFFSET(SystemData_RoomData_vRougeTotalSkill)
-IMPL_OFFSET(SystemData_RoomData_vRougeOMGSkill)
-IMPL_OFFSET(SystemData_RoomData_vRecommendEquipList)
-IMPL_OFFSET(SystemData_RoomData_sRecommendEquipVersion)
-IMPL_OFFSET(SystemData_RoomData_vPingParamDetail)
-IMPL_OFFSET(SystemData_RoomData_uiPlayerPing)
-IMPL_OFFSET(SystemData_RoomData_mSkinRankSeasonTag)
-IMPL_OFFSET(SystemData_RoomData_mSkinNumTag)
-IMPL_OFFSET(SystemData_RoomData_bFullSkillaber)
-IMPL_OFFSET(SystemData_RoomData_uiCommanderSkinAttackEffect)
-IMPL_OFFSET(SystemData_RoomData_uiDailyFreeRandomNum)
-IMPL_OFFSET(SystemData_RoomData_bIllustrateCornerEffectClose)
-IMPL_OFFSET(SystemData_RoomData_bTagedBackOf2022)
-IMPL_OFFSET(SystemData_RoomData_iTapConflictTipNum)
-IMPL_OFFSET(SystemData_RoomData_iNameShowType)
-IMPL_OFFSET(SystemData_RoomData_bOpenHighLight)
-IMPL_OFFSET(SystemData_RoomData_mMCBanPickCommander)
-IMPL_OFFSET(SystemData_RoomData_vForbidBanCommander)
-IMPL_OFFSET(SystemData_RoomData_iTeamLevel)
-IMPL_OFFSET(SystemData_RoomData_vAdditionalHero)
-IMPL_OFFSET(SystemData_RoomData_uiDisorderPublicHeroScore)
-IMPL_OFFSET(SystemData_RoomData_bPlayerBirthdayToday)
-IMPL_OFFSET(SystemData_RoomData_iTeamHeadId)
-IMPL_OFFSET(SystemData_RoomData_mapHeroBattleNum)
-IMPL_OFFSET(SystemData_RoomData_vCurSeasonRealRoadInfo)
-IMPL_OFFSET(SystemData_RoomData_vCultivateRoadShow)
-IMPL_OFFSET(SystemData_RoomData_uiCommanderLevel)
-IMPL_OFFSET(SystemData_RoomData_bOpenSubRankID)
-IMPL_OFFSET(SystemData_RoomData_iSubRankID)
-IMPL_OFFSET(SystemData_RoomData_iSingleLv)
-IMPL_OFFSET(SystemData_RoomData_stArenaMatchBattleInfo)
-IMPL_OFFSET(SystemData_RoomData_stArenaMatchShowInfo)
-IMPL_OFFSET(SystemData_RoomData_stSkinAttach)
-IMPL_OFFSET(SystemData_RoomData_iMatchTeamId)
-IMPL_OFFSET(SystemData_RoomData_iFlowBackTYpe)
-IMPL_OFFSET(SystemData_RoomData_bRoadAdditionCover)
-IMPL_OFFSET(SystemData_RoomData_iRoadAdditionCoverTimes)
-IMPL_OFFSET(SystemData_RoomData_iRoomPos)
-IMPL_OFFSET(SystemData_RoomData_stEasterEggInfo)
-IMPL_OFFSET(SystemData_RoomData_sMatchTeamName)
-IMPL_OFFSET(SystemData_RoomData_iMatchTeamFaceId)
-
-// GameClass.h Fields
-IMPL_OFFSET(BattleManager_m_LocalPlayerShow)
-IMPL_OFFSET(BattleManager_m_ShowPlayers)
-IMPL_OFFSET(BattleManager_m_ShowMonsters)
-IMPL_OFFSET(BattleManager_m_dicPlayerShow)
-IMPL_OFFSET(BattleManager_m_dicMonsterShow)
-IMPL_OFFSET(BattleBridge_bStartBattle)
-IMPL_OFFSET(BattleManager_m_LocalShowPlayers)
-IMPL_OFFSET(ShowPlayer_m_bInBattle)
-IMPL_OFFSET(ShowEntity__Position)
-IMPL_OFFSET(ShowEntity_bShowEntityLayer)
-IMPL_OFFSET(ShowEntity_m_OwnSkillComp)
-IMPL_OFFSET(ShowEntity_m_RoleName)
-IMPL_OFFSET(ShowEntity__MoveDir)
-IMPL_OFFSET(EntityBase_bMove)
-IMPL_OFFSET(EntityBase_m_ID)
-IMPL_OFFSET(EntityBase_m_Level)
-IMPL_OFFSET(EntityBase_m_bDeath)
-IMPL_OFFSET(EntityBase_m_IsDeathProgress)
-IMPL_OFFSET(EntityBase_m_bSameCampType)
-IMPL_OFFSET(EntityBase_m_Hp)
-IMPL_OFFSET(EntityBase_m_HpMax)
-IMPL_OFFSET(EntityBase_m_EntityCampType)
-IMPL_OFFSET(EntityBase_m_iType)
-IMPL_OFFSET(EntityBase_canSight)
-IMPL_OFFSET(EntityBase_m_uGuid)
-IMPL_OFFSET(ShowPlayer_m_HeroName)
-IMPL_OFFSET(LogicFighter_m_SkillComp)
-IMPL_OFFSET(UIRankHero_banList)
-IMPL_OFFSET(UIRankHero_pickList)
-IMPL_OFFSET(UIRankHero_banOrder)
-IMPL_OFFSET(UIRankHero_pickOrder)
-IMPL_OFFSET(UIRankHero__startBanTime)
-IMPL_OFFSET(UIRankHero__startSelectTime)
-IMPL_OFFSET(UIRankHero_iBanTimeSpan)
-IMPL_OFFSET(UIRankHero_iPickTimeSpan)
-IMPL_OFFSET(UIRankHero_ChangeShow_iSelfHero)
-IMPL_OFFSET(BattlePlayerInfo_lUid)
-IMPL_OFFSET(BattlePlayerInfo_uiSelHero)
-IMPL_OFFSET(BattlePlayerInfo_uiSkinId)
-IMPL_OFFSET(SystemData_m_uiID)
-
-// Init Helper
-#define INIT_OFFSET(name, image, namesp, klass, field) \
-    OFF_##name = Il2CppGetFieldOffset(image, namesp, klass, field);
-
-#define INIT_STATIC_OFFSET(name, image, namesp, klass, field) \
-    OFF_##name = Il2CppGetStaticFieldOffset(image, namesp, klass, field);
+uintptr_t OFF_BattleManager_m_LocalPlayerShow = 0;
+uintptr_t OFF_BattleManager_m_ShowPlayers = 0;
+uintptr_t OFF_BattleManager_m_ShowMonsters = 0;
+uintptr_t OFF_BattleManager_m_dicPlayerShow = 0;
+uintptr_t OFF_BattleManager_m_dicMonsterShow = 0;
+uintptr_t OFF_BattleBridge_bStartBattle = 0;
+uintptr_t OFF_BattleManager_m_LocalShowPlayers = 0;
+uintptr_t OFF_ShowPlayer_m_bInBattle = 0;
+uintptr_t OFF_ShowEntity__Position = 0;
+uintptr_t OFF_ShowEntity_bShowEntityLayer = 0;
+uintptr_t OFF_ShowEntity_m_OwnSkillComp = 0;
+uintptr_t OFF_ShowEntity_m_RoleName = 0;
+uintptr_t OFF_ShowEntity__MoveDir = 0;
+uintptr_t OFF_EntityBase_bMove = 0;
+uintptr_t OFF_EntityBase_m_ID = 0;
+uintptr_t OFF_EntityBase_m_Level = 0;
+uintptr_t OFF_EntityBase_m_bDeath = 0;
+uintptr_t OFF_EntityBase_m_IsDeathProgress = 0;
+uintptr_t OFF_EntityBase_m_bSameCampType = 0;
+uintptr_t OFF_EntityBase_m_Hp = 0;
+uintptr_t OFF_EntityBase_m_HpMax = 0;
+uintptr_t OFF_EntityBase_m_EntityCampType = 0;
+uintptr_t OFF_EntityBase_m_iType = 0;
+uintptr_t OFF_EntityBase_canSight = 0;
+uintptr_t OFF_EntityBase_m_uGuid = 0;
+uintptr_t OFF_ShowPlayer_m_HeroName = 0;
+uintptr_t OFF_LogicFighter_m_SkillComp = 0;
+uintptr_t OFF_UIRankHero_banList = 0;
+uintptr_t OFF_UIRankHero_pickList = 0;
+uintptr_t OFF_UIRankHero_banOrder = 0;
+uintptr_t OFF_UIRankHero_pickOrder = 0;
+uintptr_t OFF_UIRankHero__startBanTime = 0;
+uintptr_t OFF_UIRankHero__startSelectTime = 0;
+uintptr_t OFF_UIRankHero_iBanTimeSpan = 0;
+uintptr_t OFF_UIRankHero_iPickTimeSpan = 0;
+uintptr_t OFF_UIRankHero_ChangeShow_iSelfHero = 0;
+uintptr_t OFF_BattlePlayerInfo_lUid = 0;
+uintptr_t OFF_BattlePlayerInfo_uiSelHero = 0;
+uintptr_t OFF_BattlePlayerInfo_uiSkinId = 0;
+uintptr_t OFF_SystemData_m_uiID = 0;
 
 void InitDynamicOffsets() {
     // LogicPlayer (Base: LogicFighter -> EntityBase)
-    INIT_OFFSET(LogicPlayer_m_ID, "Assembly-CSharp.dll", "Battle", "EntityBase", "m_ID")
+    OFF_LogicPlayer_m_ID = Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", "EntityBase", "m_ID");
+
+    // Most LogicPlayer fields seem to be in LogicPlayer directly or LogicFighter
+    // Assuming "Battle.LogicPlayer" based on LogicPlayer.h context, though dump.cs wasn't fully processed for inheritance depth.
+    // Given the previous defines used LogicPlayer_... I will assume they are on LogicPlayer or inherited.
+    // If Il2CppGetFieldOffset handles inheritance (which it usually does if the field is found in parent), this is fine.
+    // However, namespaze is likely "Battle".
 
     const char* battle = "Battle";
     const char* lp = "LogicPlayer";
     const char* image = "Assembly-CSharp.dll";
 
-    INIT_OFFSET(LogicPlayer_m_LoigcBezierBullet, image, battle, lp, "m_LoigcBezierBullet")
-    INIT_OFFSET(LogicPlayer_moveControllers, image, battle, lp, "moveControllers")
-    INIT_OFFSET(LogicPlayer_totalGold, image, battle, lp, "totalGold")
-    INIT_OFFSET(LogicPlayer_m_copyHurtCount, image, battle, lp, "m_copyHurtCount")
-    INIT_OFFSET(LogicPlayer_m_HurtTotalValue, image, battle, lp, "m_HurtTotalValue")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroValue, image, battle, lp, "m_HurtHeroValue")
-    INIT_OFFSET(LogicPlayer_m_ATKHero, image, battle, lp, "m_ATKHero")
-    INIT_OFFSET(LogicPlayer_m_iCommonAttackHeroCount, image, battle, lp, "m_iCommonAttackHeroCount")
-    INIT_OFFSET(LogicPlayer_m_iNormalSkillHeroCount, image, battle, lp, "m_iNormalSkillHeroCount")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroReel, image, battle, lp, "m_HurtHeroReel")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroAD, image, battle, lp, "m_HurtHeroAD")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroAP, image, battle, lp, "m_HurtHeroAP")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroByEquip, image, battle, lp, "m_HurtHeroByEquip")
-    INIT_OFFSET(LogicPlayer_m_HurtHeroByEmblem, image, battle, lp, "m_HurtHeroByEmblem")
-    INIT_OFFSET(LogicPlayer_m_HurtTowerValue, image, battle, lp, "m_HurtTowerValue")
-    INIT_OFFSET(LogicPlayer_m_HurtSoliderValue, image, battle, lp, "m_HurtSoliderValue")
-    INIT_OFFSET(LogicPlayer_m_iInjuredShield, image, battle, lp, "m_iInjuredShield")
-    INIT_OFFSET(LogicPlayer_m_InjuredValue, image, battle, lp, "m_InjuredValue")
-    INIT_OFFSET(LogicPlayer_m_InjuredTower, image, battle, lp, "m_InjuredTower")
-    INIT_OFFSET(LogicPlayer_m_InjuredTotal, image, battle, lp, "m_InjuredTotal")
-    INIT_OFFSET(LogicPlayer_m_InjuredSoldier, image, battle, lp, "m_InjuredSoldier")
-    INIT_OFFSET(LogicPlayer_m_InjuredAD, image, battle, lp, "m_InjuredAD")
-    INIT_OFFSET(LogicPlayer_m_InjuredAP, image, battle, lp, "m_InjuredAP")
-    INIT_OFFSET(LogicPlayer_m_InjuredReal, image, battle, lp, "m_InjuredReal")
-    INIT_OFFSET(LogicPlayer_m_RealInjuredVal, image, battle, lp, "m_RealInjuredVal")
-    INIT_OFFSET(LogicPlayer_m_iBeCuredValue, image, battle, lp, "m_iBeCuredValue")
-    INIT_OFFSET(LogicPlayer_m_CureHero, image, battle, lp, "m_CureHero")
-    INIT_OFFSET(LogicPlayer_m_CureTeammate, image, battle, lp, "m_CureTeammate")
-    INIT_OFFSET(LogicPlayer_m_CureSelf, image, battle, lp, "m_CureSelf")
-    INIT_OFFSET(LogicPlayer_m_CureHeroJustSkill, image, battle, lp, "m_CureHeroJustSkill")
-    INIT_OFFSET(LogicPlayer_m_iSkillUseCount, image, battle, lp, "m_iSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iCommonAtkUseCount, image, battle, lp, "m_iCommonAtkUseCount")
-    INIT_OFFSET(LogicPlayer_m_iCommonAtkUseCount_AllSkillCD, image, battle, lp, "m_iCommonAtkUseCount_AllSkillCD")
-    INIT_OFFSET(LogicPlayer_m_iNormalSkillUseCount, image, battle, lp, "m_iNormalSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iNormalSkillHasDraggedCount, image, battle, lp, "m_iNormalSkillHasDraggedCount")
-    INIT_OFFSET(LogicPlayer_m_iFirstSkillUseCount, image, battle, lp, "m_iFirstSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iSecondSkillUseCount, image, battle, lp, "m_iSecondSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iThirdSkillUseCount, image, battle, lp, "m_iThirdSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iFourthSkillUseCount, image, battle, lp, "m_iFourthSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iEquipSkillUseCount, image, battle, lp, "m_iEquipSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iCureSkillUseCount, image, battle, lp, "m_iCureSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iBackHomeSkillUseCount, image, battle, lp, "m_iBackHomeSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iSummonSkillUseCount, image, battle, lp, "m_iSummonSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iHuntSkillUseCount, image, battle, lp, "m_iHuntSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iGankSkillUseCount, image, battle, lp, "m_iGankSkillUseCount")
-    INIT_OFFSET(LogicPlayer_m_iKillMageCount, image, battle, lp, "m_iKillMageCount")
-    INIT_OFFSET(LogicPlayer_m_iKillMarksmanCount, image, battle, lp, "m_iKillMarksmanCount")
-    INIT_OFFSET(LogicPlayer_m_iEnterHeroBattleFromGrass, image, battle, lp, "m_iEnterHeroBattleFromGrass")
-    INIT_OFFSET(LogicPlayer_m_iEnterGrassTimes, image, battle, lp, "m_iEnterGrassTimes")
-    INIT_OFFSET(LogicPlayer_m_dictFirstHitHeroTime, image, battle, lp, "m_dictFirstHitHeroTime")
-    INIT_OFFSET(LogicPlayer_m_listTimeSpent4Kill, image, battle, lp, "m_listTimeSpent4Kill")
-    INIT_OFFSET(LogicPlayer_KillTowerTimes, image, battle, lp, "KillTowerTimes")
-    INIT_OFFSET(LogicPlayer_KillSoldierTimes, image, battle, lp, "KillSoldierTimes")
-    INIT_OFFSET(LogicPlayer_m_arrSavedPositions, image, battle, lp, "m_arrSavedPositions")
-    INIT_OFFSET(LogicPlayer_m_nSavedPositionsStart, image, battle, lp, "m_nSavedPositionsStart")
-    INIT_OFFSET(LogicPlayer_m_nSavedPositionsCount, image, battle, lp, "m_nSavedPositionsCount")
-    INIT_OFFSET(LogicPlayer_hurtInfos, image, battle, lp, "hurtInfos")
-    INIT_OFFSET(LogicPlayer_m_uLossOfSightTime, image, battle, lp, "m_uLossOfSightTime")
-    INIT_OFFSET(LogicPlayer_enemySightLoss, image, battle, lp, "enemySightLoss")
-    INIT_OFFSET(LogicPlayer_endedSightValue, image, battle, lp, "endedSightValue")
-    INIT_OFFSET(LogicPlayer_ongoingSightValue, image, battle, lp, "ongoingSightValue")
-    INIT_OFFSET(LogicPlayer_sightIdGenerator, image, battle, lp, "sightIdGenerator")
-    INIT_OFFSET(LogicPlayer_continueKill, image, battle, lp, "continueKill")
-    INIT_OFFSET(LogicPlayer_multiKill, image, battle, lp, "multiKill")
-    INIT_OFFSET(LogicPlayer_DoubleKillTimes, image, battle, lp, "DoubleKillTimes")
-    INIT_OFFSET(LogicPlayer_TripleKillTimes, image, battle, lp, "TripleKillTimes")
-    INIT_OFFSET(LogicPlayer_QuadraKillTimes, image, battle, lp, "QuadraKillTimes")
-    INIT_OFFSET(LogicPlayer_PentaKillTimes, image, battle, lp, "PentaKillTimes")
-    INIT_OFFSET(LogicPlayer_multiKillAssistIDs, image, battle, lp, "multiKillAssistIDs")
-    INIT_OFFSET(LogicPlayer_greenLightCanUse, image, battle, lp, "greenLightCanUse")
-    INIT_OFFSET(LogicPlayer_greenLightStartTime, image, battle, lp, "greenLightStartTime")
-    INIT_OFFSET(LogicPlayer_greenLightTimeSpan, image, battle, lp, "greenLightTimeSpan")
-    INIT_OFFSET(LogicPlayer_greenLightIgnoreCountDown, image, battle, lp, "greenLightIgnoreCountDown")
-    INIT_OFFSET(LogicPlayer_m_LogicGuLianBulletManger, image, battle, lp, "m_LogicGuLianBulletManger")
-    INIT_OFFSET(LogicPlayer_bMonitoringSoloBreakLane, image, battle, lp, "bMonitoringSoloBreakLane")
-    INIT_OFFSET(LogicPlayer_uMonitoringTowerGuid, image, battle, lp, "uMonitoringTowerGuid")
-    INIT_OFFSET(LogicPlayer_uMonitoringTimeout, image, battle, lp, "uMonitoringTimeout")
-    INIT_OFFSET(LogicPlayer_m_magicTranSpellSideEffect, image, battle, lp, "m_magicTranSpellSideEffect")
-    INIT_OFFSET(LogicPlayer_m_magicTranSpellStageEffect, image, battle, lp, "m_magicTranSpellStageEffect")
-    INIT_OFFSET(LogicPlayer_lastReceiveMoveOptTime, image, battle, lp, "lastReceiveMoveOptTime")
-    INIT_OFFSET(LogicPlayer_moveProtectTime, image, battle, lp, "moveProtectTime")
-    INIT_OFFSET(LogicPlayer_m_bMoveProtectAIState, image, battle, lp, "m_bMoveProtectAIState")
-    INIT_OFFSET(LogicPlayer_uCheckStarLightTaskTimer, image, battle, lp, "uCheckStarLightTaskTimer")
-    INIT_OFFSET(LogicPlayer_uLastGuideSoldier2Tower, image, battle, lp, "uLastGuideSoldier2Tower")
-    INIT_OFFSET(LogicPlayer_m_iGuideSoldier2Tower, image, battle, lp, "m_iGuideSoldier2Tower")
-    INIT_OFFSET(LogicPlayer_m_TwinPlayer, image, battle, lp, "m_TwinPlayer")
-    INIT_OFFSET(LogicPlayer_m_bIsTwinMain, image, battle, lp, "m_bIsTwinMain")
-    INIT_OFFSET(LogicPlayer_m_bIsTwinControl, image, battle, lp, "m_bIsTwinControl")
-    INIT_OFFSET(LogicPlayer_m_summonTwinAI, image, battle, lp, "m_summonTwinAI")
-    INIT_OFFSET(LogicPlayer_m_AFKTurnAIComponent, image, battle, lp, "m_AFKTurnAIComponent")
-    INIT_OFFSET(LogicPlayer_bMLAIState, image, battle, lp, "bMLAIState")
-    INIT_OFFSET(LogicPlayer_bShowConnectMsg, image, battle, lp, "bShowConnectMsg")
-    INIT_OFFSET(LogicPlayer_m_IsRobotPlayer, image, battle, lp, "m_IsRobotPlayer")
-    INIT_OFFSET(LogicPlayer_m_uiWaitTrunAITime, image, battle, lp, "m_uiWaitTrunAITime")
-    INIT_OFFSET(LogicPlayer_uiQuicklyTrunToAITime, image, battle, lp, "uiQuicklyTrunToAITime")
-    INIT_OFFSET(LogicPlayer_uiNomalTurnAITime, image, battle, lp, "uiNomalTurnAITime")
-    INIT_OFFSET(LogicPlayer_uIgnoreTurnAITime, image, battle, lp, "uIgnoreTurnAITime")
-    INIT_OFFSET(LogicPlayer_iIgnoreOpered, image, battle, lp, "iIgnoreOpered")
-    INIT_OFFSET(LogicPlayer_m_bForceAi, image, battle, lp, "m_bForceAi")
-    INIT_OFFSET(LogicPlayer_m_bWeakNetWork, image, battle, lp, "m_bWeakNetWork")
-    INIT_OFFSET(LogicPlayer_m_uiAFKHoldCDRangeTimes, image, battle, lp, "m_uiAFKHoldCDRangeTimes")
-    INIT_OFFSET(LogicPlayer_m_uLastTimePlayerOpered, image, battle, lp, "m_uLastTimePlayerOpered")
-    INIT_OFFSET(LogicPlayer_bWaitTurnAI, image, battle, lp, "bWaitTurnAI")
-    INIT_OFFSET(LogicPlayer_m_SynFightData, image, battle, lp, "m_SynFightData")
-    INIT_OFFSET(LogicPlayer_uplandRangeDistance, image, battle, lp, "uplandRangeDistance")
-    INIT_OFFSET(LogicPlayer_dicIgnoreOpered, image, battle, lp, "dicIgnoreOpered")
-    INIT_OFFSET(LogicPlayer_m_bConnected, image, battle, lp, "m_bConnected")
-    INIT_OFFSET(LogicPlayer_m_uiVoiceParam, image, battle, lp, "m_uiVoiceParam")
-    INIT_OFFSET(LogicPlayer_m_RelativeScore, image, battle, lp, "m_RelativeScore")
-    INIT_OFFSET(LogicPlayer_dicTalentSkill, image, battle, lp, "dicTalentSkill")
-    INIT_OFFSET(LogicPlayer_dicRuneSkill2023, image, battle, lp, "dicRuneSkill2023")
-    INIT_OFFSET(LogicPlayer_lsMissions, image, battle, lp, "lsMissions")
-    INIT_OFFSET(LogicPlayer_easterEggMissions, image, battle, lp, "easterEggMissions")
-    INIT_OFFSET(LogicPlayer_m_lsEmoji, image, battle, lp, "m_lsEmoji")
-    INIT_OFFSET(LogicPlayer_m_lsAutoEmoji, image, battle, lp, "m_lsAutoEmoji")
-    INIT_OFFSET(LogicPlayer_m_lsAnima, image, battle, lp, "m_lsAnima")
-    INIT_OFFSET(LogicPlayer_m_lsGraffiti, image, battle, lp, "m_lsGraffiti")
-    INIT_OFFSET(LogicPlayer_m_iHolyStatueSkillID, image, battle, lp, "m_iHolyStatueSkillID")
-    INIT_OFFSET(LogicPlayer_m_uHolyStatueID, image, battle, lp, "m_uHolyStatueID")
-    INIT_OFFSET(LogicPlayer_m_uHolyStatueIDIfUsed, image, battle, lp, "m_uHolyStatueIDIfUsed")
-    INIT_OFFSET(LogicPlayer_m_TotalExp, image, battle, lp, "m_TotalExp")
-    INIT_OFFSET(LogicPlayer_m_PlayerData, image, battle, lp, "m_PlayerData")
-    INIT_OFFSET(LogicPlayer_m_ConfigData, image, battle, lp, "m_ConfigData")
-    INIT_OFFSET(LogicPlayer_m_HeroCostType, image, battle, lp, "m_HeroCostType")
-    INIT_OFFSET(LogicPlayer_m_BattleConfig, image, battle, lp, "m_BattleConfig")
-    INIT_OFFSET(LogicPlayer_m_TowerTurnData, image, battle, lp, "m_TowerTurnData")
-    INIT_OFFSET(LogicPlayer_m_OperateTimeMonitor, image, battle, lp, "m_OperateTimeMonitor")
-    INIT_OFFSET(LogicPlayer_m_CheckNearComponent, image, battle, lp, "m_CheckNearComponent")
-    INIT_OFFSET(LogicPlayer_m_EstimateAttrComponent, image, battle, lp, "m_EstimateAttrComponent")
-    INIT_OFFSET(LogicPlayer_m_StoreSkillComp, image, battle, lp, "m_StoreSkillComp")
-    INIT_OFFSET(LogicPlayer_m_operCache, image, battle, lp, "m_operCache")
-    INIT_OFFSET(LogicPlayer_m_HighLightComp, image, battle, lp, "m_HighLightComp")
-    INIT_OFFSET(LogicPlayer_m_GankShoeRewardComp, image, battle, lp, "m_GankShoeRewardComp")
-    INIT_OFFSET(LogicPlayer_m_bGankEquip, image, battle, lp, "m_bGankEquip")
-    INIT_OFFSET(LogicPlayer_m_bHuntSkill, image, battle, lp, "m_bHuntSkill")
-    INIT_OFFSET(LogicPlayer_m_bLowestMoneyOrExp, image, battle, lp, "m_bLowestMoneyOrExp")
-    INIT_OFFSET(LogicPlayer_m_ShareMoneyEx, image, battle, lp, "m_ShareMoneyEx")
-    INIT_OFFSET(LogicPlayer_m_ShareExpEx, image, battle, lp, "m_ShareExpEx")
-    INIT_OFFSET(LogicPlayer_m_RewardMoney, image, battle, lp, "m_RewardMoney")
-    INIT_OFFSET(LogicPlayer_m_iBaseMoney, image, battle, lp, "m_iBaseMoney")
-    INIT_OFFSET(LogicPlayer_m_KillBounty, image, battle, lp, "m_KillBounty")
-    INIT_OFFSET(LogicPlayer_m_bBountyOverThreshold, image, battle, lp, "m_bBountyOverThreshold")
-    INIT_OFFSET(LogicPlayer_m_uLastBountyOverThreshold, image, battle, lp, "m_uLastBountyOverThreshold")
-    INIT_OFFSET(LogicPlayer_m_iContinueDeadSub, image, battle, lp, "m_iContinueDeadSub")
-    INIT_OFFSET(LogicPlayer_m_iContinueKillNum, image, battle, lp, "m_iContinueKillNum")
-    INIT_OFFSET(LogicPlayer_m_iContinueKillAdd, image, battle, lp, "m_iContinueKillAdd")
-    INIT_OFFSET(LogicPlayer_m_RewardExp, image, battle, lp, "m_RewardExp")
-    INIT_OFFSET(LogicPlayer_m_iBaseExp, image, battle, lp, "m_iBaseExp")
-    INIT_OFFSET(LogicPlayer_m_iLevelExp, image, battle, lp, "m_iLevelExp")
-    INIT_OFFSET(LogicPlayer_m_iLvExpRate, image, battle, lp, "m_iLvExpRate")
-    INIT_OFFSET(LogicPlayer_m_fContinueDeadPara, image, battle, lp, "m_fContinueDeadPara")
-    INIT_OFFSET(LogicPlayer_DeadAndKillTimes, image, battle, lp, "DeadAndKillTimes")
-    INIT_OFFSET(LogicPlayer_m_AssistTimesReward, image, battle, lp, "m_AssistTimesReward")
-    INIT_OFFSET(LogicPlayer_m_bReqMoveUpdate, image, battle, lp, "m_bReqMoveUpdate")
-    INIT_OFFSET(LogicPlayer_m_ReqMoveDir, image, battle, lp, "m_ReqMoveDir")
-    INIT_OFFSET(LogicPlayer_m_ReqMovePos, image, battle, lp, "m_ReqMovePos")
-    INIT_OFFSET(LogicPlayer_bDeathHoldKillCount, image, battle, lp, "bDeathHoldKillCount")
-    INIT_OFFSET(LogicPlayer_mShutDown, image, battle, lp, "mShutDown")
-    INIT_OFFSET(LogicPlayer_lastKillTime, image, battle, lp, "lastKillTime")
-    INIT_OFFSET(LogicPlayer_mutiKillUsefulTime, image, battle, lp, "mutiKillUsefulTime")
-    INIT_OFFSET(LogicPlayer_mutiKillUsefulTimeOn5kill, image, battle, lp, "mutiKillUsefulTimeOn5kill")
-    INIT_OFFSET(LogicPlayer_listKillTime, image, battle, lp, "listKillTime")
-    INIT_OFFSET(LogicPlayer_m_vDelayRemoveSkillIds, image, battle, lp, "m_vDelayRemoveSkillIds")
-    INIT_OFFSET(LogicPlayer_m_uiLastMoveTime, image, battle, lp, "m_uiLastMoveTime")
-    INIT_OFFSET(LogicPlayer_m_GetGoldTimesBySoldier, image, battle, lp, "m_GetGoldTimesBySoldier")
-    INIT_OFFSET(LogicPlayer_m_BeyondGodlike, image, battle, lp, "m_BeyondGodlike")
-    INIT_OFFSET(LogicPlayer_m_MaxMutiKill, image, battle, lp, "m_MaxMutiKill")
-    INIT_OFFSET(LogicPlayer_m_MaxContinueKill, image, battle, lp, "m_MaxContinueKill")
-    INIT_OFFSET(LogicPlayer_m_singleKill, image, battle, lp, "m_singleKill")
-    INIT_OFFSET(LogicPlayer_m_KillLingZhu, image, battle, lp, "m_KillLingZhu")
-    INIT_OFFSET(LogicPlayer_m_AssistLingZhu, image, battle, lp, "m_AssistLingZhu")
-    INIT_OFFSET(LogicPlayer_KillWildTimes, image, battle, lp, "KillWildTimes")
-    INIT_OFFSET(LogicPlayer_m_HitHeroTimes_SkillGuid, image, battle, lp, "m_HitHeroTimes_SkillGuid")
-    INIT_OFFSET(LogicPlayer_m_WeekKill, image, battle, lp, "m_WeekKill")
-    INIT_OFFSET(LogicPlayer_m_KillShenGui, image, battle, lp, "m_KillShenGui")
-    INIT_OFFSET(LogicPlayer_m_AssistShenGui, image, battle, lp, "m_AssistShenGui")
-    INIT_OFFSET(LogicPlayer_m_KillCdMonster, image, battle, lp, "m_KillCdMonster")
-    INIT_OFFSET(LogicPlayer_m_KillAtkMonster, image, battle, lp, "m_KillAtkMonster")
-    INIT_OFFSET(LogicPlayer_m_KillMePlayerCount, image, battle, lp, "m_KillMePlayerCount")
-    INIT_OFFSET(LogicPlayer_m_CurZoneId, image, battle, lp, "m_CurZoneId")
-    INIT_OFFSET(LogicPlayer_m_HurtTurtle, image, battle, lp, "m_HurtTurtle")
-    INIT_OFFSET(LogicPlayer_m_HurtLord, image, battle, lp, "m_HurtLord")
-    INIT_OFFSET(LogicPlayer_m_ShieldCureHero, image, battle, lp, "m_ShieldCureHero")
-    INIT_OFFSET(LogicPlayer_m_ShieldCureSelf, image, battle, lp, "m_ShieldCureSelf")
-    INIT_OFFSET(LogicPlayer_m_ShieldTeammate, image, battle, lp, "m_ShieldTeammate")
-    INIT_OFFSET(LogicPlayer_m_SufferControlTime, image, battle, lp, "m_SufferControlTime")
-    INIT_OFFSET(LogicPlayer_m_SufferSlowTime, image, battle, lp, "m_SufferSlowTime")
-    INIT_OFFSET(LogicPlayer_m_ControlTime, image, battle, lp, "m_ControlTime")
-    INIT_OFFSET(LogicPlayer_m_KillsWithRedAndBlueBuff, image, battle, lp, "m_KillsWithRedAndBlueBuff")
-    INIT_OFFSET(LogicPlayer_m_MoveDis, image, battle, lp, "m_MoveDis")
-    INIT_OFFSET(LogicPlayer_m_MoveDisTickCount, image, battle, lp, "m_MoveDisTickCount")
-    INIT_OFFSET(LogicPlayer_m_MoveCountPrePosX, image, battle, lp, "m_MoveCountPrePosX")
-    INIT_OFFSET(LogicPlayer_m_MoveCountPrePosY, image, battle, lp, "m_MoveCountPrePosY")
-    INIT_OFFSET(LogicPlayer_m_GoldByWild, image, battle, lp, "m_GoldByWild")
-    INIT_OFFSET(LogicPlayer_m_GoldBySoldier, image, battle, lp, "m_GoldBySoldier")
-    INIT_OFFSET(LogicPlayer_m_GoldByHero, image, battle, lp, "m_GoldByHero")
-    INIT_OFFSET(LogicPlayer_iAllHurtVal, image, battle, lp, "iAllHurtVal")
-    INIT_OFFSET(LogicPlayer_m_CrlTimes, image, battle, lp, "m_CrlTimes")
-    INIT_OFFSET(LogicPlayer_m_iPoisonValue, image, battle, lp, "m_iPoisonValue")
-    INIT_OFFSET(LogicPlayer_m_hurtEnemyWild, image, battle, lp, "m_hurtEnemyWild")
-    INIT_OFFSET(LogicPlayer_m_hurtWildValue, image, battle, lp, "m_hurtWildValue")
-    INIT_OFFSET(LogicPlayer_m_dStealValue, image, battle, lp, "m_dStealValue")
-    INIT_OFFSET(LogicPlayer_m_TrunSpeed, image, battle, lp, "m_TrunSpeed")
-    INIT_OFFSET(LogicPlayer_m_GreatGuid, image, battle, lp, "m_GreatGuid")
-    INIT_OFFSET(LogicPlayer_m_bRefuseSelectAIType, image, battle, lp, "m_bRefuseSelectAIType")
-    INIT_OFFSET(LogicPlayer_m_uiLastOperFrameTime, image, battle, lp, "m_uiLastOperFrameTime")
-    INIT_OFFSET(LogicPlayer_SummonSkillId, image, battle, lp, "SummonSkillId")
-    INIT_OFFSET(LogicPlayer_m_SummonStartSkillId, image, battle, lp, "m_SummonStartSkillId")
-    INIT_OFFSET(LogicPlayer_m_RankLv, image, battle, lp, "m_RankLv")
-    INIT_OFFSET(LogicPlayer_m_bigRankLv, image, battle, lp, "m_bigRankLv")
-    INIT_OFFSET(LogicPlayer_m_rankStar, image, battle, lp, "m_rankStar")
-    INIT_OFFSET(LogicPlayer_m_rankNum, image, battle, lp, "m_rankNum")
-    INIT_OFFSET(LogicPlayer_m_AutoAttackAI, image, battle, lp, "m_AutoAttackAI")
-    INIT_OFFSET(LogicPlayer_m_LogicPunish, image, battle, lp, "m_LogicPunish")
-    INIT_OFFSET(LogicPlayer_m_lastReliveTime, image, battle, lp, "m_lastReliveTime")
-    INIT_OFFSET(LogicPlayer_m_ReviveTimeMs, image, battle, lp, "m_ReviveTimeMs")
-    INIT_OFFSET(LogicPlayer_m_bFastDie, image, battle, lp, "m_bFastDie")
-    INIT_OFFSET(LogicPlayer_m_EatFruit, image, battle, lp, "m_EatFruit")
-    INIT_OFFSET(LogicPlayer_m_KillByFruit, image, battle, lp, "m_KillByFruit")
-    INIT_OFFSET(LogicPlayer_m_GetFruitOnMin, image, battle, lp, "m_GetFruitOnMin")
-    INIT_OFFSET(LogicPlayer_bAllowRelive, image, battle, lp, "bAllowRelive")
-    INIT_OFFSET(LogicPlayer_m_uiRoleLevel, image, battle, lp, "m_uiRoleLevel")
-    INIT_OFFSET(LogicPlayer_m_Killer, image, battle, lp, "m_Killer")
-    INIT_OFFSET(LogicPlayer_m_iAddGoldValue, image, battle, lp, "m_iAddGoldValue")
-    INIT_OFFSET(LogicPlayer_iMaxHurtValue, image, battle, lp, "iMaxHurtValue")
-    INIT_OFFSET(LogicPlayer_m_iSkinId, image, battle, lp, "m_iSkinId")
-    INIT_OFFSET(LogicPlayer_m_iDragonCrystalId, image, battle, lp, "m_iDragonCrystalId")
-    INIT_OFFSET(LogicPlayer_m_uUserMapID, image, battle, lp, "m_uUserMapID")
-    INIT_OFFSET(LogicPlayer_m_DevourData, image, battle, lp, "m_DevourData")
-    INIT_OFFSET(LogicPlayer_iLastGiveupEquip, image, battle, lp, "iLastGiveupEquip")
-    INIT_OFFSET(LogicPlayer_m_ControlSummer, image, battle, lp, "m_ControlSummer")
-    INIT_OFFSET(LogicPlayer_m_vSkillLogicFighter, image, battle, lp, "m_vSkillLogicFighter")
-    INIT_OFFSET(LogicPlayer_m_iSurvivalTime, image, battle, lp, "m_iSurvivalTime")
-    INIT_OFFSET(LogicPlayer_m_iChickenRanking, image, battle, lp, "m_iChickenRanking")
-    INIT_OFFSET(LogicPlayer_m_bEmojiBirthday, image, battle, lp, "m_bEmojiBirthday")
-    INIT_OFFSET(LogicPlayer_logAttackSpeed, image, battle, lp, "logAttackSpeed")
-    INIT_OFFSET(LogicPlayer_doAttackSpeed, image, battle, lp, "doAttackSpeed")
-    INIT_OFFSET(LogicPlayer_m_CommATK_RunTimer, image, battle, lp, "m_CommATK_RunTimer")
-    INIT_OFFSET(LogicPlayer_m_dCommATKSingTime_Mod, image, battle, lp, "m_dCommATKSingTime_Mod")
-    INIT_OFFSET(LogicPlayer_m_CommATKSingTime_LastTimer, image, battle, lp, "m_CommATKSingTime_LastTimer")
-    INIT_OFFSET(LogicPlayer_m_dCommATKCD_Mod, image, battle, lp, "m_dCommATKCD_Mod")
-    INIT_OFFSET(LogicPlayer_m_CommATKCD_LastTimer, image, battle, lp, "m_CommATKCD_LastTimer")
-    INIT_OFFSET(LogicPlayer_m_vPlayerDeadInfo, image, battle, lp, "m_vPlayerDeadInfo")
-    INIT_OFFSET(LogicPlayer_m_PriorEquip, image, battle, lp, "m_PriorEquip")
-    INIT_OFFSET(LogicPlayer_m_RecmendEquips, image, battle, lp, "m_RecmendEquips")
-    INIT_OFFSET(LogicPlayer_m_uHeroEnhanceLevel, image, battle, lp, "m_uHeroEnhanceLevel")
-    INIT_OFFSET(LogicPlayer_m_bGhostHasDied, image, battle, lp, "m_bGhostHasDied")
-    INIT_OFFSET(LogicPlayer_m_v2StarDir, image, battle, lp, "m_v2StarDir")
-    INIT_OFFSET(LogicPlayer_shopData, image, battle, lp, "shopData")
-    INIT_OFFSET(LogicPlayer_v2LastCheckPos, image, battle, lp, "v2LastCheckPos")
-    INIT_OFFSET(LogicPlayer_lastCheckDirSymbol, image, battle, lp, "lastCheckDirSymbol")
-    INIT_OFFSET(LogicPlayer_lastCheckMoveDir, image, battle, lp, "lastCheckMoveDir")
-    INIT_OFFSET(LogicPlayer_right, image, battle, lp, "right")
-    INIT_OFFSET(LogicPlayer_lastFailedAutoAiSpellCast, image, battle, lp, "lastFailedAutoAiSpellCast")
-    INIT_OFFSET(LogicPlayer_lastFailedAutoAiSpellCastTime, image, battle, lp, "lastFailedAutoAiSpellCastTime")
-    INIT_OFFSET(LogicPlayer_ownNormalSkillCache, image, battle, lp, "ownNormalSkillCache")
-    INIT_OFFSET(LogicPlayer_autoTime, image, battle, lp, "autoTime")
-    INIT_OFFSET(LogicPlayer_m_dXpGrowthDecimal, image, battle, lp, "m_dXpGrowthDecimal")
-    INIT_OFFSET(LogicPlayer_lEatFruits, image, battle, lp, "lEatFruits")
-    INIT_OFFSET(LogicPlayer_bBornedBoss, image, battle, lp, "bBornedBoss")
-    INIT_OFFSET(LogicPlayer_iPreMutiKillValue, image, battle, lp, "iPreMutiKillValue")
-    INIT_OFFSET(LogicPlayer_iPreContinueKillValue, image, battle, lp, "iPreContinueKillValue")
-    INIT_OFFSET(LogicPlayer_iPreKillLingZhu, image, battle, lp, "iPreKillLingZhu")
-    INIT_OFFSET(LogicPlayer_iPreKillShenGui, image, battle, lp, "iPreKillShenGui")
-    INIT_OFFSET(LogicPlayer_iPreShutDown, image, battle, lp, "iPreShutDown")
-    INIT_OFFSET(LogicPlayer_bCheckFirstBlood, image, battle, lp, "bCheckFirstBlood")
-    INIT_OFFSET(LogicPlayer_iCurrentResult, image, battle, lp, "iCurrentResult")
-    INIT_OFFSET(LogicPlayer_iPreGetResultTime, image, battle, lp, "iPreGetResultTime")
-    INIT_OFFSET(LogicPlayer_iCurKilledResult, image, battle, lp, "iCurKilledResult")
-    INIT_OFFSET(LogicPlayer_iPreKilledResultTime, image, battle, lp, "iPreKilledResultTime")
+    OFF_LogicPlayer_m_LoigcBezierBullet = Il2CppGetFieldOffset(image, battle, lp, "m_LoigcBezierBullet");
+    OFF_LogicPlayer_moveControllers = Il2CppGetFieldOffset(image, battle, lp, "moveControllers");
+    OFF_LogicPlayer_totalGold = Il2CppGetFieldOffset(image, battle, lp, "totalGold");
+    OFF_LogicPlayer_m_copyHurtCount = Il2CppGetFieldOffset(image, battle, lp, "m_copyHurtCount");
+    OFF_LogicPlayer_m_HurtTotalValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtTotalValue");
+    OFF_LogicPlayer_m_HurtHeroValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroValue");
+    OFF_LogicPlayer_m_ATKHero = Il2CppGetFieldOffset(image, battle, lp, "m_ATKHero");
+    OFF_LogicPlayer_m_iCommonAttackHeroCount = Il2CppGetFieldOffset(image, battle, lp, "m_iCommonAttackHeroCount");
+    OFF_LogicPlayer_m_iNormalSkillHeroCount = Il2CppGetFieldOffset(image, battle, lp, "m_iNormalSkillHeroCount");
+    OFF_LogicPlayer_m_HurtHeroReel = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroReel");
+    OFF_LogicPlayer_m_HurtHeroAD = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroAD");
+    OFF_LogicPlayer_m_HurtHeroAP = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroAP");
+    OFF_LogicPlayer_m_HurtHeroByEquip = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroByEquip");
+    OFF_LogicPlayer_m_HurtHeroByEmblem = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroByEmblem");
+    OFF_LogicPlayer_m_HurtTowerValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtTowerValue");
+    OFF_LogicPlayer_m_HurtSoliderValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtSoliderValue");
+    OFF_LogicPlayer_m_iInjuredShield = Il2CppGetFieldOffset(image, battle, lp, "m_iInjuredShield");
+    OFF_LogicPlayer_m_InjuredValue = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredValue");
+    OFF_LogicPlayer_m_InjuredTower = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredTower");
+    OFF_LogicPlayer_m_InjuredTotal = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredTotal");
+    OFF_LogicPlayer_m_InjuredSoldier = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredSoldier");
+    OFF_LogicPlayer_m_InjuredAD = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredAD");
+    OFF_LogicPlayer_m_InjuredAP = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredAP");
+    OFF_LogicPlayer_m_InjuredReal = Il2CppGetFieldOffset(image, battle, lp, "m_InjuredReal");
+    OFF_LogicPlayer_m_RealInjuredVal = Il2CppGetFieldOffset(image, battle, lp, "m_RealInjuredVal");
+    OFF_LogicPlayer_m_iBeCuredValue = Il2CppGetFieldOffset(image, battle, lp, "m_iBeCuredValue");
+    OFF_LogicPlayer_m_CureHero = Il2CppGetFieldOffset(image, battle, lp, "m_CureHero");
+    OFF_LogicPlayer_m_CureTeammate = Il2CppGetFieldOffset(image, battle, lp, "m_CureTeammate");
+    OFF_LogicPlayer_m_CureSelf = Il2CppGetFieldOffset(image, battle, lp, "m_CureSelf");
+    OFF_LogicPlayer_m_CureHeroJustSkill = Il2CppGetFieldOffset(image, battle, lp, "m_CureHeroJustSkill");
+    OFF_LogicPlayer_m_iSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iSkillUseCount");
+    OFF_LogicPlayer_m_iCommonAtkUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iCommonAtkUseCount");
+    OFF_LogicPlayer_m_iCommonAtkUseCount_AllSkillCD = Il2CppGetFieldOffset(image, battle, lp, "m_iCommonAtkUseCount_AllSkillCD");
+    OFF_LogicPlayer_m_iNormalSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iNormalSkillUseCount");
+    OFF_LogicPlayer_m_iNormalSkillHasDraggedCount = Il2CppGetFieldOffset(image, battle, lp, "m_iNormalSkillHasDraggedCount");
+    OFF_LogicPlayer_m_iFirstSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iFirstSkillUseCount");
+    OFF_LogicPlayer_m_iSecondSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iSecondSkillUseCount");
+    OFF_LogicPlayer_m_iThirdSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iThirdSkillUseCount");
+    OFF_LogicPlayer_m_iFourthSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iFourthSkillUseCount");
+    OFF_LogicPlayer_m_iEquipSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iEquipSkillUseCount");
+    OFF_LogicPlayer_m_iCureSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iCureSkillUseCount");
+    OFF_LogicPlayer_m_iBackHomeSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iBackHomeSkillUseCount");
+    OFF_LogicPlayer_m_iSummonSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iSummonSkillUseCount");
+    OFF_LogicPlayer_m_iHuntSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iHuntSkillUseCount");
+    OFF_LogicPlayer_m_iGankSkillUseCount = Il2CppGetFieldOffset(image, battle, lp, "m_iGankSkillUseCount");
+    OFF_LogicPlayer_m_iKillMageCount = Il2CppGetFieldOffset(image, battle, lp, "m_iKillMageCount");
+    OFF_LogicPlayer_m_iKillMarksmanCount = Il2CppGetFieldOffset(image, battle, lp, "m_iKillMarksmanCount");
+    OFF_LogicPlayer_m_iEnterHeroBattleFromGrass = Il2CppGetFieldOffset(image, battle, lp, "m_iEnterHeroBattleFromGrass");
+    OFF_LogicPlayer_m_iEnterGrassTimes = Il2CppGetFieldOffset(image, battle, lp, "m_iEnterGrassTimes");
+    OFF_LogicPlayer_m_dictFirstHitHeroTime = Il2CppGetFieldOffset(image, battle, lp, "m_dictFirstHitHeroTime");
+    OFF_LogicPlayer_m_listTimeSpent4Kill = Il2CppGetFieldOffset(image, battle, lp, "m_listTimeSpent4Kill");
+    OFF_LogicPlayer_KillTowerTimes = Il2CppGetFieldOffset(image, battle, lp, "KillTowerTimes");
+    OFF_LogicPlayer_KillSoldierTimes = Il2CppGetFieldOffset(image, battle, lp, "KillSoldierTimes");
+    OFF_LogicPlayer_m_arrSavedPositions = Il2CppGetFieldOffset(image, battle, lp, "m_arrSavedPositions");
+    OFF_LogicPlayer_m_nSavedPositionsStart = Il2CppGetFieldOffset(image, battle, lp, "m_nSavedPositionsStart");
+    OFF_LogicPlayer_m_nSavedPositionsCount = Il2CppGetFieldOffset(image, battle, lp, "m_nSavedPositionsCount");
+    OFF_LogicPlayer_hurtInfos = Il2CppGetFieldOffset(image, battle, lp, "hurtInfos");
+    OFF_LogicPlayer_m_uLossOfSightTime = Il2CppGetFieldOffset(image, battle, lp, "m_uLossOfSightTime");
+    OFF_LogicPlayer_enemySightLoss = Il2CppGetFieldOffset(image, battle, lp, "enemySightLoss");
+    OFF_LogicPlayer_endedSightValue = Il2CppGetFieldOffset(image, battle, lp, "endedSightValue");
+    OFF_LogicPlayer_ongoingSightValue = Il2CppGetFieldOffset(image, battle, lp, "ongoingSightValue");
+    OFF_LogicPlayer_sightIdGenerator = Il2CppGetFieldOffset(image, battle, lp, "sightIdGenerator");
+    OFF_LogicPlayer_continueKill = Il2CppGetFieldOffset(image, battle, lp, "continueKill");
+    OFF_LogicPlayer_multiKill = Il2CppGetFieldOffset(image, battle, lp, "multiKill");
+    OFF_LogicPlayer_DoubleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "DoubleKillTimes");
+    OFF_LogicPlayer_TripleKillTimes = Il2CppGetFieldOffset(image, battle, lp, "TripleKillTimes");
+    OFF_LogicPlayer_QuadraKillTimes = Il2CppGetFieldOffset(image, battle, lp, "QuadraKillTimes");
+    OFF_LogicPlayer_PentaKillTimes = Il2CppGetFieldOffset(image, battle, lp, "PentaKillTimes");
+    OFF_LogicPlayer_multiKillAssistIDs = Il2CppGetFieldOffset(image, battle, lp, "multiKillAssistIDs");
+    OFF_LogicPlayer_greenLightCanUse = Il2CppGetFieldOffset(image, battle, lp, "greenLightCanUse");
+    OFF_LogicPlayer_greenLightStartTime = Il2CppGetFieldOffset(image, battle, lp, "greenLightStartTime");
+    OFF_LogicPlayer_greenLightTimeSpan = Il2CppGetFieldOffset(image, battle, lp, "greenLightTimeSpan");
+    OFF_LogicPlayer_greenLightIgnoreCountDown = Il2CppGetFieldOffset(image, battle, lp, "greenLightIgnoreCountDown");
+    OFF_LogicPlayer_m_LogicGuLianBulletManger = Il2CppGetFieldOffset(image, battle, lp, "m_LogicGuLianBulletManger");
+    OFF_LogicPlayer_bMonitoringSoloBreakLane = Il2CppGetFieldOffset(image, battle, lp, "bMonitoringSoloBreakLane");
+    OFF_LogicPlayer_uMonitoringTowerGuid = Il2CppGetFieldOffset(image, battle, lp, "uMonitoringTowerGuid");
+    OFF_LogicPlayer_uMonitoringTimeout = Il2CppGetFieldOffset(image, battle, lp, "uMonitoringTimeout");
+    OFF_LogicPlayer_m_magicTranSpellSideEffect = Il2CppGetFieldOffset(image, battle, lp, "m_magicTranSpellSideEffect");
+    OFF_LogicPlayer_m_magicTranSpellStageEffect = Il2CppGetFieldOffset(image, battle, lp, "m_magicTranSpellStageEffect");
+    OFF_LogicPlayer_lastReceiveMoveOptTime = Il2CppGetFieldOffset(image, battle, lp, "lastReceiveMoveOptTime");
+    OFF_LogicPlayer_moveProtectTime = Il2CppGetFieldOffset(image, battle, lp, "moveProtectTime");
+    OFF_LogicPlayer_m_bMoveProtectAIState = Il2CppGetFieldOffset(image, battle, lp, "m_bMoveProtectAIState");
+    OFF_LogicPlayer_uCheckStarLightTaskTimer = Il2CppGetFieldOffset(image, battle, lp, "uCheckStarLightTaskTimer");
+    OFF_LogicPlayer_uLastGuideSoldier2Tower = Il2CppGetFieldOffset(image, battle, lp, "uLastGuideSoldier2Tower");
+    OFF_LogicPlayer_m_iGuideSoldier2Tower = Il2CppGetFieldOffset(image, battle, lp, "m_iGuideSoldier2Tower");
+    OFF_LogicPlayer_m_TwinPlayer = Il2CppGetFieldOffset(image, battle, lp, "m_TwinPlayer");
+    OFF_LogicPlayer_m_bIsTwinMain = Il2CppGetFieldOffset(image, battle, lp, "m_bIsTwinMain");
+    OFF_LogicPlayer_m_bIsTwinControl = Il2CppGetFieldOffset(image, battle, lp, "m_bIsTwinControl");
+    OFF_LogicPlayer_m_summonTwinAI = Il2CppGetFieldOffset(image, battle, lp, "m_summonTwinAI");
+    OFF_LogicPlayer_m_AFKTurnAIComponent = Il2CppGetFieldOffset(image, battle, lp, "m_AFKTurnAIComponent");
+    OFF_LogicPlayer_bMLAIState = Il2CppGetFieldOffset(image, battle, lp, "bMLAIState");
+    OFF_LogicPlayer_bShowConnectMsg = Il2CppGetFieldOffset(image, battle, lp, "bShowConnectMsg");
+    OFF_LogicPlayer_m_IsRobotPlayer = Il2CppGetFieldOffset(image, battle, lp, "m_IsRobotPlayer");
+    OFF_LogicPlayer_m_uiWaitTrunAITime = Il2CppGetFieldOffset(image, battle, lp, "m_uiWaitTrunAITime");
+    OFF_LogicPlayer_uiQuicklyTrunToAITime = Il2CppGetFieldOffset(image, battle, lp, "uiQuicklyTrunToAITime");
+    OFF_LogicPlayer_uiNomalTurnAITime = Il2CppGetFieldOffset(image, battle, lp, "uiNomalTurnAITime");
+    OFF_LogicPlayer_uIgnoreTurnAITime = Il2CppGetFieldOffset(image, battle, lp, "uIgnoreTurnAITime");
+    OFF_LogicPlayer_iIgnoreOpered = Il2CppGetFieldOffset(image, battle, lp, "iIgnoreOpered");
+    OFF_LogicPlayer_m_bForceAi = Il2CppGetFieldOffset(image, battle, lp, "m_bForceAi");
+    OFF_LogicPlayer_m_bWeakNetWork = Il2CppGetFieldOffset(image, battle, lp, "m_bWeakNetWork");
+    OFF_LogicPlayer_m_uiAFKHoldCDRangeTimes = Il2CppGetFieldOffset(image, battle, lp, "m_uiAFKHoldCDRangeTimes");
+    OFF_LogicPlayer_m_uLastTimePlayerOpered = Il2CppGetFieldOffset(image, battle, lp, "m_uLastTimePlayerOpered");
+    OFF_LogicPlayer_bWaitTurnAI = Il2CppGetFieldOffset(image, battle, lp, "bWaitTurnAI");
+    OFF_LogicPlayer_m_SynFightData = Il2CppGetFieldOffset(image, battle, lp, "m_SynFightData");
+    OFF_LogicPlayer_uplandRangeDistance = Il2CppGetFieldOffset(image, battle, lp, "uplandRangeDistance");
+    OFF_LogicPlayer_dicIgnoreOpered = Il2CppGetFieldOffset(image, battle, lp, "dicIgnoreOpered");
+    OFF_LogicPlayer_m_bConnected = Il2CppGetFieldOffset(image, battle, lp, "m_bConnected");
+    OFF_LogicPlayer_m_uiVoiceParam = Il2CppGetFieldOffset(image, battle, lp, "m_uiVoiceParam");
+    OFF_LogicPlayer_m_RelativeScore = Il2CppGetFieldOffset(image, battle, lp, "m_RelativeScore");
+    OFF_LogicPlayer_dicTalentSkill = Il2CppGetFieldOffset(image, battle, lp, "dicTalentSkill");
+    OFF_LogicPlayer_dicRuneSkill2023 = Il2CppGetFieldOffset(image, battle, lp, "dicRuneSkill2023");
+    OFF_LogicPlayer_lsMissions = Il2CppGetFieldOffset(image, battle, lp, "lsMissions");
+    OFF_LogicPlayer_easterEggMissions = Il2CppGetFieldOffset(image, battle, lp, "easterEggMissions");
+    OFF_LogicPlayer_m_lsEmoji = Il2CppGetFieldOffset(image, battle, lp, "m_lsEmoji");
+    OFF_LogicPlayer_m_lsAutoEmoji = Il2CppGetFieldOffset(image, battle, lp, "m_lsAutoEmoji");
+    OFF_LogicPlayer_m_lsAnima = Il2CppGetFieldOffset(image, battle, lp, "m_lsAnima");
+    OFF_LogicPlayer_m_lsGraffiti = Il2CppGetFieldOffset(image, battle, lp, "m_lsGraffiti");
+    OFF_LogicPlayer_m_iHolyStatueSkillID = Il2CppGetFieldOffset(image, battle, lp, "m_iHolyStatueSkillID");
+    OFF_LogicPlayer_m_uHolyStatueID = Il2CppGetFieldOffset(image, battle, lp, "m_uHolyStatueID");
+    OFF_LogicPlayer_m_uHolyStatueIDIfUsed = Il2CppGetFieldOffset(image, battle, lp, "m_uHolyStatueIDIfUsed");
+    OFF_LogicPlayer_m_TotalExp = Il2CppGetFieldOffset(image, battle, lp, "m_TotalExp");
+    OFF_LogicPlayer_m_PlayerData = Il2CppGetFieldOffset(image, battle, lp, "m_PlayerData");
+    OFF_LogicPlayer_m_ConfigData = Il2CppGetFieldOffset(image, battle, lp, "m_ConfigData");
+    OFF_LogicPlayer_m_HeroCostType = Il2CppGetFieldOffset(image, battle, lp, "m_HeroCostType");
+    OFF_LogicPlayer_m_BattleConfig = Il2CppGetFieldOffset(image, battle, lp, "m_BattleConfig");
+    OFF_LogicPlayer_m_TowerTurnData = Il2CppGetFieldOffset(image, battle, lp, "m_TowerTurnData");
+    OFF_LogicPlayer_m_OperateTimeMonitor = Il2CppGetFieldOffset(image, battle, lp, "m_OperateTimeMonitor");
+    OFF_LogicPlayer_m_CheckNearComponent = Il2CppGetFieldOffset(image, battle, lp, "m_CheckNearComponent");
+    OFF_LogicPlayer_m_EstimateAttrComponent = Il2CppGetFieldOffset(image, battle, lp, "m_EstimateAttrComponent");
+    OFF_LogicPlayer_m_StoreSkillComp = Il2CppGetFieldOffset(image, battle, lp, "m_StoreSkillComp");
+    OFF_LogicPlayer_m_operCache = Il2CppGetFieldOffset(image, battle, lp, "m_operCache");
+    OFF_LogicPlayer_m_HighLightComp = Il2CppGetFieldOffset(image, battle, lp, "m_HighLightComp");
+    OFF_LogicPlayer_m_GankShoeRewardComp = Il2CppGetFieldOffset(image, battle, lp, "m_GankShoeRewardComp");
+    OFF_LogicPlayer_m_bGankEquip = Il2CppGetFieldOffset(image, battle, lp, "m_bGankEquip");
+    OFF_LogicPlayer_m_bHuntSkill = Il2CppGetFieldOffset(image, battle, lp, "m_bHuntSkill");
+    OFF_LogicPlayer_m_bLowestMoneyOrExp = Il2CppGetFieldOffset(image, battle, lp, "m_bLowestMoneyOrExp");
+    OFF_LogicPlayer_m_ShareMoneyEx = Il2CppGetFieldOffset(image, battle, lp, "m_ShareMoneyEx");
+    OFF_LogicPlayer_m_ShareExpEx = Il2CppGetFieldOffset(image, battle, lp, "m_ShareExpEx");
+    OFF_LogicPlayer_m_RewardMoney = Il2CppGetFieldOffset(image, battle, lp, "m_RewardMoney");
+    OFF_LogicPlayer_m_iBaseMoney = Il2CppGetFieldOffset(image, battle, lp, "m_iBaseMoney");
+    OFF_LogicPlayer_m_KillBounty = Il2CppGetFieldOffset(image, battle, lp, "m_KillBounty");
+    OFF_LogicPlayer_m_bBountyOverThreshold = Il2CppGetFieldOffset(image, battle, lp, "m_bBountyOverThreshold");
+    OFF_LogicPlayer_m_uLastBountyOverThreshold = Il2CppGetFieldOffset(image, battle, lp, "m_uLastBountyOverThreshold");
+    OFF_LogicPlayer_m_iContinueDeadSub = Il2CppGetFieldOffset(image, battle, lp, "m_iContinueDeadSub");
+    OFF_LogicPlayer_m_iContinueKillNum = Il2CppGetFieldOffset(image, battle, lp, "m_iContinueKillNum");
+    OFF_LogicPlayer_m_iContinueKillAdd = Il2CppGetFieldOffset(image, battle, lp, "m_iContinueKillAdd");
+    OFF_LogicPlayer_m_RewardExp = Il2CppGetFieldOffset(image, battle, lp, "m_RewardExp");
+    OFF_LogicPlayer_m_iBaseExp = Il2CppGetFieldOffset(image, battle, lp, "m_iBaseExp");
+    OFF_LogicPlayer_m_iLevelExp = Il2CppGetFieldOffset(image, battle, lp, "m_iLevelExp");
+    OFF_LogicPlayer_m_iLvExpRate = Il2CppGetFieldOffset(image, battle, lp, "m_iLvExpRate");
+    OFF_LogicPlayer_m_fContinueDeadPara = Il2CppGetFieldOffset(image, battle, lp, "m_fContinueDeadPara");
+    OFF_LogicPlayer_DeadAndKillTimes = Il2CppGetFieldOffset(image, battle, lp, "DeadAndKillTimes");
+    OFF_LogicPlayer_m_AssistTimesReward = Il2CppGetFieldOffset(image, battle, lp, "m_AssistTimesReward");
+    OFF_LogicPlayer_m_bReqMoveUpdate = Il2CppGetFieldOffset(image, battle, lp, "m_bReqMoveUpdate");
+    OFF_LogicPlayer_m_ReqMoveDir = Il2CppGetFieldOffset(image, battle, lp, "m_ReqMoveDir");
+    OFF_LogicPlayer_m_ReqMovePos = Il2CppGetFieldOffset(image, battle, lp, "m_ReqMovePos");
+    OFF_LogicPlayer_bDeathHoldKillCount = Il2CppGetFieldOffset(image, battle, lp, "bDeathHoldKillCount");
+    OFF_LogicPlayer_mShutDown = Il2CppGetFieldOffset(image, battle, lp, "mShutDown");
+    OFF_LogicPlayer_lastKillTime = Il2CppGetFieldOffset(image, battle, lp, "lastKillTime");
+    OFF_LogicPlayer_mutiKillUsefulTime = Il2CppGetFieldOffset(image, battle, lp, "mutiKillUsefulTime");
+    OFF_LogicPlayer_mutiKillUsefulTimeOn5kill = Il2CppGetFieldOffset(image, battle, lp, "mutiKillUsefulTimeOn5kill");
+    OFF_LogicPlayer_listKillTime = Il2CppGetFieldOffset(image, battle, lp, "listKillTime");
+    OFF_LogicPlayer_m_vDelayRemoveSkillIds = Il2CppGetFieldOffset(image, battle, lp, "m_vDelayRemoveSkillIds");
+    OFF_LogicPlayer_m_uiLastMoveTime = Il2CppGetFieldOffset(image, battle, lp, "m_uiLastMoveTime");
+    OFF_LogicPlayer_m_GetGoldTimesBySoldier = Il2CppGetFieldOffset(image, battle, lp, "m_GetGoldTimesBySoldier");
+    OFF_LogicPlayer_m_BeyondGodlike = Il2CppGetFieldOffset(image, battle, lp, "m_BeyondGodlike");
+    OFF_LogicPlayer_m_MaxMutiKill = Il2CppGetFieldOffset(image, battle, lp, "m_MaxMutiKill");
+    OFF_LogicPlayer_m_MaxContinueKill = Il2CppGetFieldOffset(image, battle, lp, "m_MaxContinueKill");
+    OFF_LogicPlayer_m_singleKill = Il2CppGetFieldOffset(image, battle, lp, "m_singleKill");
+    OFF_LogicPlayer_m_KillLingZhu = Il2CppGetFieldOffset(image, battle, lp, "m_KillLingZhu");
+    OFF_LogicPlayer_m_AssistLingZhu = Il2CppGetFieldOffset(image, battle, lp, "m_AssistLingZhu");
+    OFF_LogicPlayer_KillWildTimes = Il2CppGetFieldOffset(image, battle, lp, "KillWildTimes");
+    OFF_LogicPlayer_m_HitHeroTimes_SkillGuid = Il2CppGetFieldOffset(image, battle, lp, "m_HitHeroTimes_SkillGuid");
+    OFF_LogicPlayer_m_WeekKill = Il2CppGetFieldOffset(image, battle, lp, "m_WeekKill");
+    OFF_LogicPlayer_m_KillShenGui = Il2CppGetFieldOffset(image, battle, lp, "m_KillShenGui");
+    OFF_LogicPlayer_m_AssistShenGui = Il2CppGetFieldOffset(image, battle, lp, "m_AssistShenGui");
+    OFF_LogicPlayer_m_KillCdMonster = Il2CppGetFieldOffset(image, battle, lp, "m_KillCdMonster");
+    OFF_LogicPlayer_m_KillAtkMonster = Il2CppGetFieldOffset(image, battle, lp, "m_KillAtkMonster");
+    OFF_LogicPlayer_m_KillMePlayerCount = Il2CppGetFieldOffset(image, battle, lp, "m_KillMePlayerCount");
+    OFF_LogicPlayer_m_CurZoneId = Il2CppGetFieldOffset(image, battle, lp, "m_CurZoneId");
+    OFF_LogicPlayer_m_HurtTurtle = Il2CppGetFieldOffset(image, battle, lp, "m_HurtTurtle");
+    OFF_LogicPlayer_m_HurtLord = Il2CppGetFieldOffset(image, battle, lp, "m_HurtLord");
+    OFF_LogicPlayer_m_ShieldCureHero = Il2CppGetFieldOffset(image, battle, lp, "m_ShieldCureHero");
+    OFF_LogicPlayer_m_ShieldCureSelf = Il2CppGetFieldOffset(image, battle, lp, "m_ShieldCureSelf");
+    OFF_LogicPlayer_m_ShieldTeammate = Il2CppGetFieldOffset(image, battle, lp, "m_ShieldTeammate");
+    OFF_LogicPlayer_m_SufferControlTime = Il2CppGetFieldOffset(image, battle, lp, "m_SufferControlTime");
+    OFF_LogicPlayer_m_SufferSlowTime = Il2CppGetFieldOffset(image, battle, lp, "m_SufferSlowTime");
+    OFF_LogicPlayer_m_ControlTime = Il2CppGetFieldOffset(image, battle, lp, "m_ControlTime");
+    OFF_LogicPlayer_m_KillsWithRedAndBlueBuff = Il2CppGetFieldOffset(image, battle, lp, "m_KillsWithRedAndBlueBuff");
+    OFF_LogicPlayer_m_MoveDis = Il2CppGetFieldOffset(image, battle, lp, "m_MoveDis");
+    OFF_LogicPlayer_m_MoveDisTickCount = Il2CppGetFieldOffset(image, battle, lp, "m_MoveDisTickCount");
+    OFF_LogicPlayer_m_MoveCountPrePosX = Il2CppGetFieldOffset(image, battle, lp, "m_MoveCountPrePosX");
+    OFF_LogicPlayer_m_MoveCountPrePosY = Il2CppGetFieldOffset(image, battle, lp, "m_MoveCountPrePosY");
+    OFF_LogicPlayer_m_GoldByWild = Il2CppGetFieldOffset(image, battle, lp, "m_GoldByWild");
+    OFF_LogicPlayer_m_GoldBySoldier = Il2CppGetFieldOffset(image, battle, lp, "m_GoldBySoldier");
+    OFF_LogicPlayer_m_GoldByHero = Il2CppGetFieldOffset(image, battle, lp, "m_GoldByHero");
+    OFF_LogicPlayer_iAllHurtVal = Il2CppGetFieldOffset(image, battle, lp, "iAllHurtVal");
+    OFF_LogicPlayer_m_CrlTimes = Il2CppGetFieldOffset(image, battle, lp, "m_CrlTimes");
+    OFF_LogicPlayer_m_iPoisonValue = Il2CppGetFieldOffset(image, battle, lp, "m_iPoisonValue");
+    OFF_LogicPlayer_m_hurtEnemyWild = Il2CppGetFieldOffset(image, battle, lp, "m_hurtEnemyWild");
+    OFF_LogicPlayer_m_hurtWildValue = Il2CppGetFieldOffset(image, battle, lp, "m_hurtWildValue");
+    OFF_LogicPlayer_m_dStealValue = Il2CppGetFieldOffset(image, battle, lp, "m_dStealValue");
+    OFF_LogicPlayer_m_TrunSpeed = Il2CppGetFieldOffset(image, battle, lp, "m_TrunSpeed");
+    OFF_LogicPlayer_m_GreatGuid = Il2CppGetFieldOffset(image, battle, lp, "m_GreatGuid");
+    OFF_LogicPlayer_m_bRefuseSelectAIType = Il2CppGetFieldOffset(image, battle, lp, "m_bRefuseSelectAIType");
+    OFF_LogicPlayer_m_uiLastOperFrameTime = Il2CppGetFieldOffset(image, battle, lp, "m_uiLastOperFrameTime");
+    OFF_LogicPlayer_SummonSkillId = Il2CppGetFieldOffset(image, battle, lp, "SummonSkillId");
+    OFF_LogicPlayer_m_SummonStartSkillId = Il2CppGetFieldOffset(image, battle, lp, "m_SummonStartSkillId");
+    OFF_LogicPlayer_m_RankLv = Il2CppGetFieldOffset(image, battle, lp, "m_RankLv");
+    OFF_LogicPlayer_m_bigRankLv = Il2CppGetFieldOffset(image, battle, lp, "m_bigRankLv");
+    OFF_LogicPlayer_m_rankStar = Il2CppGetFieldOffset(image, battle, lp, "m_rankStar");
+    OFF_LogicPlayer_m_rankNum = Il2CppGetFieldOffset(image, battle, lp, "m_rankNum");
+    OFF_LogicPlayer_m_AutoAttackAI = Il2CppGetFieldOffset(image, battle, lp, "m_AutoAttackAI");
+    OFF_LogicPlayer_m_LogicPunish = Il2CppGetFieldOffset(image, battle, lp, "m_LogicPunish");
+    OFF_LogicPlayer_m_lastReliveTime = Il2CppGetFieldOffset(image, battle, lp, "m_lastReliveTime");
+    OFF_LogicPlayer_m_ReviveTimeMs = Il2CppGetFieldOffset(image, battle, lp, "m_ReviveTimeMs");
+    OFF_LogicPlayer_m_bFastDie = Il2CppGetFieldOffset(image, battle, lp, "m_bFastDie");
+    OFF_LogicPlayer_m_EatFruit = Il2CppGetFieldOffset(image, battle, lp, "m_EatFruit");
+    OFF_LogicPlayer_m_KillByFruit = Il2CppGetFieldOffset(image, battle, lp, "m_KillByFruit");
+    OFF_LogicPlayer_m_GetFruitOnMin = Il2CppGetFieldOffset(image, battle, lp, "m_GetFruitOnMin");
+    OFF_LogicPlayer_bAllowRelive = Il2CppGetFieldOffset(image, battle, lp, "bAllowRelive");
+    OFF_LogicPlayer_m_uiRoleLevel = Il2CppGetFieldOffset(image, battle, lp, "m_uiRoleLevel");
+    OFF_LogicPlayer_m_Killer = Il2CppGetFieldOffset(image, battle, lp, "m_Killer");
+    OFF_LogicPlayer_m_iAddGoldValue = Il2CppGetFieldOffset(image, battle, lp, "m_iAddGoldValue");
+    OFF_LogicPlayer_iMaxHurtValue = Il2CppGetFieldOffset(image, battle, lp, "iMaxHurtValue");
+    OFF_LogicPlayer_m_iSkinId = Il2CppGetFieldOffset(image, battle, lp, "m_iSkinId");
+    OFF_LogicPlayer_m_iDragonCrystalId = Il2CppGetFieldOffset(image, battle, lp, "m_iDragonCrystalId");
+    OFF_LogicPlayer_m_uUserMapID = Il2CppGetFieldOffset(image, battle, lp, "m_uUserMapID");
+    OFF_LogicPlayer_m_DevourData = Il2CppGetFieldOffset(image, battle, lp, "m_DevourData");
+    OFF_LogicPlayer_iLastGiveupEquip = Il2CppGetFieldOffset(image, battle, lp, "iLastGiveupEquip");
+    OFF_LogicPlayer_m_ControlSummer = Il2CppGetFieldOffset(image, battle, lp, "m_ControlSummer");
+    OFF_LogicPlayer_m_vSkillLogicFighter = Il2CppGetFieldOffset(image, battle, lp, "m_vSkillLogicFighter");
+    OFF_LogicPlayer_m_iSurvivalTime = Il2CppGetFieldOffset(image, battle, lp, "m_iSurvivalTime");
+    OFF_LogicPlayer_m_iChickenRanking = Il2CppGetFieldOffset(image, battle, lp, "m_iChickenRanking");
+    OFF_LogicPlayer_m_bEmojiBirthday = Il2CppGetFieldOffset(image, battle, lp, "m_bEmojiBirthday");
+    OFF_LogicPlayer_logAttackSpeed = Il2CppGetFieldOffset(image, battle, lp, "logAttackSpeed");
+    OFF_LogicPlayer_doAttackSpeed = Il2CppGetFieldOffset(image, battle, lp, "doAttackSpeed");
+    OFF_LogicPlayer_m_CommATK_RunTimer = Il2CppGetFieldOffset(image, battle, lp, "m_CommATK_RunTimer");
+    OFF_LogicPlayer_m_dCommATKSingTime_Mod = Il2CppGetFieldOffset(image, battle, lp, "m_dCommATKSingTime_Mod");
+    OFF_LogicPlayer_m_CommATKSingTime_LastTimer = Il2CppGetFieldOffset(image, battle, lp, "m_CommATKSingTime_LastTimer");
+    OFF_LogicPlayer_m_dCommATKCD_Mod = Il2CppGetFieldOffset(image, battle, lp, "m_dCommATKCD_Mod");
+    OFF_LogicPlayer_m_CommATKCD_LastTimer = Il2CppGetFieldOffset(image, battle, lp, "m_CommATKCD_LastTimer");
+    OFF_LogicPlayer_m_vPlayerDeadInfo = Il2CppGetFieldOffset(image, battle, lp, "m_vPlayerDeadInfo");
+    OFF_LogicPlayer_m_PriorEquip = Il2CppGetFieldOffset(image, battle, lp, "m_PriorEquip");
+    OFF_LogicPlayer_m_RecmendEquips = Il2CppGetFieldOffset(image, battle, lp, "m_RecmendEquips");
+    OFF_LogicPlayer_m_uHeroEnhanceLevel = Il2CppGetFieldOffset(image, battle, lp, "m_uHeroEnhanceLevel");
+    OFF_LogicPlayer_m_bGhostHasDied = Il2CppGetFieldOffset(image, battle, lp, "m_bGhostHasDied");
+    OFF_LogicPlayer_m_v2StarDir = Il2CppGetFieldOffset(image, battle, lp, "m_v2StarDir");
+    OFF_LogicPlayer_shopData = Il2CppGetFieldOffset(image, battle, lp, "shopData");
+    OFF_LogicPlayer_v2LastCheckPos = Il2CppGetFieldOffset(image, battle, lp, "v2LastCheckPos");
+    OFF_LogicPlayer_lastCheckDirSymbol = Il2CppGetFieldOffset(image, battle, lp, "lastCheckDirSymbol");
+    OFF_LogicPlayer_lastCheckMoveDir = Il2CppGetFieldOffset(image, battle, lp, "lastCheckMoveDir");
+    OFF_LogicPlayer_right = Il2CppGetFieldOffset(image, battle, lp, "right");
+    OFF_LogicPlayer_lastFailedAutoAiSpellCast = Il2CppGetFieldOffset(image, battle, lp, "lastFailedAutoAiSpellCast");
+    OFF_LogicPlayer_lastFailedAutoAiSpellCastTime = Il2CppGetFieldOffset(image, battle, lp, "lastFailedAutoAiSpellCastTime");
+    OFF_LogicPlayer_ownNormalSkillCache = Il2CppGetFieldOffset(image, battle, lp, "ownNormalSkillCache");
+    OFF_LogicPlayer_autoTime = Il2CppGetFieldOffset(image, battle, lp, "autoTime");
+    OFF_LogicPlayer_m_dXpGrowthDecimal = Il2CppGetFieldOffset(image, battle, lp, "m_dXpGrowthDecimal");
+    OFF_LogicPlayer_lEatFruits = Il2CppGetFieldOffset(image, battle, lp, "lEatFruits");
+    OFF_LogicPlayer_bBornedBoss = Il2CppGetFieldOffset(image, battle, lp, "bBornedBoss");
+    OFF_LogicPlayer_iPreMutiKillValue = Il2CppGetFieldOffset(image, battle, lp, "iPreMutiKillValue");
+    OFF_LogicPlayer_iPreContinueKillValue = Il2CppGetFieldOffset(image, battle, lp, "iPreContinueKillValue");
+    OFF_LogicPlayer_iPreKillLingZhu = Il2CppGetFieldOffset(image, battle, lp, "iPreKillLingZhu");
+    OFF_LogicPlayer_iPreKillShenGui = Il2CppGetFieldOffset(image, battle, lp, "iPreKillShenGui");
+    OFF_LogicPlayer_iPreShutDown = Il2CppGetFieldOffset(image, battle, lp, "iPreShutDown");
+    OFF_LogicPlayer_bCheckFirstBlood = Il2CppGetFieldOffset(image, battle, lp, "bCheckFirstBlood");
+    OFF_LogicPlayer_iCurrentResult = Il2CppGetFieldOffset(image, battle, lp, "iCurrentResult");
+    OFF_LogicPlayer_iPreGetResultTime = Il2CppGetFieldOffset(image, battle, lp, "iPreGetResultTime");
+    OFF_LogicPlayer_iCurKilledResult = Il2CppGetFieldOffset(image, battle, lp, "iCurKilledResult");
+    OFF_LogicPlayer_iPreKilledResultTime = Il2CppGetFieldOffset(image, battle, lp, "iPreKilledResultTime");
 
     // ShowFightDataTiny (BattleStats)
     const char* sfd = "ShowFightDataTiny";
 
-    INIT_OFFSET(ShowFightDataTiny_m_levelOnSixMin, image, "", sfd, "m_levelOnSixMin")
-    INIT_OFFSET(ShowFightDataTiny_m_LevelOnTwelveMin, image, "", sfd, "m_LevelOnTwelveMin")
-    INIT_OFFSET(ShowFightDataTiny_m_EmojiCarryList, image, "", sfd, "m_EmojiCarryList")
-    INIT_OFFSET(ShowFightDataTiny_m_TDFighteData, image, "", sfd, "m_TDFighteData")
-    INIT_OFFSET(ShowFightDataTiny_m_DeathInfoList, image, "", sfd, "m_DeathInfoList")
-    INIT_OFFSET(ShowFightDataTiny_m_DeathAttackInfoDict, image, "", sfd, "m_DeathAttackInfoDict")
-    INIT_OFFSET(ShowFightDataTiny_m_lNotLinkEffect, image, "", sfd, "m_lNotLinkEffect")
-    INIT_OFFSET(ShowFightDataTiny_m_dicKeyCancelDis, image, "", sfd, "m_dicKeyCancelDis")
-    INIT_OFFSET(ShowFightDataTiny_m_KillerCount, image, "", sfd, "m_KillerCount")
-    INIT_OFFSET(ShowFightDataTiny_m_FighterDyData, image, "", sfd, "m_FighterDyData")
-    INIT_OFFSET(ShowFightDataTiny_m_KillNumCrossTower, image, "", sfd, "m_KillNumCrossTower")
-    INIT_OFFSET(ShowFightDataTiny_m_RevengeKillNum, image, "", sfd, "m_RevengeKillNum")
-    INIT_OFFSET(ShowFightDataTiny_m_ExtremeBackHomeNum, image, "", sfd, "m_ExtremeBackHomeNum")
-    INIT_OFFSET(ShowFightDataTiny_m_selfBeAttackTIme, image, "", sfd, "m_selfBeAttackTIme")
-    INIT_OFFSET(ShowFightDataTiny_m_heroNumAroundSelf, image, "", sfd, "m_heroNumAroundSelf")
-    INIT_OFFSET(ShowFightDataTiny_m_EnemyhurtSelf, image, "", sfd, "m_EnemyhurtSelf")
-    INIT_OFFSET(ShowFightDataTiny_lastLockGuid, image, "", sfd, "lastLockGuid")
-    INIT_OFFSET(ShowFightDataTiny_bLockGuidChanged, image, "", sfd, "bLockGuidChanged")
-    INIT_OFFSET(ShowFightDataTiny_m_BackHomeCount, image, "", sfd, "m_BackHomeCount")
-    INIT_OFFSET(ShowFightDataTiny_m_RecoverSuccessfullyCount, image, "", sfd, "m_RecoverSuccessfullyCount")
-    INIT_OFFSET(ShowFightDataTiny_m_ReplaceHeroSkill, image, "", sfd, "m_ReplaceHeroSkill")
-    INIT_OFFSET(ShowFightDataTiny_m_arenaWinVoice, image, "", sfd, "m_arenaWinVoice")
-    INIT_OFFSET(ShowFightDataTiny_m_arenaLoseVoice, image, "", sfd, "m_arenaLoseVoice")
-    INIT_OFFSET(ShowFightDataTiny_m_BuyEquipCount, image, "", sfd, "m_BuyEquipCount")
-    INIT_OFFSET(ShowFightDataTiny_m_BuyEquipTime, image, "", sfd, "m_BuyEquipTime")
-    INIT_OFFSET(ShowFightDataTiny_m_BannedList, image, "", sfd, "m_BannedList")
-    INIT_OFFSET(ShowFightDataTiny_m_VoiceBannedList, image, "", sfd, "m_VoiceBannedList")
-    INIT_OFFSET(ShowFightDataTiny_m_ForbidTalkList, image, "", sfd, "m_ForbidTalkList")
-    INIT_OFFSET(ShowFightDataTiny_m_BuyEquipTimes, image, "", sfd, "m_BuyEquipTimes")
-    INIT_OFFSET(ShowFightDataTiny_m_GreatIDs, image, "", sfd, "m_GreatIDs")
-    INIT_OFFSET(ShowFightDataTiny_m_FighterSplitEnergyBar, image, "", sfd, "m_FighterSplitEnergyBar")
-    INIT_OFFSET(ShowFightDataTiny_m_uSurvivalCount, image, "", sfd, "m_uSurvivalCount")
-    INIT_OFFSET(ShowFightDataTiny_m_uPlayerCount, image, "", sfd, "m_uPlayerCount")
-    INIT_OFFSET(ShowFightDataTiny_m_iCampAKill, image, "", sfd, "m_iCampAKill")
-    INIT_OFFSET(ShowFightDataTiny_m_iCampBKill, image, "", sfd, "m_iCampBKill")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAGold, image, "", sfd, "m_CampAGold")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBGold, image, "", sfd, "m_CampBGold")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAExp, image, "", sfd, "m_CampAExp")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBExp, image, "", sfd, "m_CampBExp")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAKillTower, image, "", sfd, "m_CampAKillTower")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBKillTower, image, "", sfd, "m_CampBKillTower")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAKillLingZhu, image, "", sfd, "m_CampAKillLingZhu")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBKillLingZhu, image, "", sfd, "m_CampBKillLingZhu")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAKillShenGui, image, "", sfd, "m_CampAKillShenGui")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBKillShenGui, image, "", sfd, "m_CampBKillShenGui")
-    INIT_OFFSET(ShowFightDataTiny_m_CampAKillLingzhuOnSuperior, image, "", sfd, "m_CampAKillLingzhuOnSuperior")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBKillLingzhuOnSuperior, image, "", sfd, "m_CampBKillLingzhuOnSuperior")
-    INIT_OFFSET(ShowFightDataTiny_m_CampASuperiorTime, image, "", sfd, "m_CampASuperiorTime")
-    INIT_OFFSET(ShowFightDataTiny_m_CampBSuperiorTime, image, "", sfd, "m_CampBSuperiorTime")
-    INIT_OFFSET(ShowFightDataTiny_m_iFirstBldTime, image, "", sfd, "m_iFirstBldTime")
-    INIT_OFFSET(ShowFightDataTiny_m_iFirstBldKiller, image, "", sfd, "m_iFirstBldKiller")
+    OFF_ShowFightDataTiny_m_levelOnSixMin = Il2CppGetFieldOffset(image, "", sfd, "m_levelOnSixMin");
+    OFF_ShowFightDataTiny_m_LevelOnTwelveMin = Il2CppGetFieldOffset(image, "", sfd, "m_LevelOnTwelveMin");
+    OFF_ShowFightDataTiny_m_EmojiCarryList = Il2CppGetFieldOffset(image, "", sfd, "m_EmojiCarryList");
+    OFF_ShowFightDataTiny_m_TDFighteData = Il2CppGetFieldOffset(image, "", sfd, "m_TDFighteData");
+    OFF_ShowFightDataTiny_m_DeathInfoList = Il2CppGetFieldOffset(image, "", sfd, "m_DeathInfoList");
+    OFF_ShowFightDataTiny_m_DeathAttackInfoDict = Il2CppGetFieldOffset(image, "", sfd, "m_DeathAttackInfoDict");
+    OFF_ShowFightDataTiny_m_lNotLinkEffect = Il2CppGetFieldOffset(image, "", sfd, "m_lNotLinkEffect");
+    OFF_ShowFightDataTiny_m_dicKeyCancelDis = Il2CppGetFieldOffset(image, "", sfd, "m_dicKeyCancelDis");
+    OFF_ShowFightDataTiny_m_KillerCount = Il2CppGetFieldOffset(image, "", sfd, "m_KillerCount");
+    OFF_ShowFightDataTiny_m_FighterDyData = Il2CppGetFieldOffset(image, "", sfd, "m_FighterDyData");
+    OFF_ShowFightDataTiny_m_KillNumCrossTower = Il2CppGetFieldOffset(image, "", sfd, "m_KillNumCrossTower");
+    OFF_ShowFightDataTiny_m_RevengeKillNum = Il2CppGetFieldOffset(image, "", sfd, "m_RevengeKillNum");
+    OFF_ShowFightDataTiny_m_ExtremeBackHomeNum = Il2CppGetFieldOffset(image, "", sfd, "m_ExtremeBackHomeNum");
+    OFF_ShowFightDataTiny_m_selfBeAttackTIme = Il2CppGetFieldOffset(image, "", sfd, "m_selfBeAttackTIme");
+    OFF_ShowFightDataTiny_m_heroNumAroundSelf = Il2CppGetFieldOffset(image, "", sfd, "m_heroNumAroundSelf");
+    OFF_ShowFightDataTiny_m_EnemyhurtSelf = Il2CppGetFieldOffset(image, "", sfd, "m_EnemyhurtSelf");
+    OFF_ShowFightDataTiny_lastLockGuid = Il2CppGetFieldOffset(image, "", sfd, "lastLockGuid");
+    OFF_ShowFightDataTiny_bLockGuidChanged = Il2CppGetFieldOffset(image, "", sfd, "bLockGuidChanged");
+    OFF_ShowFightDataTiny_m_BackHomeCount = Il2CppGetFieldOffset(image, "", sfd, "m_BackHomeCount");
+    OFF_ShowFightDataTiny_m_RecoverSuccessfullyCount = Il2CppGetFieldOffset(image, "", sfd, "m_RecoverSuccessfullyCount");
+    OFF_ShowFightDataTiny_m_ReplaceHeroSkill = Il2CppGetFieldOffset(image, "", sfd, "m_ReplaceHeroSkill");
+    OFF_ShowFightDataTiny_m_arenaWinVoice = Il2CppGetFieldOffset(image, "", sfd, "m_arenaWinVoice");
+    OFF_ShowFightDataTiny_m_arenaLoseVoice = Il2CppGetFieldOffset(image, "", sfd, "m_arenaLoseVoice");
+    OFF_ShowFightDataTiny_m_BuyEquipCount = Il2CppGetFieldOffset(image, "", sfd, "m_BuyEquipCount");
+    OFF_ShowFightDataTiny_m_BuyEquipTime = Il2CppGetFieldOffset(image, "", sfd, "m_BuyEquipTime");
+    OFF_ShowFightDataTiny_m_BannedList = Il2CppGetFieldOffset(image, "", sfd, "m_BannedList");
+    OFF_ShowFightDataTiny_m_VoiceBannedList = Il2CppGetFieldOffset(image, "", sfd, "m_VoiceBannedList");
+    OFF_ShowFightDataTiny_m_ForbidTalkList = Il2CppGetFieldOffset(image, "", sfd, "m_ForbidTalkList");
+    OFF_ShowFightDataTiny_m_BuyEquipTimes = Il2CppGetFieldOffset(image, "", sfd, "m_BuyEquipTimes");
+    OFF_ShowFightDataTiny_m_GreatIDs = Il2CppGetFieldOffset(image, "", sfd, "m_GreatIDs");
+    OFF_ShowFightDataTiny_m_FighterSplitEnergyBar = Il2CppGetFieldOffset(image, "", sfd, "m_FighterSplitEnergyBar");
+    OFF_ShowFightDataTiny_m_uSurvivalCount = Il2CppGetFieldOffset(image, "", sfd, "m_uSurvivalCount");
+    OFF_ShowFightDataTiny_m_uPlayerCount = Il2CppGetFieldOffset(image, "", sfd, "m_uPlayerCount");
+    OFF_ShowFightDataTiny_m_iCampAKill = Il2CppGetFieldOffset(image, "", sfd, "m_iCampAKill");
+    OFF_ShowFightDataTiny_m_iCampBKill = Il2CppGetFieldOffset(image, "", sfd, "m_iCampBKill");
+    OFF_ShowFightDataTiny_m_CampAGold = Il2CppGetFieldOffset(image, "", sfd, "m_CampAGold");
+    OFF_ShowFightDataTiny_m_CampBGold = Il2CppGetFieldOffset(image, "", sfd, "m_CampBGold");
+    OFF_ShowFightDataTiny_m_CampAExp = Il2CppGetFieldOffset(image, "", sfd, "m_CampAExp");
+    OFF_ShowFightDataTiny_m_CampBExp = Il2CppGetFieldOffset(image, "", sfd, "m_CampBExp");
+    OFF_ShowFightDataTiny_m_CampAKillTower = Il2CppGetFieldOffset(image, "", sfd, "m_CampAKillTower");
+    OFF_ShowFightDataTiny_m_CampBKillTower = Il2CppGetFieldOffset(image, "", sfd, "m_CampBKillTower");
+    OFF_ShowFightDataTiny_m_CampAKillLingZhu = Il2CppGetFieldOffset(image, "", sfd, "m_CampAKillLingZhu");
+    OFF_ShowFightDataTiny_m_CampBKillLingZhu = Il2CppGetFieldOffset(image, "", sfd, "m_CampBKillLingZhu");
+    OFF_ShowFightDataTiny_m_CampAKillShenGui = Il2CppGetFieldOffset(image, "", sfd, "m_CampAKillShenGui");
+    OFF_ShowFightDataTiny_m_CampBKillShenGui = Il2CppGetFieldOffset(image, "", sfd, "m_CampBKillShenGui");
+    OFF_ShowFightDataTiny_m_CampAKillLingzhuOnSuperior = Il2CppGetFieldOffset(image, "", sfd, "m_CampAKillLingzhuOnSuperior");
+    OFF_ShowFightDataTiny_m_CampBKillLingzhuOnSuperior = Il2CppGetFieldOffset(image, "", sfd, "m_CampBKillLingzhuOnSuperior");
+    OFF_ShowFightDataTiny_m_CampASuperiorTime = Il2CppGetFieldOffset(image, "", sfd, "m_CampASuperiorTime");
+    OFF_ShowFightDataTiny_m_CampBSuperiorTime = Il2CppGetFieldOffset(image, "", sfd, "m_CampBSuperiorTime");
+    OFF_ShowFightDataTiny_m_iFirstBldTime = Il2CppGetFieldOffset(image, "", sfd, "m_iFirstBldTime");
+    OFF_ShowFightDataTiny_m_iFirstBldKiller = Il2CppGetFieldOffset(image, "", sfd, "m_iFirstBldKiller");
 
     // BattleData
-    INIT_OFFSET(BattleData_heroInfoList, image, "", "BattleData", "heroInfoList")
+    OFF_BattleData_heroInfoList = Il2CppGetFieldOffset(image, "", "BattleData", "heroInfoList");
 
     // FightHeroInfo
     const char* mttd = "MTTDProto";
     const char* fhi = "FightHeroInfo";
 
-    INIT_OFFSET(FightHeroInfo_m_KillNum, image, mttd, fhi, "m_KillNum")
-    INIT_OFFSET(FightHeroInfo_m_DeadNum, image, mttd, fhi, "m_DeadNum")
-    INIT_OFFSET(FightHeroInfo_m_AssistNum, image, mttd, fhi, "m_AssistNum")
-    INIT_OFFSET(FightHeroInfo_m_Gold, image, mttd, fhi, "m_Gold")
-    INIT_OFFSET(FightHeroInfo_m_TotalGold, image, mttd, fhi, "m_TotalGold")
-    INIT_OFFSET(FightHeroInfo_m_PlayerName, image, mttd, fhi, "m_PlayerName")
-    INIT_OFFSET(FightHeroInfo_m_uGuid, image, mttd, fhi, "m_uGuid")
-    INIT_OFFSET(FightHeroInfo_m_CampType, image, mttd, fhi, "m_CampType")
+    OFF_FightHeroInfo_m_KillNum = Il2CppGetFieldOffset(image, mttd, fhi, "m_KillNum");
+    OFF_FightHeroInfo_m_DeadNum = Il2CppGetFieldOffset(image, mttd, fhi, "m_DeadNum");
+    OFF_FightHeroInfo_m_AssistNum = Il2CppGetFieldOffset(image, mttd, fhi, "m_AssistNum");
+    OFF_FightHeroInfo_m_Gold = Il2CppGetFieldOffset(image, mttd, fhi, "m_Gold");
+    OFF_FightHeroInfo_m_TotalGold = Il2CppGetFieldOffset(image, mttd, fhi, "m_TotalGold");
+    OFF_FightHeroInfo_m_PlayerName = Il2CppGetFieldOffset(image, mttd, fhi, "m_PlayerName");
+    OFF_FightHeroInfo_m_uGuid = Il2CppGetFieldOffset(image, mttd, fhi, "m_uGuid");
+    OFF_FightHeroInfo_m_CampType = Il2CppGetFieldOffset(image, mttd, fhi, "m_CampType");
 
     // SystemData.RoomData
     const char* srd = "SystemData/RoomData";
 
-    INIT_OFFSET(SystemData_RoomData_lUid, image, "", srd, "lUid")
-    INIT_OFFSET(SystemData_RoomData_bUid, image, "", srd, "bUid")
-    INIT_OFFSET(SystemData_RoomData_iCamp, image, "", srd, "iCamp")
-    INIT_OFFSET(SystemData_RoomData_iPos, image, "", srd, "iPos")
-    INIT_OFFSET(SystemData_RoomData__sName, image, "", srd, "_sName")
-    INIT_OFFSET(SystemData_RoomData_heroid, image, "", srd, "heroid")
-    INIT_OFFSET(SystemData_RoomData_heroskin, image, "", srd, "heroskin")
-    INIT_OFFSET(SystemData_RoomData_summonSkillId, image, "", srd, "summonSkillId")
-    INIT_OFFSET(SystemData_RoomData_runeId, image, "", srd, "runeId")
-    INIT_OFFSET(SystemData_RoomData_runeLv, image, "", srd, "runeLv")
-    INIT_OFFSET(SystemData_RoomData_uiRankLevel, image, "", srd, "uiRankLevel")
-    INIT_OFFSET(SystemData_RoomData_iMythPoint, image, "", srd, "iMythPoint")
-    INIT_OFFSET(SystemData_RoomData_uiZoneId, image, "", srd, "uiZoneId")
-    INIT_OFFSET(SystemData_RoomData_banHero, image, "", srd, "banHero")
-    INIT_OFFSET(SystemData_RoomData_bRobot, image, "", srd, "bRobot")
-    INIT_OFFSET(SystemData_RoomData_bNewPlayer, image, "", srd, "bNewPlayer")
-    INIT_OFFSET(SystemData_RoomData_uiHeroIDChoose, image, "", srd, "uiHeroIDChoose")
-    INIT_OFFSET(SystemData_RoomData_bAutoConditionNew, image, "", srd, "bAutoConditionNew")
-    INIT_OFFSET(SystemData_RoomData_bShowSeasonAchieve, image, "", srd, "bShowSeasonAchieve")
-    INIT_OFFSET(SystemData_RoomData_iStyleBoardId, image, "", srd, "iStyleBoardId")
-    INIT_OFFSET(SystemData_RoomData_iMatchEffectId, image, "", srd, "iMatchEffectId")
-    INIT_OFFSET(SystemData_RoomData_iDayBreakNo1Count, image, "", srd, "iDayBreakNo1Count")
-    INIT_OFFSET(SystemData_RoomData_bAutoReadySelect, image, "", srd, "bAutoReadySelect")
-    INIT_OFFSET(SystemData_RoomData_headID, image, "", srd, "headID")
-    INIT_OFFSET(SystemData_RoomData_uiSex, image, "", srd, "uiSex")
-    INIT_OFFSET(SystemData_RoomData_country, image, "", srd, "country")
-    INIT_OFFSET(SystemData_RoomData_facePath, image, "", srd, "facePath")
-    INIT_OFFSET(SystemData_RoomData_faceBorder, image, "", srd, "faceBorder")
-    INIT_OFFSET(SystemData_RoomData_bStarVip, image, "", srd, "bStarVip")
-    INIT_OFFSET(SystemData_RoomData_bMCStarVip, image, "", srd, "bMCStarVip")
-    INIT_OFFSET(SystemData_RoomData_bMCStarVipPlus, image, "", srd, "bMCStarVipPlus")
-    INIT_OFFSET(SystemData_RoomData_ulRoomID, image, "", srd, "ulRoomID")
-    INIT_OFFSET(SystemData_RoomData_iConBlackRoomId, image, "", srd, "iConBlackRoomId")
-    INIT_OFFSET(SystemData_RoomData_uiBattlePlayerType, image, "", srd, "uiBattlePlayerType")
-    INIT_OFFSET(SystemData_RoomData_sThisLoginCountry, image, "", srd, "sThisLoginCountry")
-    INIT_OFFSET(SystemData_RoomData_sCreateRoleCountry, image, "", srd, "sCreateRoleCountry")
-    INIT_OFFSET(SystemData_RoomData_uiLanguage, image, "", srd, "uiLanguage")
-    INIT_OFFSET(SystemData_RoomData_bIsOpenLive, image, "", srd, "bIsOpenLive")
-    INIT_OFFSET(SystemData_RoomData_iTeamId, image, "", srd, "iTeamId")
-    INIT_OFFSET(SystemData_RoomData_iTeamNationId, image, "", srd, "iTeamNationId")
-    INIT_OFFSET(SystemData_RoomData__steamName, image, "", srd, "_steamName")
-    INIT_OFFSET(SystemData_RoomData__steamSimpleName, image, "", srd, "_steamSimpleName")
-    INIT_OFFSET(SystemData_RoomData_iCertify, image, "", srd, "iCertify")
-    INIT_OFFSET(SystemData_RoomData_uiPVPRank, image, "", srd, "uiPVPRank")
-    INIT_OFFSET(SystemData_RoomData_bRankReview, image, "", srd, "bRankReview")
-    INIT_OFFSET(SystemData_RoomData_iElo, image, "", srd, "iElo")
-    INIT_OFFSET(SystemData_RoomData_uiRoleLevel, image, "", srd, "uiRoleLevel")
-    INIT_OFFSET(SystemData_RoomData_iRoad, image, "", srd, "iRoad")
-    INIT_OFFSET(SystemData_RoomData_uiSkinSource, image, "", srd, "uiSkinSource")
-    INIT_OFFSET(SystemData_RoomData_iFighterType, image, "", srd, "iFighterType")
-    INIT_OFFSET(SystemData_RoomData_iWorldCupSupportCountry, image, "", srd, "iWorldCupSupportCountry")
-    INIT_OFFSET(SystemData_RoomData_iHeroLevel, image, "", srd, "iHeroLevel")
-    INIT_OFFSET(SystemData_RoomData_iHeroSubLevel, image, "", srd, "iHeroSubLevel")
-    INIT_OFFSET(SystemData_RoomData_iHeroPowerLevel, image, "", srd, "iHeroPowerLevel")
-    INIT_OFFSET(SystemData_RoomData_iActCamp, image, "", srd, "iActCamp")
-    INIT_OFFSET(SystemData_RoomData_mHeroMission, image, "", srd, "mHeroMission")
-    INIT_OFFSET(SystemData_RoomData_mSkinPaint, image, "", srd, "mSkinPaint")
-    INIT_OFFSET(SystemData_RoomData_sClientVersion, image, "", srd, "sClientVersion")
-    INIT_OFFSET(SystemData_RoomData_uiHolyStatue, image, "", srd, "uiHolyStatue")
-    INIT_OFFSET(SystemData_RoomData_uiKamon, image, "", srd, "uiKamon")
-    INIT_OFFSET(SystemData_RoomData_uiUserMapID, image, "", srd, "uiUserMapID")
-    INIT_OFFSET(SystemData_RoomData_iSurviveRank, image, "", srd, "iSurviveRank")
-    INIT_OFFSET(SystemData_RoomData_iDefenceRankID, image, "", srd, "iDefenceRankID")
-    INIT_OFFSET(SystemData_RoomData_iLeagueWCNum, image, "", srd, "iLeagueWCNum")
-    INIT_OFFSET(SystemData_RoomData_iLeagueFCNum, image, "", srd, "iLeagueFCNum")
-    INIT_OFFSET(SystemData_RoomData_iMPLCertifyTime, image, "", srd, "iMPLCertifyTime")
-    INIT_OFFSET(SystemData_RoomData_iMPLCertifyID, image, "", srd, "iMPLCertifyID")
-    INIT_OFFSET(SystemData_RoomData_iHeroUseCount, image, "", srd, "iHeroUseCount")
-    INIT_OFFSET(SystemData_RoomData_bMythEvaled, image, "", srd, "bMythEvaled")
-    INIT_OFFSET(SystemData_RoomData_iDefenceFlag, image, "", srd, "iDefenceFlag")
-    INIT_OFFSET(SystemData_RoomData_iDefenPoint, image, "", srd, "iDefenPoint")
-    INIT_OFFSET(SystemData_RoomData_iDefenceMap, image, "", srd, "iDefenceMap")
-    INIT_OFFSET(SystemData_RoomData_iAIType, image, "", srd, "iAIType")
-    INIT_OFFSET(SystemData_RoomData_iAISeed, image, "", srd, "iAISeed")
-    INIT_OFFSET(SystemData_RoomData_sAiName, image, "", srd, "sAiName")
-    INIT_OFFSET(SystemData_RoomData_iWarmValue, image, "", srd, "iWarmValue")
-    INIT_OFFSET(SystemData_RoomData_uiAircraftIDChooose, image, "", srd, "uiAircraftIDChooose")
-    INIT_OFFSET(SystemData_RoomData_uiHeroSkinIDChoose, image, "", srd, "uiHeroSkinIDChoose")
-    INIT_OFFSET(SystemData_RoomData_uiMapIDChoose, image, "", srd, "uiMapIDChoose")
-    INIT_OFFSET(SystemData_RoomData_uiMapSkinIDChoose, image, "", srd, "uiMapSkinIDChoose")
-    INIT_OFFSET(SystemData_RoomData_uiDefenceRankScore, image, "", srd, "uiDefenceRankScore")
-    INIT_OFFSET(SystemData_RoomData_bBanChat, image, "", srd, "bBanChat")
-    INIT_OFFSET(SystemData_RoomData_iChatBanFinishTime, image, "", srd, "iChatBanFinishTime")
-    INIT_OFFSET(SystemData_RoomData_iChatBanBattleNum, image, "", srd, "iChatBanBattleNum")
-    INIT_OFFSET(SystemData_RoomData_mapTalentTree, image, "", srd, "mapTalentTree")
-    INIT_OFFSET(SystemData_RoomData_mRuneSkill2023, image, "", srd, "mRuneSkill2023")
-    INIT_OFFSET(SystemData_RoomData_skinlist, image, "", srd, "skinlist")
-    INIT_OFFSET(SystemData_RoomData_vCanSelectHero, image, "", srd, "vCanSelectHero")
-    INIT_OFFSET(SystemData_RoomData_vCanPickHero, image, "", srd, "vCanPickHero")
-    INIT_OFFSET(SystemData_RoomData_lsEffectSkins, image, "", srd, "lsEffectSkins")
-    INIT_OFFSET(SystemData_RoomData_lsComEffSkins, image, "", srd, "lsComEffSkins")
-    INIT_OFFSET(SystemData_RoomData_vMissions, image, "", srd, "vMissions")
-    INIT_OFFSET(SystemData_RoomData_vTitle, image, "", srd, "vTitle")
-    INIT_OFFSET(SystemData_RoomData_vEmoji, image, "", srd, "vEmoji")
-    INIT_OFFSET(SystemData_RoomData_vItemBuff, image, "", srd, "vItemBuff")
-    INIT_OFFSET(SystemData_RoomData_vMapPaint, image, "", srd, "vMapPaint")
-    INIT_OFFSET(SystemData_RoomData_mapBattleAttr, image, "", srd, "mapBattleAttr")
-    INIT_OFFSET(SystemData_RoomData_vFastChat, image, "", srd, "vFastChat")
-    INIT_OFFSET(SystemData_RoomData_vWantSelectHero, image, "", srd, "vWantSelectHero")
-    INIT_OFFSET(SystemData_RoomData_bForbidUseFaceName, image, "", srd, "bForbidUseFaceName")
-    INIT_OFFSET(SystemData_RoomData_sClientIp, image, "", srd, "sClientIp")
-    INIT_OFFSET(SystemData_RoomData_iRoomOrder, image, "", srd, "iRoomOrder")
-    INIT_OFFSET(SystemData_RoomData_vRougeTotalSkill, image, "", srd, "vRougeTotalSkill")
-    INIT_OFFSET(SystemData_RoomData_vRougeOMGSkill, image, "", srd, "vRougeOMGSkill")
-    INIT_OFFSET(SystemData_RoomData_vRecommendEquipList, image, "", srd, "vRecommendEquipList")
-    INIT_OFFSET(SystemData_RoomData_sRecommendEquipVersion, image, "", srd, "sRecommendEquipVersion")
-    INIT_OFFSET(SystemData_RoomData_vPingParamDetail, image, "", srd, "vPingParamDetail")
-    INIT_OFFSET(SystemData_RoomData_uiPlayerPing, image, "", srd, "uiPlayerPing")
-    INIT_OFFSET(SystemData_RoomData_mSkinRankSeasonTag, image, "", srd, "mSkinRankSeasonTag")
-    INIT_OFFSET(SystemData_RoomData_mSkinNumTag, image, "", srd, "mSkinNumTag")
-    INIT_OFFSET(SystemData_RoomData_bFullSkillaber, image, "", srd, "bFullSkillaber")
-    INIT_OFFSET(SystemData_RoomData_uiCommanderSkinAttackEffect, image, "", srd, "uiCommanderSkinAttackEffect")
-    INIT_OFFSET(SystemData_RoomData_uiDailyFreeRandomNum, image, "", srd, "uiDailyFreeRandomNum")
-    INIT_OFFSET(SystemData_RoomData_bIllustrateCornerEffectClose, image, "", srd, "bIllustrateCornerEffectClose")
-    INIT_OFFSET(SystemData_RoomData_bTagedBackOf2022, image, "", srd, "bTagedBackOf2022")
-    INIT_OFFSET(SystemData_RoomData_iTapConflictTipNum, image, "", srd, "iTapConflictTipNum")
-    INIT_OFFSET(SystemData_RoomData_iNameShowType, image, "", srd, "iNameShowType")
-    INIT_OFFSET(SystemData_RoomData_bOpenHighLight, image, "", srd, "bOpenHighLight")
-    INIT_OFFSET(SystemData_RoomData_mMCBanPickCommander, image, "", srd, "mMCBanPickCommander")
-    INIT_OFFSET(SystemData_RoomData_vForbidBanCommander, image, "", srd, "vForbidBanCommander")
-    INIT_OFFSET(SystemData_RoomData_iTeamLevel, image, "", srd, "iTeamLevel")
-    INIT_OFFSET(SystemData_RoomData_vAdditionalHero, image, "", srd, "vAdditionalHero")
-    INIT_OFFSET(SystemData_RoomData_uiDisorderPublicHeroScore, image, "", srd, "uiDisorderPublicHeroScore")
-    INIT_OFFSET(SystemData_RoomData_bPlayerBirthdayToday, image, "", srd, "bPlayerBirthdayToday")
-    INIT_OFFSET(SystemData_RoomData_iTeamHeadId, image, "", srd, "iTeamHeadId")
-    INIT_OFFSET(SystemData_RoomData_mapHeroBattleNum, image, "", srd, "mapHeroBattleNum")
-    INIT_OFFSET(SystemData_RoomData_vCurSeasonRealRoadInfo, image, "", srd, "vCurSeasonRealRoadInfo")
-    INIT_OFFSET(SystemData_RoomData_vCultivateRoadShow, image, "", srd, "vCultivateRoadShow")
-    INIT_OFFSET(SystemData_RoomData_uiCommanderLevel, image, "", srd, "uiCommanderLevel")
-    INIT_OFFSET(SystemData_RoomData_bOpenSubRankID, image, "", srd, "bOpenSubRankID")
-    INIT_OFFSET(SystemData_RoomData_iSubRankID, image, "", srd, "iSubRankID")
-    INIT_OFFSET(SystemData_RoomData_iSingleLv, image, "", srd, "iSingleLv")
-    INIT_OFFSET(SystemData_RoomData_stArenaMatchBattleInfo, image, "", srd, "stArenaMatchBattleInfo")
-    INIT_OFFSET(SystemData_RoomData_stArenaMatchShowInfo, image, "", srd, "stArenaMatchShowInfo")
-    INIT_OFFSET(SystemData_RoomData_stSkinAttach, image, "", srd, "stSkinAttach")
-    INIT_OFFSET(SystemData_RoomData_iMatchTeamId, image, "", srd, "iMatchTeamId")
-    INIT_OFFSET(SystemData_RoomData_iFlowBackTYpe, image, "", srd, "iFlowBackTYpe")
-    INIT_OFFSET(SystemData_RoomData_bRoadAdditionCover, image, "", srd, "bRoadAdditionCover")
-    INIT_OFFSET(SystemData_RoomData_iRoadAdditionCoverTimes, image, "", srd, "iRoadAdditionCoverTimes")
-    INIT_OFFSET(SystemData_RoomData_iRoomPos, image, "", srd, "iRoomPos")
-    INIT_OFFSET(SystemData_RoomData_stEasterEggInfo, image, "", srd, "stEasterEggInfo")
-    INIT_OFFSET(SystemData_RoomData_sMatchTeamName, image, "", srd, "sMatchTeamName")
-    INIT_OFFSET(SystemData_RoomData_iMatchTeamFaceId, image, "", srd, "iMatchTeamFaceId")
+    OFF_SystemData_RoomData_lUid = Il2CppGetFieldOffset(image, "", srd, "lUid");
+    OFF_SystemData_RoomData_bUid = Il2CppGetFieldOffset(image, "", srd, "bUid");
+    OFF_SystemData_RoomData_iCamp = Il2CppGetFieldOffset(image, "", srd, "iCamp");
+    OFF_SystemData_RoomData_iPos = Il2CppGetFieldOffset(image, "", srd, "iPos");
+    OFF_SystemData_RoomData__sName = Il2CppGetFieldOffset(image, "", srd, "_sName");
+    OFF_SystemData_RoomData_heroid = Il2CppGetFieldOffset(image, "", srd, "heroid");
+    OFF_SystemData_RoomData_heroskin = Il2CppGetFieldOffset(image, "", srd, "heroskin");
+    OFF_SystemData_RoomData_summonSkillId = Il2CppGetFieldOffset(image, "", srd, "summonSkillId");
+    OFF_SystemData_RoomData_runeId = Il2CppGetFieldOffset(image, "", srd, "runeId");
+    OFF_SystemData_RoomData_runeLv = Il2CppGetFieldOffset(image, "", srd, "runeLv");
+    OFF_SystemData_RoomData_uiRankLevel = Il2CppGetFieldOffset(image, "", srd, "uiRankLevel");
+    OFF_SystemData_RoomData_iMythPoint = Il2CppGetFieldOffset(image, "", srd, "iMythPoint");
+    OFF_SystemData_RoomData_uiZoneId = Il2CppGetFieldOffset(image, "", srd, "uiZoneId");
+    OFF_SystemData_RoomData_banHero = Il2CppGetFieldOffset(image, "", srd, "banHero");
+    OFF_SystemData_RoomData_bRobot = Il2CppGetFieldOffset(image, "", srd, "bRobot");
+    OFF_SystemData_RoomData_bNewPlayer = Il2CppGetFieldOffset(image, "", srd, "bNewPlayer");
+    OFF_SystemData_RoomData_uiHeroIDChoose = Il2CppGetFieldOffset(image, "", srd, "uiHeroIDChoose");
+    OFF_SystemData_RoomData_bAutoConditionNew = Il2CppGetFieldOffset(image, "", srd, "bAutoConditionNew");
+    OFF_SystemData_RoomData_bShowSeasonAchieve = Il2CppGetFieldOffset(image, "", srd, "bShowSeasonAchieve");
+    OFF_SystemData_RoomData_iStyleBoardId = Il2CppGetFieldOffset(image, "", srd, "iStyleBoardId");
+    OFF_SystemData_RoomData_iMatchEffectId = Il2CppGetFieldOffset(image, "", srd, "iMatchEffectId");
+    OFF_SystemData_RoomData_iDayBreakNo1Count = Il2CppGetFieldOffset(image, "", srd, "iDayBreakNo1Count");
+    OFF_SystemData_RoomData_bAutoReadySelect = Il2CppGetFieldOffset(image, "", srd, "bAutoReadySelect");
+    OFF_SystemData_RoomData_headID = Il2CppGetFieldOffset(image, "", srd, "headID");
+    OFF_SystemData_RoomData_uiSex = Il2CppGetFieldOffset(image, "", srd, "uiSex");
+    OFF_SystemData_RoomData_country = Il2CppGetFieldOffset(image, "", srd, "country");
+    OFF_SystemData_RoomData_facePath = Il2CppGetFieldOffset(image, "", srd, "facePath");
+    OFF_SystemData_RoomData_faceBorder = Il2CppGetFieldOffset(image, "", srd, "faceBorder");
+    OFF_SystemData_RoomData_bStarVip = Il2CppGetFieldOffset(image, "", srd, "bStarVip");
+    OFF_SystemData_RoomData_bMCStarVip = Il2CppGetFieldOffset(image, "", srd, "bMCStarVip");
+    OFF_SystemData_RoomData_bMCStarVipPlus = Il2CppGetFieldOffset(image, "", srd, "bMCStarVipPlus");
+    OFF_SystemData_RoomData_ulRoomID = Il2CppGetFieldOffset(image, "", srd, "ulRoomID");
+    OFF_SystemData_RoomData_iConBlackRoomId = Il2CppGetFieldOffset(image, "", srd, "iConBlackRoomId");
+    OFF_SystemData_RoomData_uiBattlePlayerType = Il2CppGetFieldOffset(image, "", srd, "uiBattlePlayerType");
+    OFF_SystemData_RoomData_sThisLoginCountry = Il2CppGetFieldOffset(image, "", srd, "sThisLoginCountry");
+    OFF_SystemData_RoomData_sCreateRoleCountry = Il2CppGetFieldOffset(image, "", srd, "sCreateRoleCountry");
+    OFF_SystemData_RoomData_uiLanguage = Il2CppGetFieldOffset(image, "", srd, "uiLanguage");
+    OFF_SystemData_RoomData_bIsOpenLive = Il2CppGetFieldOffset(image, "", srd, "bIsOpenLive");
+    OFF_SystemData_RoomData_iTeamId = Il2CppGetFieldOffset(image, "", srd, "iTeamId");
+    OFF_SystemData_RoomData_iTeamNationId = Il2CppGetFieldOffset(image, "", srd, "iTeamNationId");
+    OFF_SystemData_RoomData__steamName = Il2CppGetFieldOffset(image, "", srd, "_steamName");
+    OFF_SystemData_RoomData__steamSimpleName = Il2CppGetFieldOffset(image, "", srd, "_steamSimpleName");
+    OFF_SystemData_RoomData_iCertify = Il2CppGetFieldOffset(image, "", srd, "iCertify");
+    OFF_SystemData_RoomData_uiPVPRank = Il2CppGetFieldOffset(image, "", srd, "uiPVPRank");
+    OFF_SystemData_RoomData_bRankReview = Il2CppGetFieldOffset(image, "", srd, "bRankReview");
+    OFF_SystemData_RoomData_iElo = Il2CppGetFieldOffset(image, "", srd, "iElo");
+    OFF_SystemData_RoomData_uiRoleLevel = Il2CppGetFieldOffset(image, "", srd, "uiRoleLevel");
+    OFF_SystemData_RoomData_iRoad = Il2CppGetFieldOffset(image, "", srd, "iRoad");
+    OFF_SystemData_RoomData_uiSkinSource = Il2CppGetFieldOffset(image, "", srd, "uiSkinSource");
+    OFF_SystemData_RoomData_iFighterType = Il2CppGetFieldOffset(image, "", srd, "iFighterType");
+    OFF_SystemData_RoomData_iWorldCupSupportCountry = Il2CppGetFieldOffset(image, "", srd, "iWorldCupSupportCountry");
+    OFF_SystemData_RoomData_iHeroLevel = Il2CppGetFieldOffset(image, "", srd, "iHeroLevel");
+    OFF_SystemData_RoomData_iHeroSubLevel = Il2CppGetFieldOffset(image, "", srd, "iHeroSubLevel");
+    OFF_SystemData_RoomData_iHeroPowerLevel = Il2CppGetFieldOffset(image, "", srd, "iHeroPowerLevel");
+    OFF_SystemData_RoomData_iActCamp = Il2CppGetFieldOffset(image, "", srd, "iActCamp");
+    OFF_SystemData_RoomData_mHeroMission = Il2CppGetFieldOffset(image, "", srd, "mHeroMission");
+    OFF_SystemData_RoomData_mSkinPaint = Il2CppGetFieldOffset(image, "", srd, "mSkinPaint");
+    OFF_SystemData_RoomData_sClientVersion = Il2CppGetFieldOffset(image, "", srd, "sClientVersion");
+    OFF_SystemData_RoomData_uiHolyStatue = Il2CppGetFieldOffset(image, "", srd, "uiHolyStatue");
+    OFF_SystemData_RoomData_uiKamon = Il2CppGetFieldOffset(image, "", srd, "uiKamon");
+    OFF_SystemData_RoomData_uiUserMapID = Il2CppGetFieldOffset(image, "", srd, "uiUserMapID");
+    OFF_SystemData_RoomData_iSurviveRank = Il2CppGetFieldOffset(image, "", srd, "iSurviveRank");
+    OFF_SystemData_RoomData_iDefenceRankID = Il2CppGetFieldOffset(image, "", srd, "iDefenceRankID");
+    OFF_SystemData_RoomData_iLeagueWCNum = Il2CppGetFieldOffset(image, "", srd, "iLeagueWCNum");
+    OFF_SystemData_RoomData_iLeagueFCNum = Il2CppGetFieldOffset(image, "", srd, "iLeagueFCNum");
+    OFF_SystemData_RoomData_iMPLCertifyTime = Il2CppGetFieldOffset(image, "", srd, "iMPLCertifyTime");
+    OFF_SystemData_RoomData_iMPLCertifyID = Il2CppGetFieldOffset(image, "", srd, "iMPLCertifyID");
+    OFF_SystemData_RoomData_iHeroUseCount = Il2CppGetFieldOffset(image, "", srd, "iHeroUseCount");
+    OFF_SystemData_RoomData_bMythEvaled = Il2CppGetFieldOffset(image, "", srd, "bMythEvaled");
+    OFF_SystemData_RoomData_iDefenceFlag = Il2CppGetFieldOffset(image, "", srd, "iDefenceFlag");
+    OFF_SystemData_RoomData_iDefenPoint = Il2CppGetFieldOffset(image, "", srd, "iDefenPoint");
+    OFF_SystemData_RoomData_iDefenceMap = Il2CppGetFieldOffset(image, "", srd, "iDefenceMap");
+    OFF_SystemData_RoomData_iAIType = Il2CppGetFieldOffset(image, "", srd, "iAIType");
+    OFF_SystemData_RoomData_iAISeed = Il2CppGetFieldOffset(image, "", srd, "iAISeed");
+    OFF_SystemData_RoomData_sAiName = Il2CppGetFieldOffset(image, "", srd, "sAiName");
+    OFF_SystemData_RoomData_iWarmValue = Il2CppGetFieldOffset(image, "", srd, "iWarmValue");
+    OFF_SystemData_RoomData_uiAircraftIDChooose = Il2CppGetFieldOffset(image, "", srd, "uiAircraftIDChooose");
+    OFF_SystemData_RoomData_uiHeroSkinIDChoose = Il2CppGetFieldOffset(image, "", srd, "uiHeroSkinIDChoose");
+    OFF_SystemData_RoomData_uiMapIDChoose = Il2CppGetFieldOffset(image, "", srd, "uiMapIDChoose");
+    OFF_SystemData_RoomData_uiMapSkinIDChoose = Il2CppGetFieldOffset(image, "", srd, "uiMapSkinIDChoose");
+    OFF_SystemData_RoomData_uiDefenceRankScore = Il2CppGetFieldOffset(image, "", srd, "uiDefenceRankScore");
+    OFF_SystemData_RoomData_bBanChat = Il2CppGetFieldOffset(image, "", srd, "bBanChat");
+    OFF_SystemData_RoomData_iChatBanFinishTime = Il2CppGetFieldOffset(image, "", srd, "iChatBanFinishTime");
+    OFF_SystemData_RoomData_iChatBanBattleNum = Il2CppGetFieldOffset(image, "", srd, "iChatBanBattleNum");
+    OFF_SystemData_RoomData_mapTalentTree = Il2CppGetFieldOffset(image, "", srd, "mapTalentTree");
+    OFF_SystemData_RoomData_mRuneSkill2023 = Il2CppGetFieldOffset(image, "", srd, "mRuneSkill2023");
+    OFF_SystemData_RoomData_skinlist = Il2CppGetFieldOffset(image, "", srd, "skinlist");
+    OFF_SystemData_RoomData_vCanSelectHero = Il2CppGetFieldOffset(image, "", srd, "vCanSelectHero");
+    OFF_SystemData_RoomData_vCanPickHero = Il2CppGetFieldOffset(image, "", srd, "vCanPickHero");
+    OFF_SystemData_RoomData_lsEffectSkins = Il2CppGetFieldOffset(image, "", srd, "lsEffectSkins");
+    OFF_SystemData_RoomData_lsComEffSkins = Il2CppGetFieldOffset(image, "", srd, "lsComEffSkins");
+    OFF_SystemData_RoomData_vMissions = Il2CppGetFieldOffset(image, "", srd, "vMissions");
+    OFF_SystemData_RoomData_vTitle = Il2CppGetFieldOffset(image, "", srd, "vTitle");
+    OFF_SystemData_RoomData_vEmoji = Il2CppGetFieldOffset(image, "", srd, "vEmoji");
+    OFF_SystemData_RoomData_vItemBuff = Il2CppGetFieldOffset(image, "", srd, "vItemBuff");
+    OFF_SystemData_RoomData_vMapPaint = Il2CppGetFieldOffset(image, "", srd, "vMapPaint");
+    OFF_SystemData_RoomData_mapBattleAttr = Il2CppGetFieldOffset(image, "", srd, "mapBattleAttr");
+    OFF_SystemData_RoomData_vFastChat = Il2CppGetFieldOffset(image, "", srd, "vFastChat");
+    OFF_SystemData_RoomData_vWantSelectHero = Il2CppGetFieldOffset(image, "", srd, "vWantSelectHero");
+    OFF_SystemData_RoomData_bForbidUseFaceName = Il2CppGetFieldOffset(image, "", srd, "bForbidUseFaceName");
+    OFF_SystemData_RoomData_sClientIp = Il2CppGetFieldOffset(image, "", srd, "sClientIp");
+    OFF_SystemData_RoomData_iRoomOrder = Il2CppGetFieldOffset(image, "", srd, "iRoomOrder");
+    OFF_SystemData_RoomData_vRougeTotalSkill = Il2CppGetFieldOffset(image, "", srd, "vRougeTotalSkill");
+    OFF_SystemData_RoomData_vRougeOMGSkill = Il2CppGetFieldOffset(image, "", srd, "vRougeOMGSkill");
+    OFF_SystemData_RoomData_vRecommendEquipList = Il2CppGetFieldOffset(image, "", srd, "vRecommendEquipList");
+    OFF_SystemData_RoomData_sRecommendEquipVersion = Il2CppGetFieldOffset(image, "", srd, "sRecommendEquipVersion");
+    OFF_SystemData_RoomData_vPingParamDetail = Il2CppGetFieldOffset(image, "", srd, "vPingParamDetail");
+    OFF_SystemData_RoomData_uiPlayerPing = Il2CppGetFieldOffset(image, "", srd, "uiPlayerPing");
+    OFF_SystemData_RoomData_mSkinRankSeasonTag = Il2CppGetFieldOffset(image, "", srd, "mSkinRankSeasonTag");
+    OFF_SystemData_RoomData_mSkinNumTag = Il2CppGetFieldOffset(image, "", srd, "mSkinNumTag");
+    OFF_SystemData_RoomData_bFullSkillaber = Il2CppGetFieldOffset(image, "", srd, "bFullSkillaber");
+    OFF_SystemData_RoomData_uiCommanderSkinAttackEffect = Il2CppGetFieldOffset(image, "", srd, "uiCommanderSkinAttackEffect");
+    OFF_SystemData_RoomData_uiDailyFreeRandomNum = Il2CppGetFieldOffset(image, "", srd, "uiDailyFreeRandomNum");
+    OFF_SystemData_RoomData_bIllustrateCornerEffectClose = Il2CppGetFieldOffset(image, "", srd, "bIllustrateCornerEffectClose");
+    OFF_SystemData_RoomData_bTagedBackOf2022 = Il2CppGetFieldOffset(image, "", srd, "bTagedBackOf2022");
+    OFF_SystemData_RoomData_iTapConflictTipNum = Il2CppGetFieldOffset(image, "", srd, "iTapConflictTipNum");
+    OFF_SystemData_RoomData_iNameShowType = Il2CppGetFieldOffset(image, "", srd, "iNameShowType");
+    OFF_SystemData_RoomData_bOpenHighLight = Il2CppGetFieldOffset(image, "", srd, "bOpenHighLight");
+    OFF_SystemData_RoomData_mMCBanPickCommander = Il2CppGetFieldOffset(image, "", srd, "mMCBanPickCommander");
+    OFF_SystemData_RoomData_vForbidBanCommander = Il2CppGetFieldOffset(image, "", srd, "vForbidBanCommander");
+    OFF_SystemData_RoomData_iTeamLevel = Il2CppGetFieldOffset(image, "", srd, "iTeamLevel");
+    OFF_SystemData_RoomData_vAdditionalHero = Il2CppGetFieldOffset(image, "", srd, "vAdditionalHero");
+    OFF_SystemData_RoomData_uiDisorderPublicHeroScore = Il2CppGetFieldOffset(image, "", srd, "uiDisorderPublicHeroScore");
+    OFF_SystemData_RoomData_bPlayerBirthdayToday = Il2CppGetFieldOffset(image, "", srd, "bPlayerBirthdayToday");
+    OFF_SystemData_RoomData_iTeamHeadId = Il2CppGetFieldOffset(image, "", srd, "iTeamHeadId");
+    OFF_SystemData_RoomData_mapHeroBattleNum = Il2CppGetFieldOffset(image, "", srd, "mapHeroBattleNum");
+    OFF_SystemData_RoomData_vCurSeasonRealRoadInfo = Il2CppGetFieldOffset(image, "", srd, "vCurSeasonRealRoadInfo");
+    OFF_SystemData_RoomData_vCultivateRoadShow = Il2CppGetFieldOffset(image, "", srd, "vCultivateRoadShow");
+    OFF_SystemData_RoomData_uiCommanderLevel = Il2CppGetFieldOffset(image, "", srd, "uiCommanderLevel");
+    OFF_SystemData_RoomData_bOpenSubRankID = Il2CppGetFieldOffset(image, "", srd, "bOpenSubRankID");
+    OFF_SystemData_RoomData_iSubRankID = Il2CppGetFieldOffset(image, "", srd, "iSubRankID");
+    OFF_SystemData_RoomData_iSingleLv = Il2CppGetFieldOffset(image, "", srd, "iSingleLv");
+    OFF_SystemData_RoomData_stArenaMatchBattleInfo = Il2CppGetFieldOffset(image, "", srd, "stArenaMatchBattleInfo");
+    OFF_SystemData_RoomData_stArenaMatchShowInfo = Il2CppGetFieldOffset(image, "", srd, "stArenaMatchShowInfo");
+    OFF_SystemData_RoomData_stSkinAttach = Il2CppGetFieldOffset(image, "", srd, "stSkinAttach");
+    OFF_SystemData_RoomData_iMatchTeamId = Il2CppGetFieldOffset(image, "", srd, "iMatchTeamId");
+    OFF_SystemData_RoomData_iFlowBackTYpe = Il2CppGetFieldOffset(image, "", srd, "iFlowBackTYpe");
+    OFF_SystemData_RoomData_bRoadAdditionCover = Il2CppGetFieldOffset(image, "", srd, "bRoadAdditionCover");
+    OFF_SystemData_RoomData_iRoadAdditionCoverTimes = Il2CppGetFieldOffset(image, "", srd, "iRoadAdditionCoverTimes");
+    OFF_SystemData_RoomData_iRoomPos = Il2CppGetFieldOffset(image, "", srd, "iRoomPos");
+    OFF_SystemData_RoomData_stEasterEggInfo = Il2CppGetFieldOffset(image, "", srd, "stEasterEggInfo");
+    OFF_SystemData_RoomData_sMatchTeamName = Il2CppGetFieldOffset(image, "", srd, "sMatchTeamName");
+    OFF_SystemData_RoomData_iMatchTeamFaceId = Il2CppGetFieldOffset(image, "", srd, "iMatchTeamFaceId");
 
     // GameClass.h Fields
-    INIT_OFFSET(BattleManager_m_LocalPlayerShow, image, "", "BattleManager", "m_LocalPlayerShow")
-    INIT_OFFSET(BattleManager_m_ShowPlayers, image, "", "BattleManager", "m_ShowPlayers")
-    INIT_OFFSET(BattleManager_m_ShowMonsters, image, "", "BattleManager", "m_ShowMonsters")
-    INIT_OFFSET(BattleManager_m_dicPlayerShow, image, "", "BattleManager", "m_dicPlayerShow")
-    INIT_OFFSET(BattleManager_m_dicMonsterShow, image, "", "BattleManager", "m_dicMonsterShow")
-    INIT_OFFSET(BattleBridge_bStartBattle, image, "", "BattleBridge", "bStartBattle")
-    INIT_OFFSET(BattleManager_m_LocalShowPlayers, image, "", "BattleManager", "m_LocalShowPlayers")
-    INIT_OFFSET(ShowPlayer_m_bInBattle, image, "", "ShowPlayer", "m_bInBattle")
-    INIT_OFFSET(ShowEntity__Position, image, "", "ShowEntity", "m_vCachePosition")
-    INIT_OFFSET(ShowEntity_bShowEntityLayer, image, "", "ShowEntity", "bShowEntityLayer")
-    INIT_OFFSET(ShowEntity_m_OwnSkillComp, image, "", "ShowEntity", "m_OwnSkillComp")
-    INIT_OFFSET(ShowEntity_m_RoleName, image, "", "ShowEntity", "m_RoleName")
-    INIT_OFFSET(ShowEntity__MoveDir, image, "", "ShowEntity", "_MoveDir")
-    INIT_OFFSET(EntityBase_bMove, image, "Battle", "EntityBase", "bMove")
-    INIT_OFFSET(EntityBase_m_ID, image, "", "ShowEntity", "m_ID")
-    INIT_OFFSET(EntityBase_m_Level, image, "", "ShowEntity", "m_Level")
-    INIT_OFFSET(EntityBase_m_bDeath, image, "", "ShowEntity", "m_bDeath")
-    INIT_OFFSET(EntityBase_m_IsDeathProgress, image, "", "ShowEntity", "m_IsDeathProgress")
-    INIT_OFFSET(EntityBase_m_bSameCampType, image, "", "ShowEntity", "m_bSameCampType")
-    INIT_OFFSET(EntityBase_m_Hp, image, "", "ShowEntity", "m_Hp")
-    INIT_OFFSET(EntityBase_m_HpMax, image, "", "ShowEntity", "m_HpMax")
-    INIT_OFFSET(EntityBase_m_EntityCampType, image, "", "ShowEntity", "m_EntityCampType")
-    INIT_OFFSET(EntityBase_m_iType, image, "", "ShowEntity", "m_iType")
-    INIT_OFFSET(EntityBase_canSight, image, "", "ShowEntity", "canSight")
-    INIT_OFFSET(EntityBase_m_uGuid, image, "", "ShowEntity", "m_uGuid")
-    INIT_OFFSET(ShowPlayer_m_HeroName, image, "", "ShowPlayer", "m_HeroName")
-    INIT_OFFSET(LogicFighter_m_SkillComp, image, "Battle", "LogicFighter", "m_SkillComp")
+    OFF_BattleManager_m_LocalPlayerShow = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_LocalPlayerShow");
+    OFF_BattleManager_m_ShowPlayers = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_ShowPlayers");
+    OFF_BattleManager_m_ShowMonsters = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_ShowMonsters");
+    OFF_BattleManager_m_dicPlayerShow = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_dicPlayerShow");
+    OFF_BattleManager_m_dicMonsterShow = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_dicMonsterShow");
+    OFF_BattleBridge_bStartBattle = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleBridge", "bStartBattle");
+    OFF_BattleManager_m_LocalShowPlayers = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "BattleManager", "m_LocalShowPlayers");
+    OFF_ShowPlayer_m_bInBattle = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowPlayer", "m_bInBattle");
+    OFF_ShowEntity__Position = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_vCachePosition");
+    OFF_ShowEntity_bShowEntityLayer = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "bShowEntityLayer");
+    OFF_ShowEntity_m_OwnSkillComp = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_OwnSkillComp");
+    OFF_ShowEntity_m_RoleName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_RoleName");
+    OFF_ShowEntity__MoveDir = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "_MoveDir");
+    OFF_EntityBase_bMove = Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", "EntityBase", "bMove");
+    OFF_EntityBase_m_ID = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_ID");
+    OFF_EntityBase_m_Level = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_Level");
+    OFF_EntityBase_m_bDeath = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_bDeath");
+    OFF_EntityBase_m_IsDeathProgress = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_IsDeathProgress");
+    OFF_EntityBase_m_bSameCampType = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_bSameCampType");
+    OFF_EntityBase_m_Hp = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_Hp");
+    OFF_EntityBase_m_HpMax = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_HpMax");
+    OFF_EntityBase_m_EntityCampType = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_EntityCampType");
+    OFF_EntityBase_m_iType = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_iType");
+    OFF_EntityBase_canSight = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "canSight");
+    OFF_EntityBase_m_uGuid = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowEntity", "m_uGuid");
+    OFF_ShowPlayer_m_HeroName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "ShowPlayer", "m_HeroName");
+    OFF_LogicFighter_m_SkillComp = Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", "LogicFighter", "m_SkillComp");
 
     // UIRankHero Fields
     const char* urh = "UIRankHero";
-    INIT_OFFSET(UIRankHero_banList, image, "", urh, "banList")
-    INIT_OFFSET(UIRankHero_pickList, image, "", urh, "pickList")
-    INIT_OFFSET(UIRankHero_banOrder, image, "", urh, "banOrder")
-    INIT_OFFSET(UIRankHero_pickOrder, image, "", urh, "pickOrder")
-    INIT_OFFSET(UIRankHero__startBanTime, image, "", urh, "_startBanTime")
-    INIT_OFFSET(UIRankHero__startSelectTime, image, "", urh, "_startSelectTime")
-    INIT_OFFSET(UIRankHero_iBanTimeSpan, image, "", urh, "iBanTimeSpan")
-    INIT_OFFSET(UIRankHero_iPickTimeSpan, image, "", urh, "iPickTimeSpan")
+    OFF_UIRankHero_banList = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "banList");
+    OFF_UIRankHero_pickList = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "pickList");
+    OFF_UIRankHero_banOrder = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "banOrder");
+    OFF_UIRankHero_pickOrder = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "pickOrder");
+    OFF_UIRankHero__startBanTime = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "_startBanTime");
+    OFF_UIRankHero__startSelectTime = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "_startSelectTime");
+    OFF_UIRankHero_iBanTimeSpan = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "iBanTimeSpan");
+    OFF_UIRankHero_iPickTimeSpan = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", urh, "iPickTimeSpan");
 
-    INIT_OFFSET(UIRankHero_ChangeShow_iSelfHero, image, "", "UIRankHero/ChangeShow", "iSelfHero")
+    OFF_UIRankHero_ChangeShow_iSelfHero = Il2CppGetFieldOffset("Assembly-CSharp.dll", "", "UIRankHero/ChangeShow", "iSelfHero");
 
     // BattlePlayerInfo Fields
     const char* bpi = "BattlePlayerInfo";
-    INIT_OFFSET(BattlePlayerInfo_lUid, image, mttd, bpi, "lUid")
-    INIT_OFFSET(BattlePlayerInfo_uiSelHero, image, mttd, bpi, "uiSelHero")
-    INIT_OFFSET(BattlePlayerInfo_uiSkinId, image, mttd, bpi, "uiSkinId")
+    OFF_BattlePlayerInfo_lUid = Il2CppGetFieldOffset("Assembly-CSharp.dll", mttd, bpi, "lUid");
+    OFF_BattlePlayerInfo_uiSelHero = Il2CppGetFieldOffset("Assembly-CSharp.dll", mttd, bpi, "uiSelHero");
+    OFF_BattlePlayerInfo_uiSkinId = Il2CppGetFieldOffset("Assembly-CSharp.dll", mttd, bpi, "uiSkinId");
 
     // SystemData Static Field
-    INIT_STATIC_OFFSET(SystemData_m_uiID, image, "", "SystemData", "m_uiID")
+    OFF_SystemData_m_uiID = Il2CppGetStaticFieldOffset("Assembly-CSharp.dll", "", "SystemData", "m_uiID");
 }

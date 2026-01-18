@@ -93,7 +93,6 @@ export interface RoomInfo {
 export interface LogicPlayer {
     m_ID: number;
     totalGold: number;
-    _DoubleKillTimes: number;
     _TripleKillTimes: number;
     _QuadraKillTimes: number;
     _PentaKillTimes: number;

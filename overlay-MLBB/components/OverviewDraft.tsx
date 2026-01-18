@@ -197,6 +197,34 @@ const OverviewDraft: React.FC<OverviewDraftProps> = ({ data }) => {
       <div className="red-player-card">
         {redPicks.map((pick, i) => renderPlayerCard(pick, redNames[i], 'red', i))}
       </div>
+
+      {/* Blue Bans */}
+      <div className="ban-blue">
+        {blueSource.bans.map((ban, i) => (
+            <div key={i} className="ban-item">
+                <img 
+                    src={getBanImg(ban)} 
+                    className="ban-image" 
+                    alt="Ban" 
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDERS.ban; }}
+                />
+            </div>
+        ))}
+      </div>
+
+      {/* Red Bans */}
+      <div className="ban-red">
+         {redSource.bans.map((ban, i) => (
+            <div key={i} className="ban-item">
+                <img 
+                    src={getBanImg(ban)} 
+                    className="ban-image" 
+                    alt="Ban" 
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDERS.ban; }}
+                />
+            </div>
+        ))}
+      </div>
       
       {/* Iklan / Ad Space */}
       <div className="absolute left-1/2 -translate-x-1/2 top-[675px] w-[1837px] h-[373px] bg-[#18252c] opacity-70 rounded-[30px] flex items-center justify-center overflow-hidden">

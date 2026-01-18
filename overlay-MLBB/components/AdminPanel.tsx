@@ -583,29 +583,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
           </div>
           <div className="p-4 space-y-3">
              <div className="grid grid-cols-5 gap-1 mb-2">{draft[side as 'blue' | 'red'].bans.map((ban, i) => (<input key={i} placeholder={`Ban ${i+1}`} value={ban} onChange={(e) => updateDraftTeam(side as any, 'bans', e.target.value, i)} className="bg-slate-900 border-slate-700 p-1.5 text-[10px] rounded text-center uppercase" />))}</div>
-             <div className="grid gap-2">{draft[side as 'blue' | 'red'].pNames.map((name, i) => (
-                <div key={i} className="flex gap-2 group">
-                    <div className="flex flex-col gap-1">
-                        <input value={draft[side as 'blue' | 'red'].picks[i]} onChange={(e) => updateDraftTeam(side as any, 'picks', e.target.value, i)} className="w-16 bg-slate-900 text-[10px] p-2 rounded uppercase" placeholder="Hero"/>
-                        <select 
-                            value={draft[side as 'blue' | 'red'].lanes?.[i] || '0'} 
-                            onChange={(e) => updateDraftTeam(side as any, 'lanes', e.target.value, i)}
-                            className="w-16 bg-slate-950 text-[8px] p-1 rounded border border-slate-800 text-slate-400"
-                        >
-                            <option value="0">None</option>
-                            <option value="1">Gold</option>
-                            <option value="2">Jungle</option>
-                            <option value="3">Mid</option>
-                            <option value="4">Exp</option>
-                            <option value="5">Roam</option>
-                        </select>
-                    </div>
-                    <div className="flex-1 flex flex-col">
-                        <input value={name} onChange={(e) => updateDraftTeam(side as any, 'pNames', e.target.value, i)} className="w-full bg-slate-900 text-[10px] p-2 rounded-t uppercase" placeholder="Player"/>
-                        <div className="bg-slate-950 text-[8px] text-slate-500 px-2 py-0.5 rounded-b border-t border-slate-800 font-mono select-all">ID: {draft[side as 'blue' | 'red'].pIds?.[i] || 'N/A'}</div>
-                    </div>
-                </div>
-             ))}</div>
+             <div className="grid gap-2">{draft[side as 'blue' | 'red'].pNames.map((name, i) => (<div key={i} className="flex gap-2 group"><input value={draft[side as 'blue' | 'red'].picks[i]} onChange={(e) => updateDraftTeam(side as any, 'picks', e.target.value, i)} className="w-20 bg-slate-900 text-[10px] p-2 rounded uppercase" placeholder="Hero"/><div className="flex-1 flex flex-col"><input value={name} onChange={(e) => updateDraftTeam(side as any, 'pNames', e.target.value, i)} className="w-full bg-slate-900 text-[10px] p-2 rounded-t uppercase" placeholder="Player"/><div className="bg-slate-950 text-[8px] text-slate-500 px-2 py-0.5 rounded-b border-t border-slate-800 font-mono select-all">ID: {draft[side as 'blue' | 'red'].pIds?.[i] || 'N/A'}</div></div></div>))}
+</div>
           </div>
         </div>
       ))}
