@@ -103,10 +103,8 @@ const BattleOverlay: React.FC<BattleOverlayProps> = ({ data }) => {
         display: flex;
         align-items: center;
         gap: 5px;
-        background-color: rgba(0,0,0,0.6);
         padding: 2px 8px;
         border-radius: 4px;
-        border: 1px solid rgba(255,255,255,0.2);
       }
       .gold-diff-text {
         color: #FFD700;
@@ -204,7 +202,7 @@ const BattleOverlay: React.FC<BattleOverlayProps> = ({ data }) => {
       {goldDiff > 0 && (
         <>
         {isBlueLeading && (
-          <div className="gold-diff-container anim-fade-up" style={{ left: '853px', animationDelay: '0.8s' }}>
+          <div className="gold-diff-container anim-fade-up" style={{ left: '811px', animationDelay: '0.8s' }}>
           <img src={getAsset("assets/battle/gold.png")} style={{ width: '20px', height: '20px' }} />
           <span className="gold-diff-text">+</span>
           <span className="gold-diff-text">{formatGold(goldDiff)}</span>

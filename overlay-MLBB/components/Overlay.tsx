@@ -306,36 +306,18 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
     prevGameState.current = current;
   }, [gameState]);
 
-  // If Game State is 5 (Battle) or higher, we hide the Draft Pick overlay.
-  // We now introduce OverviewDraft for state 4 and 5.
-  // Standard Draft: state < 4
-  // Overview Draft: state 4 or 5 (or 6 while waiting)
-  // Battle Overlay: state 6 (active)
-
+  // If Game State is 6 (active), show Battle Overlay exclusively.
   if (showBattleOverlay) {
     return <BattleOverlay data={data} />;
   }
 
-  // If gameState is 4 or 5, or (6 and waiting), show OverviewDraft
-  if (showOverview) {
-      return (
-        <div style={{ 
-            opacity: isFading ? 0 : 1, 
-            transition: 'opacity 1s ease-out',
-            width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 50
-        }}>
-            <OverviewDraft data={data} />
-        </div>
-      );
-  }
+  // Determine if Draft Overlay should be visible.
+  // It is visible if we are in Draft Phase (<4) OR if Overview is showing (background for transition).
+  const isDraftPhase = gameState === undefined || gameState < 4;
+  const showDraftLayer = isDraftPhase || showOverview;
 
-  // If Draft is not visible (which means logic above handled it or state is weird), return null.
-  // But wait, the logic above handles 4, 5, 6. 
-  // What about 0, 1, 2, 3? That's the standard Draft Overlay below.
-  // So we just continue if state < 4.
-  const isDraftVisible = gameState === undefined || gameState < 4;
-
-  if (!isDraftVisible) {
+  // If neither layer is active, return null
+  if (!showDraftLayer && !showOverview) {
       return null; 
   }
 
@@ -352,173 +334,189 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
   return (
     <div className="relative w-[1920px] h-[1080px] text-white overflow-hidden pointer-events-none">
       
-      {/* --- INTRO VS LAYER --- */}
-      {isIntro && (
-        <div className="intro-vs absolute left-1/2 flex items-center justify-center gap-20">
-            <div className="flex flex-col items-center gap-4">
-               {data.blue.logo && <img src={getLogoSrc(data.blue.logo)} className="w-32 h-32 object-contain" />}
-               <div className="text-6xl font-gothic text-white">{data.blue.name}</div>
+      {/* --- DRAFT LAYER (Background) --- */}
+      {showDraftLayer && (
+        <>
+            {/* --- INTRO VS LAYER --- */}
+            {isIntro && (
+                <div className="intro-vs absolute left-1/2 flex items-center justify-center gap-20">
+                    <div className="flex flex-col items-center gap-4">
+                    {data.blue.logo && <img src={getLogoSrc(data.blue.logo)} className="w-32 h-32 object-contain" />}
+                    <div className="text-6xl font-gothic text-white">{data.blue.name}</div>
+                    </div>
+                    <div className="text-9xl font-londrina text-white">VS</div>
+                    <div className="flex flex-col items-center gap-4">
+                    {data.red.logo && <img src={getLogoSrc(data.red.logo)} className="w-32 h-32 object-contain" />}
+                    <div className="text-6xl font-gothic text-white">{data.red.name}</div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- DEKORASI --- */}
+            <img 
+                className={`absolute w-[454px] h-[199px] left-[733px] top-[763px] object-cover ${isIntro ? 'intro-item' : ''}`} 
+                style={isIntro ? { animationDelay: '6s' } : {}}
+                src={getAsset('gradient', PLACEHOLDERS.gradient)} 
+            />
+            
+            <div 
+                className={`absolute w-[455px] h-[46px] left-[732px] top-[968px] bg-[#0C2E48] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.2s' } : {}}
+            ></div>
+            <div 
+                className={`absolute w-[51px] h-[46px] left-[938px] top-[968px] bg-[#D50200] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.4s' } : {}}
+            ></div>
+            
+            <img 
+                className={`absolute w-[80px] h-[111px] left-[920px] top-[672px] object-contain z-50 ${isIntro ? 'intro-logo' : ''}`} 
+                src={getAsset('logo', PLACEHOLDERS.logo)} 
+            />
+
+            {/* BLUE TEAM BAR & SCORE */}
+            <div 
+                className={`absolute w-[168px] h-[53px] top-[704px] left-[674px] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.6s' } : {}}
+            >
+                <img className="w-full h-full object-contain" src={getAsset('union1', PLACEHOLDERS.union1)} />
+                <ScoreBars score={data.blue.score} bestOf={data.game.bestOf} side="blue" theme={theme} />
             </div>
-            <div className="text-9xl font-londrina text-white">VS</div>
-            <div className="flex flex-col items-center gap-4">
-               {data.red.logo && <img src={getLogoSrc(data.red.logo)} className="w-32 h-32 object-contain" />}
-               <div className="text-6xl font-gothic text-white">{data.red.name}</div>
+
+            {/* RED TEAM BAR & SCORE */}
+            <div 
+                className={`absolute w-[168px] h-[53px] top-[704px] left-[1078px] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.6s' } : {}}
+            >
+                <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union1', PLACEHOLDERS.union1)} />
+                <ScoreBars score={data.red.score} bestOf={data.game.bestOf} side="red" theme={theme} />
             </div>
-        </div>
+
+            <div 
+                className={`absolute w-[87px] h-[41px] top-[715px] left-[1020px] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.8s' } : {}}
+            >
+                <img className="w-full h-full object-contain" src={getAsset('union2', PLACEHOLDERS.union2)} />
+            </div>
+            <div 
+                className={`absolute w-[87px] h-[41px] top-[715px] left-[813px] ${isIntro ? 'intro-item' : ''}`}
+                style={isIntro ? { animationDelay: '6.8s' } : {}}
+            >
+                <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union2', PLACEHOLDERS.union2)} />
+            </div>
+
+            {/* --- AD MARQUEE --- */}
+            <div 
+                className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] bg-[#18252C] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
+                style={isIntro ? { animationDelay: '8.5s' } : {}}
+            >
+                <AdContent adConfig={data.adConfig} ads={data.ads} />
+            </div>
+
+            {!isIntro && (
+                <div className="absolute w-[101px] h-[79px] left-[908px] top-[817px] font-londrina font-light text-[96px] flex items-center justify-center leading-none animate-fade text-white">
+                vs
+                </div>
+            )}
+
+            {/* Blue Team Info */}
+            <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7.5s' } : {}}>
+                {data.blue.logo && (
+                    <img className="absolute w-[60px] h-[60px] top-[820px] left-[790px] object-contain" src={getLogoSrc(data.blue.logo)} />
+                )}
+                <div className="absolute w-[150px] h-[24px] top-[886px] left-[745px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
+                    {data.blue.name}
+                </div>
+            </div>
+
+            {/* Red Team Info */}
+            <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7.5s' } : {}}>
+                {data.red.logo && (
+                    <img className="absolute w-[60px] h-[60px] top-[1066px] left-[1066px] object-contain" style={{ top: '820px' }} src={getLogoSrc(data.red.logo)} />
+                )}
+                <div className="absolute w-[150px] h-[24px] top-[886px] left-[1021px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
+                    {data.red.name}
+                </div>
+            </div>
+
+            <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7s' } : {}}>
+                {isControlEnabled && (
+                    <>
+                    {(data.game.visibility?.timer ?? true) && (
+                        <div className="absolute w-[51px] h-[46px] left-[938px] top-[968px] font-gothic text-[32px] flex items-center justify-center z-10 text-white">
+                        {data.game.timer}
+                        </div>
+                    )}
+                    {(data.game.visibility?.phase ?? true) && (
+                        <div 
+                        className="absolute w-[208px] h-[46px] top-[968px] font-gothic text-[32px] flex items-center justify-center transition-all duration-500 text-white"
+                        style={{ left: isRedTurn ? '730px' : '989px' }}
+                        >
+                        {data.game.phase}
+                        </div>
+                    )}
+                    {(data.game.visibility?.turn ?? true) && (
+                        <div 
+                        className="absolute w-[208px] h-[46px] top-[968px] transition-all duration-500"
+                        style={{ left: isRedTurn ? '989px' : '730px' }}
+                        >
+                        <TurnIndicator turn={data.game.turn} />
+                        </div>
+                    )}
+                    </>
+                )}
+            </div>
+
+            <div className="absolute top-[755px] left-[42px] flex gap-[10px]">
+                {data.blue.picks.map((pick, i) => (
+                <PickSlot 
+                    key={i} 
+                    index={i} 
+                    side="blue" 
+                    pick={pick} 
+                    name={data.blue.pNames[i]} 
+                    delay={isIntro ? `${7.8 + (i * 0.1)}s` : undefined} 
+                />
+                ))}
+            </div>
+
+            <div className="absolute top-[755px] left-[1204px] flex gap-[10px]">
+                {data.red.picks.map((pick, i) => (
+                <PickSlot 
+                    key={i} 
+                    index={i} 
+                    side="red" 
+                    pick={pick} 
+                    name={data.red.pNames[i]} 
+                    delay={isIntro ? `${7.8 + (i * 0.1)}s` : undefined} 
+                />
+                ))}
+            </div>
+
+            {/* --- BANS --- */}
+            <div className={`absolute top-[676px] left-[51px] w-[392px] flex gap-[20px]`}>
+                {data.blue.bans.map((ban, i) => (
+                <BanSlot key={`bb-${i}`} ban={ban} delay={isIntro ? `8.2s` : undefined} />
+                ))}
+            </div>
+
+            <div className={`absolute top-[676px] left-[1483px] w-[392px] flex gap-[20px]`}>
+                {data.red.bans.map((ban, i) => (
+                <BanSlot key={`rb-${i}`} ban={ban} delay={isIntro ? `8.2s` : undefined} />
+                ))}
+            </div>
+        </>
       )}
 
-      {/* --- DEKORASI --- */}
-      <img 
-        className={`absolute w-[454px] h-[199px] left-[733px] top-[763px] object-cover ${isIntro ? 'intro-item' : ''}`} 
-        style={isIntro ? { animationDelay: '6s' } : {}}
-        src={getAsset('gradient', PLACEHOLDERS.gradient)} 
-      />
-      
-      <div 
-        className={`absolute w-[455px] h-[46px] left-[732px] top-[968px] bg-[#0C2E48] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.2s' } : {}}
-      ></div>
-      <div 
-        className={`absolute w-[51px] h-[46px] left-[938px] top-[968px] bg-[#D50200] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.4s' } : {}}
-      ></div>
-      
-      <img 
-        className={`absolute w-[80px] h-[111px] left-[920px] top-[672px] object-contain z-50 ${isIntro ? 'intro-logo' : ''}`} 
-        src={getAsset('logo', PLACEHOLDERS.logo)} 
-      />
-
-      {/* BLUE TEAM BAR & SCORE */}
-      <div 
-        className={`absolute w-[168px] h-[53px] top-[704px] left-[674px] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.6s' } : {}}
-      >
-        <img className="w-full h-full object-contain" src={getAsset('union1', PLACEHOLDERS.union1)} />
-        <ScoreBars score={data.blue.score} bestOf={data.game.bestOf} side="blue" theme={theme} />
-      </div>
-
-      {/* RED TEAM BAR & SCORE */}
-      <div 
-        className={`absolute w-[168px] h-[53px] top-[704px] left-[1078px] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.6s' } : {}}
-      >
-        <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union1', PLACEHOLDERS.union1)} />
-        <ScoreBars score={data.red.score} bestOf={data.game.bestOf} side="red" theme={theme} />
-      </div>
-
-      <div 
-        className={`absolute w-[87px] h-[41px] top-[715px] left-[1020px] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.8s' } : {}}
-      >
-        <img className="w-full h-full object-contain" src={getAsset('union2', PLACEHOLDERS.union2)} />
-      </div>
-      <div 
-        className={`absolute w-[87px] h-[41px] top-[715px] left-[813px] ${isIntro ? 'intro-item' : ''}`}
-        style={isIntro ? { animationDelay: '6.8s' } : {}}
-      >
-        <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union2', PLACEHOLDERS.union2)} />
-      </div>
-
-      {/* --- AD MARQUEE --- */}
-      <div 
-        className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] bg-[#18252C] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
-        style={isIntro ? { animationDelay: '8.5s' } : {}}
-      >
-        <AdContent adConfig={data.adConfig} ads={data.ads} />
-      </div>
-
-      {!isIntro && (
-        <div className="absolute w-[101px] h-[79px] left-[908px] top-[817px] font-londrina font-light text-[96px] flex items-center justify-center leading-none animate-fade text-white">
-          vs
-        </div>
+      {/* --- OVERVIEW LAYER (Foreground Overlay) --- */}
+      {showOverview && (
+          <div style={{ 
+              opacity: isFading ? 0 : 1, 
+              transition: 'opacity 1s ease-out',
+              width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 50
+          }}>
+              <OverviewDraft data={data} />
+          </div>
       )}
-
-      {/* Blue Team Info */}
-      <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7.5s' } : {}}>
-          {data.blue.logo && (
-            <img className="absolute w-[60px] h-[60px] top-[820px] left-[790px] object-contain" src={getLogoSrc(data.blue.logo)} />
-          )}
-          <div className="absolute w-[150px] h-[24px] top-[886px] left-[745px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
-            {data.blue.name}
-          </div>
-      </div>
-
-      {/* Red Team Info */}
-      <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7.5s' } : {}}>
-          {data.red.logo && (
-            <img className="absolute w-[60px] h-[60px] top-[1066px] left-[1066px] object-contain" style={{ top: '820px' }} src={getLogoSrc(data.red.logo)} />
-          )}
-          <div className="absolute w-[150px] h-[24px] top-[886px] left-[1021px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
-            {data.red.name}
-          </div>
-      </div>
-
-      <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7s' } : {}}>
-          {isControlEnabled && (
-            <>
-              {(data.game.visibility?.timer ?? true) && (
-                <div className="absolute w-[51px] h-[46px] left-[938px] top-[968px] font-gothic text-[32px] flex items-center justify-center z-10 text-white">
-                  {data.game.timer}
-                </div>
-              )}
-              {(data.game.visibility?.phase ?? true) && (
-                <div 
-                  className="absolute w-[208px] h-[46px] top-[968px] font-gothic text-[32px] flex items-center justify-center transition-all duration-500 text-white"
-                  style={{ left: isRedTurn ? '730px' : '989px' }}
-                >
-                  {data.game.phase}
-                </div>
-              )}
-              {(data.game.visibility?.turn ?? true) && (
-                <div 
-                  className="absolute w-[208px] h-[46px] top-[968px] transition-all duration-500"
-                  style={{ left: isRedTurn ? '989px' : '730px' }}
-                >
-                  <TurnIndicator turn={data.game.turn} />
-                </div>
-              )}
-            </>
-          )}
-      </div>
-
-      <div className="absolute top-[755px] left-[42px] flex gap-[10px]">
-        {data.blue.picks.map((pick, i) => (
-          <PickSlot 
-            key={i} 
-            index={i} 
-            side="blue" 
-            pick={pick} 
-            name={data.blue.pNames[i]} 
-            delay={isIntro ? `${7.8 + (i * 0.1)}s` : undefined} 
-          />
-        ))}
-      </div>
-
-      <div className="absolute top-[755px] left-[1204px] flex gap-[10px]">
-        {data.red.picks.map((pick, i) => (
-          <PickSlot 
-            key={i} 
-            index={i} 
-            side="red" 
-            pick={pick} 
-            name={data.red.pNames[i]} 
-            delay={isIntro ? `${7.8 + (i * 0.1)}s` : undefined} 
-          />
-        ))}
-      </div>
-
-      {/* --- BANS --- */}
-      <div className={`absolute top-[676px] left-[51px] w-[392px] flex gap-[20px]`}>
-        {data.blue.bans.map((ban, i) => (
-          <BanSlot key={`bb-${i}`} ban={ban} delay={isIntro ? `8.2s` : undefined} />
-        ))}
-      </div>
-
-      <div className={`absolute top-[676px] left-[1483px] w-[392px] flex gap-[20px]`}>
-        {data.red.bans.map((ban, i) => (
-          <BanSlot key={`rb-${i}`} ban={ban} delay={isIntro ? `8.2s` : undefined} />
-        ))}
-      </div>
     </div>
   );
 };

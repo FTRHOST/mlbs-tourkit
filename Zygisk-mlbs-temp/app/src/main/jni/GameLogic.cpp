@@ -215,6 +215,7 @@ void UpdateLogicPlayerStats(void* logicBattleManager) {
             READ_FIELD(s.totalGold, int32_t, OFF_LogicPlayer_totalGold);
             READ_FIELD(s.m_HurtTotalValue, double, OFF_LogicPlayer_m_HurtTotalValue);
             READ_FIELD(s.m_TotalExp, int32_t, OFF_LogicPlayer_m_TotalExp);
+            READ_FIELD(s.DoubleKillTimes, int32_t, OFF_LogicPlayer_DoubleKillTimes);
             READ_FIELD(s.TripleKillTimes, int32_t, OFF_LogicPlayer_TripleKillTimes);
             READ_FIELD(s.QuadraKillTimes, int32_t, OFF_LogicPlayer_QuadraKillTimes);
             READ_FIELD(s.PentaKillTimes, int32_t, OFF_LogicPlayer_PentaKillTimes);
@@ -407,4 +408,98 @@ void MonitorBattleState() {
     static int frameTick = 0;
     if (++frameTick % 60 == 0) {
         std::stringstream ss;
-        ss << "{\"type\":\"heartbeat\",\"debug\":{\"manager_found\":
+        ss << "{\"type\":\"heartbeat\",\"debug\":{\"manager_found\":" << (logicBattleManager ? "true" : "false")
+           << ",\"game_state\":" << currentBattleState
+           << "},\"data\":{";
+
+        // 1. Room Info (Lobby/Draft)
+        if (g_State.roomInfoEnabled && !g_State.players.empty()) {
+            ss << "\"room_info\":{\"player_count\":" << g_State.players.size() << ",\"players\":[";
+            for (size_t i = 0; i < g_State.players.size(); ++i) {
+                const auto& p = g_State.players[i];
+                ss << (i > 0 ? "," : "") << "{";
+                ss << "\"lUid\":" << p.lUid;
+                ss << ",\"_sName\":\"" << p.name << "\""; // Simple escape if needed
+                ss << ",\"iCamp\":" << p.camp;
+                ss << ",\"heroid\":" << p.heroId;
+                ss << ",\"uiRankLevel\":" << p.rankLevel;
+                ss << ",\"summonSkillId\":" << p.spellId;
+                ss << ",\"banHero\":" << p.banHero;
+                ss << ",\"iRoad\":" << p.iRoad;
+                ss << ",\"uiZoneId\":" << p.uiZoneId;
+                ss << ",\"heroskin\":" << p.heroskin;
+                ss << "}";
+            }
+            ss << "]},";
+        }
+
+        // 2. Battle Stats (In-Game)
+        {
+            std::lock_guard<std::mutex> lock(g_State.stateMutex);
+            if (g_State.battleState >= 3) {
+                ss << "\"battle_stats\":{";
+                ss << "\"time\":" << g_State.battleStats.gameTime;
+                ss << ",\"m_iCampAKill\":" << g_State.battleStats.m_iCampAKill;
+                ss << ",\"m_iCampBKill\":" << g_State.battleStats.m_iCampBKill;
+                ss << ",\"m_CampAGold\":" << g_State.battleStats.m_CampAGold;
+                ss << ",\"m_CampBGold\":" << g_State.battleStats.m_CampBGold;
+                ss << ",\"m_CampAExp\":" << g_State.battleStats.m_CampAExp;
+                ss << ",\"m_CampBExp\":" << g_State.battleStats.m_CampBExp;
+                ss << ",\"m_CampAKillTower\":" << g_State.battleStats.m_CampAKillTower;
+                ss << ",\"m_CampBKillTower\":" << g_State.battleStats.m_CampBKillTower;
+                ss << ",\"m_CampAKillLingZhu\":" << g_State.battleStats.m_CampAKillLingZhu;
+                ss << ",\"m_CampBKillLingZhu\":" << g_State.battleStats.m_CampBKillLingZhu;
+                ss << ",\"m_CampAKillShenGui\":" << g_State.battleStats.m_CampAKillShenGui;
+                ss << ",\"m_CampBKillShenGui\":" << g_State.battleStats.m_CampBKillShenGui;
+                ss << "},";
+
+                // Logic Players
+                ss << "\"logic_players\":[";
+                for (size_t i = 0; i < g_State.logicPlayers.size(); ++i) {
+                    const auto& p = g_State.logicPlayers[i];
+                    ss << (i > 0 ? "," : "") << "{";
+                    ss << "\"m_ID\":" << p.m_ID;
+                    ss << ",\"totalGold\":" << p.totalGold;
+                    ss << ",\"_DoubleKillTimes\":" << p.DoubleKillTimes;
+                    ss << ",\"_TripleKillTimes\":" << p.TripleKillTimes;
+                    ss << ",\"_QuadraKillTimes\":" << p.QuadraKillTimes;
+                    ss << ",\"_PentaKillTimes\":" << p.PentaKillTimes;
+                    ss << ",\"m_TotalExp\":" << p.m_TotalExp;
+                    ss << "}";
+                }
+                ss << "],";
+                
+                // Battle Players (Dynamic)
+                ss << "\"battle_players\":[";
+                for(size_t i=0; i<g_State.battlePlayers.size(); ++i) {
+                     const auto& bp = g_State.battlePlayers[i];
+                     ss << (i > 0 ? "," : "") << "{";
+                     ss << "\"uGuid\":" << bp.uGuid;
+                     ss << ",\"playerName\":\"" << bp.playerName << "\"";
+                     ss << ",\"campType\":" << bp.campType;
+                     ss << ",\"kill\":" << bp.kill;
+                     ss << ",\"death\":" << bp.death;
+                     ss << ",\"assist\":" << bp.assist;
+                     ss << ",\"gold\":" << bp.gold;
+                     ss << ",\"totalGold\":" << bp.totalGold;
+                     ss << "}";
+                }
+                ss << "]";
+            } else {
+                // If not in battle, empty stats
+                ss << "\"battle_stats\":{},\"logic_players\":[],\"battle_players\":[]";
+            }
+        }
+
+        // 3. Ban/Pick State
+        /*
+        {
+             std::lock_guard<std::mutex> lock(g_State.stateMutex);
+             // TODO: Serialize BanPickState
+        }
+        */
+
+        ss << "}}"; // End data, End root
+        BroadcastData(ss.str());
+    }
+}
