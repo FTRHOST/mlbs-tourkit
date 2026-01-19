@@ -726,7 +726,7 @@ void MonitorBattleState() {
              for (size_t i = 0; i < g_State.logicPlayers.size(); ++i) {
                  const auto& s = g_State.logicPlayers[i];
                  ss << "{\"m_ID\":" << s.m_ID << ",\"totalGold\":" << s.totalGold 
-                    << ",\"_DoubleKillTimes\":" << s.DoubleKillTimes
+                    << ",\"_DoubleKillTime"
                     << ",\"_TripleKillTimes\":" << s.TripleKillTimes 
                     << ",\"_QuadraKillTimes\":" << s.QuadraKillTimes 
                     << ",\"_PentaKillTimes\":" << s.PentaKillTimes 
