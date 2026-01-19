@@ -539,7 +539,7 @@ void InitDynamicOffsets() {
 
     OFF_LogicPlayer_m_LoigcBezierBullet = Il2CppGetFieldOffset(image, battle, lp, "m_LoigcBezierBullet");
     OFF_LogicPlayer_moveControllers = Il2CppGetFieldOffset(image, battle, lp, "moveControllers");
-    OFF_LogicPlayer_totalGold = Il2CppGetFieldOffset(image, battle, lp, "totalGold");
+    OFF_LogicPlayer_totalGold = Il2CppGetFieldOffset(image, battle, lp, "_totalGold");
     OFF_LogicPlayer_m_copyHurtCount = Il2CppGetFieldOffset(image, battle, lp, "m_copyHurtCount");
     OFF_LogicPlayer_m_HurtTotalValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtTotalValue");
     OFF_LogicPlayer_m_HurtHeroValue = Il2CppGetFieldOffset(image, battle, lp, "m_HurtHeroValue");
