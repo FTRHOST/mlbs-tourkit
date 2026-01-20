@@ -1,26 +1,74 @@
 {
   "blue": {
+    "name": "NO TEAM",
+    "logo": "",
+    "picks": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "pNames": [
+      "Tzxuan",
+      "BurkeSciron",
+      "Ryan",
+      "rajud",
+      "ArnoAstuto"
+    ],
+    "pIds": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "bans": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "score": 0,
+    "kills": 0,
+    "spells": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "lanes": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  },
+  "red": {
     "name": "tess",
     "logo": "data:image/webp;base64,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",
     "picks": [
-      "51",
-      "79",
-      "40",
-      "122",
-      "60"
+      "0",
+      "0",
+      "0",
+      "0",
+      "18"
     ],
     "pNames": [
-      "Z.Acr1t",
-      "IBZZANTIMODE",
-      "PREMAN PENSIUN",
-      "Intan&469",
+      "CounterStrike",
+      "Ristha",
+      "CaioFabio",
+      "RRQbatu",
       "macom08"
     ],
     "pIds": [
-      "128846591",
-      "1373118169",
-      "1667203574",
-      "1909692916",
+      "1",
+      "2",
+      "3",
+      "4",
       "2060454251"
     ],
     "bans": [
@@ -31,78 +79,30 @@
       "0"
     ],
     "score": 0,
-    "kills": 6,
+    "kills": 0,
     "spells": [
-      "20050",
-      "20100",
-      "20190",
-      "20020",
-      "20020"
+      "0",
+      "0",
+      "0",
+      "0",
+      "20050"
     ],
     "lanes": [
-      "0",
-      "5",
-      "0",
-      "0",
-      "0"
-    ]
-  },
-  "red": {
-    "name": "RED TEAM",
-    "logo": "",
-    "picks": [
-      "16",
-      "2",
-      "1",
-      "6",
-      "38"
-    ],
-    "pNames": [
-      "[Computer] Zilong",
-      "[Computer] Balmond",
-      "[Computer] Miya",
-      "[Computer] Tigreal",
-      "[Computer] Vexana"
-    ],
-    "pIds": [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5"
-    ],
-    "bans": [
       "0",
       "0",
       "0",
       "0",
       "0"
-    ],
-    "score": 0,
-    "kills": 8,
-    "spells": [
-      "20150",
-      "20150",
-      "20040",
-      "20070",
-      "20150"
-    ],
-    "lanes": [
-      "1",
-      "4",
-      "5",
-      "3",
-      "2"
     ]
   },
   "game": {
-    "matchTitle": "MATCH TITLE",
+    "matchTitle": "SEMIFINAL",
     "phase": "PREPARING",
-    "timer": 355,
+    "timer": 190,
     "turn": "blue",
     "isIntroActive": false,
     "isGameControlEnabled": false,
-    "bestOf": 3,
+    "bestOf": 1,
     "visibility": {
       "phase": true,
       "timer": true,
@@ -146,380 +146,27 @@
       "name": "tess",
       "leaderId": "2060454251",
       "logo": "data:image/webp;base64,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"
+    },
+    {
+      "id": "1768911941841",
+      "name": "ABDUL",
+      "leaderId": "580834130",
+      "logo": "data:image/webp;base64,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"
+    },
+    {
+      "id": "1768911982113",
+      "name": "TAPAK BUDHA",
+      "leaderId": "424614795",
+      "logo": "data:image/webp;base64,UklGRhAYAABXRUJQVlA4WAoAAAAQAAAAYwAAYwAAQUxQSJ8CAAABkARJtmlb69u2bdu2jZFt27ZtY2Tbtm372e+tj3POvWftXvGnEQHJbSRHEjV+dvfWLmtfQELFT1uo3ZQt51/6+Pr4+Ph+uLlnXq/KGZMSUDHyt1x2i73qw45eJZNjKDX8KLvq0ZzaCUxL2usQC3R7XjGTMk1/xkIFbK9pSuLV31iwiKNGXsQY95WFi9yTTVyNm2wgv4nxRMWcyoa6WlNQ7rNsrpFimvuyyfZlkDGcDfexvIRBbLzAhu51Y4Ai27vVnjHq7k4TRqmLG+UZp2Yu9r0MJDS/t6KdQ8IfUntpFGN1IoZ3B1pGa75X7sHhil7tuvA8i+VRSkZsiUcrIXFBD4owpkMerAbFlRxlZ1QnHU2GxcUcxIrEddBBGwYund1jZMtt0jGyHzYToXEtq/PYdlsk/IrtlkVvxhZVw7obBm/mP/vQzSKKmf4Huu1EKRsxOv9ccdK3hMctUhfqhq9JysbT8LVMP3wnvp7F1j/EN7fllXB8J6d/ZHx+Z94rwF9UeP/f8EXHj+j4Qzq2fR37MB37Yh3HFB3HRh3HeA3nKirOueaqOHecouEc+HsmDefyx1Vck2zRcG0VnEbDNeI7svUQWXcV1+xOs4cIXFPJoUm40jrJBmsRObYKVS4Ns7l5GmaMwUk0zEp7aJj57tcwu/ZPpWEG317DWsJcDWsihzSs7TxJqGCN6ltmBWtt34soWDP8WoJc1h3B20Lkun4Afy0bCTQkxLBrKUiksneMmkFSxdluzq8GJFgnUzZmIdGy7DDhRXMSr+Ej8UPI5Fhkoj5PRf+zYVVqMlXnY2Kz/LnJyWTNFj8XsG0kGS91hymfXdnUoyRhlKFKh/VB3g15+tcqRFClylSk4aD113x9fXx8fZ/snty2bPaMMUkqAgBWUDggShUAAHBJAJ0BKmQAZAA+GQiDQSEGNx2uBABhLYAQVGTj3H8d/xV+Syov0f7+/1X/yf5/4d82nOnlccn/LX83P8f/s/Yh+d/YE/U3zoP1V91n7X+pD9Zf2p92T/Ufrz7k/2A/Gb5AP6j/e//t7TX/P9jP+0/8z2Dv5X/b//T64v7dfBP/ZP95+3/wM/sd/+fYA/93qAcJn/Ve2b+1eCv4p8v/ZvyU/ej/O9EHm3/W+iH8l+zf3r+4/tf+ZHxh/qPB34n/2nqC/kH8p/wX5OfmnyJNk/QI9jPqv+Y/vf7sf3f02f7D0U+tn+19wD+VfzL/HflN8I/7jxa/t3+e/Yb4Bv5j/Vf9N/jf20/3X0r/1f/S/zf7j/672y/oP+K/5v+T/eD/LfYN/Jf6L/nf75/lf+v/iP/39WHsw/bv2WP2pVnzKac8Ce/G+U/Ml9cRIfF1wlMlZ7cacB6SIX0zSN3FECHaMkjDo5T4b9jkTC2as1JFdOEoOm9gUo7y8oGy8HOh7nqBEKcMP+KPEc4CqJxb/n5VgTUkTHbV7yOTmWFEorvjdR6Aonf/9g4PDPl+UfqqtZYnihx36voZDX7YMwf/IKn2KeK/JqmW97ZXp/JQPviMsMlIYBrl1oYLAc6mk+kTAzj6PlBH2hcKmzAOWG8byryDR618FEU0zjuCc5X8lfbbZvptKACAdGSOpiyMP4mtPzkPZtU0c7PoB3flUZnLmLFT0iNW/+e40X+9Ll88JuUWxwPMFAaJ1lps2SWLy8PYKxB2qSARjssyhh3eGNd5PCc3UbkSmLaAAP7/1rNFscifM6PGlD+jsdu6tQb//9y1HmXGhaot/LG3///42b8iB+RAm5N9z8Eo2O6JiIMVeJNCM4wGuXbireO9adBBTT2j/x5tRdvofiPpxOr9aPA47yXb2aGldjjVLWE1aOVJPcUnAa743jN2IQyQDZRsBwhpu0/6V5pDRntqOsqMORR9m4OXe6tYVpZwlQbMAhHWMWmgGvm3/41B+4y4uLSJsWYduKfOcKQOhrEVi2kHMCsVx7cFwt62tZ7Oe+d2e8oP/K1ac8v+zFq4dxxkN++nybGtXiHWcIs6lx6QIWwBq7qK/P6y1S/bzpe/S5fJzwgIFi8G/O/rJI92LkuTiDNjcA9piZNPfCrLrfhD7QGDlVD1OWBiAQxWOwogafzyuyGk5LWCy674CG6NTijmHMT3aqJ/5lOBfHCGd5rC+mxhK0U8BZs5oMwqlOCJsh8Z7+MJMpc+rjTg32t1t5xx+zWNLKR8/QHtyrr9MufM79y/r5o2KCjNVzv6+8I+edigmX0XdnJVEfgoR3LTTo+7gZWWnEVE2pUGmZhXnzdPVqI/Mxvn8pDmBeFG+fcIphUIkceQqQc6rntlzisfe56U8QMhj1wpUik6ksrgQOI4S7v3AILKJGIjLsU8zzJinanRXSsYlSBOiq88zS4osiP0pApZav5xkGVXeLK3I2UYDwMD0fLnEJX9Ap9NwhAdhNmB4GorlZo6TDUrUHY3cFWVCnNAtRecvyYHKYpBrul/wfT4RGGo98DmsC8Jpa0P6h2IA2Qbyf7237jEKKWgcQtrrB2taHbEvsW1gRV9bdy9K/j1CVC9Jh5d9UOYvfEk7nENMzgITrYKTsXY0T7z1ZRrwocIOsXYmsH2bsyO3pIyNZVnbmnRgooOezRrxYtOCZLbJOyFj1oUyyqJaKjbzOfKL3+rEY83UcI4IROcpuZLGf+VhyxR/Vkmzl7lpKTTLTD9FZl1xMumcqmsqP5fqtu8u9iJPSituFnwa/62zMzh87pMO/zQZl+QX3/qkCRL0gQ5TgTfUsjiwmggEG/9Z+dk9Ljrb7sE0DV6wmllbxGe8UwuQsi7/gf8YEi6RS0u0vuQBHI0qccgQc5D2WH64WOndNkmiqBnCNE61qsb/HyyYBLaDrq1m6WTpFvPHLWxtJUBhNrfR3sfgRiDUQ1oP/l15+NDZmbQYvESY27Va1wf/y+b7vybjUP4mq1MuVL5k3JyjMTUsaWztb7UTdmo1gvyD4tJsoPYRViSl6uR2FuY1oJrLmRjmnMUMFeU9Q0NTrDthzHSuLZFKt3zQxvzJ6D4DBce80f2XJtOlhwsfm4EDCb/2//CXy3xtvxmNVZwQrdu7V52C1J+sJmLrY2g4SD8vcydgkKkml4IIk2Gb7FKvD+5uTnWMm/x5TZCxyaKWf/vBqLGzpJB0JbQniCjQRxXDY6YBN+r8lmtkjNwLoQAIXFI9eAUqXDNtOsqHZw4Orp7fvy0M1jB2QFB5Y6uU/2y+qzO+oFpOfjpKF6rPbpzdFaN1gYtEBrtqDtE8Fh9a0DHnhQ686y01O1Bez9xqHNKTUhLtLVWr3XVtrDy6+RgA4McLvvyUhDPdpUo1wVTGgxv1ULNnRXAPwF3JzIuHmbUawFg3LGHjh8AbNyKD/26xrV9v9cxiThKUptx4CXpJg5IstV9NhiQoEj3e2TpLB97T1uiSlpHrnM+sl9jjXCXIYeErDbdMMout1aQG20r8YZmxhahmJeTsizODmuDZfwBCIbwAie8x8kXtEG9wDiP0gQ9B5NGoBcynPuwtgv8U9H9YH1laz+WqkIu/CM1X+lyVRX2Gov6G4mpPL9qGoJoD2sH3LeIC+IGyUD0sVqJ5VW9+6FmFy72yXTKOXIUx4GCIO8c0pCcIsXBcTg93abzFPbygD/UiYcTf1gfsX8i6nFhVYCq5cbk3U5hUIe5Xiip6JJpsuqMEjF593bdX4zD0XoxYVVQk1GuPfTCXT+5gEVn+QycFB1WKB86NW1Fs5jFp8b8ok8+BwtgvjWVxZfh6CqZS/OopWm8mHCyJuTlZm829wEh4VUrwv3lHheCZc7sfnwn72qOy4hoQpYmvS78jjl2NajH6pDPcTJQEWPbO3JD+BvGJf6iLtN4gj9PVu0CL+dv5ndwqBnj1rZHaBDhFWRhcxVfjtK6mNF4bVHSBKGe3/2VjBVpCK3V0SdxzbIUWHT65YlWx/xaGQbt5N2DWVsuLuWSxcba9zrH8bF0Q4dw5/w+lHJFrfzCbti2uwde/T4BNnWKlqKH+vlcFg7rGuk0AB7wEFfgUwaVdYRQi8X91sflaHEoqJlTUeYTRIhI8Me95guaXM3b6/IpS6bPpd5themir7XK1/RXmgIC7Q5ut9ZzTRpAYBrR6/j5Z4T+Xh6Kc5UDkJWJWuhqUKDE2SGHVfMdAcd5lYAhQKhoBv/WqGe9XdndV1xuW0iRCguZdu/q86QrchvfDfAtOqmQt8dOonQPRCuWXvHNoH/RIgV2b2/oHT1Ircinkvk0t7jv4D5tAwKSdfCZB79qaalXLnJRRi3F/uwIlj/36RWNbfEdJfcuxj5/4NcnZszNxhEKrfmS8GfZJ1tT2Gw5ZEnwksjbRJ73/dg+N+FmZGS5NnlDf248r4dw/9p6v6cPMmV4KRBWFg9Vokkn0aaALOmPXw3dgacq/wqMLM0r7c7zfdHy4l37V47tBIp9pWxLYpoK8mAnmt9h2sg6FnWgwHt3SCaY0iEsMbrabC0klFz5NWH5Qxdh/5Nj/3E3BXP9vSEkWyYMKQX7NmTnFwr82Qwjqh66Pu842cB1ghCQDm/IgKIhvq+TkKczXQCNJf8uXERd1GPRzkxiEMC7M+juzdgfarJiKoKJ24DX6wQwsssU/nTXC6Z8AxMk1wp2zMTiXs+VKJnpndSeBXGZ06xg+q1WUpUq1X84leYP8eOigZDud1HRpr/S2KGtNmjZLndeFvwKB3K/cHkXkjK3u4zYJLpKBeI3hKMEYgOumZEx1FzkvoipEodoTbSzSR+Uta+nzu/+SE2A1mGSid2QsY9Sd3Pj0JDBf2byEiNdwpHoYyZ5poMSZQ9w7tdvIuB5bGhYFRIViSGStEKiC//CQbjSelrnmuWxJuYxhsMwhICHENbrg4vWcmuuMkwzlY/5yWGtjmdyH7YLQO9ZvvuLyuyBB6fMU9b/wBC9d7Y3qrhpz0EUls6JaiKyfwlggMzijv8ZO7mm1YTq+PxO5zv6cndGG5d03ZZK2BFEHPMJran9Bk5BF+ZfEZfaNbSoOkPaxZLarYIItiDW5kQOUqC+NDEQEJBITnY4dETlW4zM1Qqik4kfIlsXUfd9kO0Cw0gWJsnahMZJQhWh+XNRX6qyukIboXcENYUD8eoeU1JWr0oJmQ7N/gBgUBIPzB+9pX4DhkOwRfpjREJgyGBdEdvFuw+KNlO9V5IvF/Sn6qDm8rFBfw5/Kl1Bh4JEoGW7HeLAdEAyCTKLAsBIbZPcalXXLK447MNe5SjTKfNKYxpAGWcemqD3s+3vkvzOwYj3HRkLv46fVouCK/OjDBMIkfTEaN74xF4n6pfvLtaSiiZPpIN80u7D5T8y0kiamiN8Ck8CVRTJeS0DzZQXj+efkLLnOenetKxh8GHP/9WyVuoAfvGbF6pNaoP/qe5G9e4k6qSDR5Rvz/nWuhaPUsROp996WutMUReuo7ZSx5TghsUu/Hnh2rY9jwc85e49xcw7qOSEC6t5GVFMWB+g1K9DUnYDJzrTR2V31fCj89ntbQDC+UF935zNbRka9bxiZwvLPfSTCZOB4BU61xDCzlznzqgJob8ekynppkfu2gGOKwKAVeS0YqLPPXapgenrx4Znar0J2wfv8rBzVoY5QMasBJL/+tVTukMm4IAHBxJtHkeYZcc6wkMFMX4OQRciexIxM8uq9s/u1ntU5p34ZDNDmpfPfrwmZyMi1Zuc+Frmu0QOcrIDUauvg4MeP4nJ0eGW3k+Lv6d/QMQeE77tAdvUwxklkn/XIl8r6c7QTg/I+HHMThp42KwKS9GJUc4NhRYdP1UM3kEOA/NxpfCu4LwCjt6S4YrQ9F2f2NGgyn+0gqGdjSJvKfdBWUyUiyseLrJO2E4o8yPuoCZnJ7FcII970NADRaFyh3kk6LP1OKsQquDThM/96rfSDpnAHVrTBmJnAWBDHxxUOSzb9BNXklv5UplnT9bmXN0trLV6/BYjd+fYC/r/LOsCbyUDYZTGiMka1kK+KmOaPp3cUw9MReXypAmuKzrsplK/tXvOIeUGkxMKvOqcxiZz3gCAD2sqBlyfMmoJAzUuoL4QkD4fLtmSRdUHzwpvk+CtKT07TQV6RHxu9wDIew/xI2rNBuvATUcuA5HmlrErgKZ/R+cWMMEtHA1/klHDiZE0h7CdOs+99yfUwZfbmvFZWsljaq5BNoKIe2/VhZ+OoKi3kT8/r+SE1ytsAc7pvO/PWpQL2W8cOeE2nDnpFyzZ/9hUU7V1lSjxF2DHPgTkY0bt8fAAZx443uKGR0yP8BhQD3RiAelMXN73b8o4v3ALy7t4pdqduE2WQr9xmGCWIMJeZlkTk1nusB9h7P7Ili5WQPAoMVvVvHVBAydQ2T3q+RRzj8Qy2jDptjcpMv6p3mb0wfSTmX36ztq1asuh4W6JLA4wE5QOcvoLDWd9Ki0tqEII3ZnEcLlUje3ScTdLFYrGUe61VauGNUvLrb9cJ/hUqfL8frxDNRpzbk0JMkZWxI/9qiFfntp3HcQehh/Usfn+uXjV9AP0yLX+IfG3k480xdjGHKkQKWKWWDe4KQFrqtgsmWv15b0zUVa2QR+DXI1b4Kd9bSGGGp9QAALS2cUfEf3CKYyGMlfd/INcTDKBmfjgFeZwWo3xlPUwEP/uQnTKKQBnd54BvW/OykLLv1I8KKSyaxPeVDyBs3qi3pzYtQafp2WncORbYPfROdXFfRQYQeyqCpMj3ihykmTcvz0ZJAH1n/A7yVrquTT4OLyuFhU65QQOvPFQJ9kxEkZPhe1KpnFD53tRXDCVJ/uywEanlvzcfh6uxxUjszw6Hegj17hHacWBsRC9sNTFo+r+oCuFnylBmrTPmavc/gmzGn2sQuOzPB7ul/WzicPhmKTGFCI2Nv2tpa1QYul++qj/cLUyVmjS0pobOGJeeqvIk1ekdDm+WmY4StOpPT0mMPqFzellwKQTZ9Dn/k2szqVSHrsU2loan8Ie7yTwRokGFQ06SdXty/l/dpSxnc1+mqh3GhO5Cyye2N4LJI6Qo2u+JhYeGw7/3Aa+uOQy8lKRWrDE+Ww/R+Koc+3Z8ty2Gwb8zmwbeY2j4xZ1AJxQxEXHb1+5q2DOBacOIOkjTk7ANG+TZrXXTbBiq0JoExffuTKCpdSix1n6nEJVqjSm/mw1HI80VbaJ6TD8la5TV3zGV7RkL+68Y2Hpvh28ZKh+gmFs+O+HrwczJGsJwxAIO1RYTkTJ1f+smUdoZo+s9k9Lk4ljZxI889SHcTntAwVdJX4w6MTKOf0XqJlekCHQbv0d8zpLdQzs8W7iQN6Q6XZXpiJj1QPO325bqQeV9oKQkqHKyuuQq794azKH1a/p6SFFFW99sLyLmitzU8IpZxJaS2PdDmba0cGJHSAA10wsNdj7O1Z2fokXF9gnuPRaxEDsIT8NcbKmLU5bro1KzJtypzRTXlVh69FadVC38kft4bjgQiMiG0NWLwcX0ta1ksmdITo5Wi2Keb9AvNaswSsM54X2ESw6F44rKhhqNh3Cd03/RKaZwMtN09VptJ0W5CnFnDX4WYs65NVwzciMWAzLZcgmgV6EKeWQEvAjRsnYcb5HYdLeJotlSmQMQEOra0qAwxT+wt3kCqEMbTPN86QDhsudgQ3h6GJu4DCbM1yv9Iw6ThXt5981squ4SDh9m+x7DIoLXYAmINq6Pw3Ns4URlWN4WLwvqssc+DeulYWZJ9T7P5QDfOTQ7MhkEhm8APbT63uSc2w5eZB6gucVJkdI8GzSgaF8xvbiGQmjGdrCVwcrmZ43K+FTcwuWCB+lInjmMqF90eptxoMjufIJ5ldPuSmCviMBNF86fWpnuBjTdORrDk2fkTvVqFpq/PfVqi5XnIu9kuMB4YpbZRqiq3Wm7Gp4gAMT5EttbNNlNWLcK04V9z6nwVyIx1gGQyjprbFmALzN/dH1hI7X6/BI5OYdumKvOoAABfjnKy+J6CgCsFRLwq/+EbrRLgCXoFYqDtuXuJLAOeHCxhyimHSqO/wiL5a5O0gETsHZZJAdu+4oevr+dSWRFUWVcu1ejVMBnkTUC3+KsbyBMLInSRI9BUlLYcC8/Qv88jy7WeuAhWTLSKfWaVW4/s5yjlWlsZlmZ4MPgg8BpDsEmMR4f8v1g/KviPJqoBzFAw4kmNxcGOmbjRYTDWVRuInaCDTF1EnLGtZjXg2T1HXBNR5YlunhGV49lxfA1C8ey4vaVMQngMSKgAHSgIWQAAAA"
     }
   ],
   "teamLibrary": [],
-  "history": [
-    {
-      "matchTitle": "MATCH TITLE",
-      "blue": {
-        "name": "BLUE TEAM",
-        "logo": "",
-        "picks": [
-          "10",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "pNames": [
-          "macom07",
-          "PLAYER 2",
-          "PLAYER 3",
-          "PLAYER 4",
-          "PLAYER 5"
-        ],
-        "pIds": [
-          "2055252516",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "bans": [
-          "0",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "score": 0,
-        "kills": 0
-      },
-      "red": {
-        "name": "RED TEAM",
-        "logo": "",
-        "picks": [
-          "60",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "pNames": [
-          "Computer",
-          "PLAYER 2",
-          "PLAYER 3",
-          "PLAYER 4",
-          "PLAYER 5"
-        ],
-        "pIds": [
-          "99",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "bans": [
-          "0",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "score": 0,
-        "kills": 0
-      },
-      "game": {
-        "matchTitle": "MATCH TITLE",
-        "phase": "PREPARING",
-        "timer": 37,
-        "turn": "blue",
-        "isIntroActive": false,
-        "isGameControlEnabled": false,
-        "bestOf": 3,
-        "visibility": {
-          "phase": true,
-          "timer": true,
-          "turn": true,
-          "score": true,
-          "isAutoSync": false
-        }
-      },
-      "gameData": {
-        "type": "heartbeat",
-        "debug": {
-          "manager_found": true,
-          "game_state": 7,
-          "feature_enabled": true
-        },
-        "data": {
-          "room_info": {
-            "player_count": 2,
-            "players": [
-              {
-                "lUid": 2055252516,
-                "_sName": "macom07",
-                "iCamp": 1,
-                "heroid": 85,
-                "uiRankLevel": 39,
-                "summonSkillId": 20190,
-                "banHero": 0,
-                "iRoad": 0,
-                "uiZoneId": 19662,
-                "heroskin": 1851
-              },
-              {
-                "lUid": 99,
-                "_sName": "Computer",
-                "iCamp": 2,
-                "heroid": 10,
-                "uiRankLevel": 0,
-                "summonSkillId": 20050,
-                "banHero": 0,
-                "iRoad": 0,
-                "uiZoneId": 0,
-                "heroskin": 1101
-              }
-            ],
-            "logic_players": [
-              {
-                "m_ID": 85,
-                "totalGold": 1251,
-                "_TripleKillTimes": 0,
-                "_QuadraKillTimes": 0,
-                "_PentaKillTimes": 0,
-                "m_TotalExp": 1968
-              },
-              {
-                "m_ID": 10,
-                "totalGold": 33657,
-                "_TripleKillTimes": 0,
-                "_QuadraKillTimes": 0,
-                "_PentaKillTimes": 0,
-                "m_TotalExp": 5741
-              }
-            ]
-          },
-          "battle_stats": {
-            "time": 488.61,
-            "m_iCampAKill": 0,
-            "m_iCampBKill": 0,
-            "m_CampAGold": 1251,
-            "m_CampBGold": 33557,
-            "m_CampAExp": 1968,
-            "m_CampBExp": 5516,
-            "m_CampAKillTower": 0,
-            "m_CampBKillTower": 3,
-            "m_CampAKillLingZhu": 0,
-            "m_CampBKillLingZhu": 0,
-            "m_CampAKillShenGui": 0,
-            "m_CampBKillShenGui": 0
-          }
-        }
-      },
-      "winner": "draw",
-      "date": "2026-01-17T08:57:05.067Z",
-      "id": "1768640225106"
-    },
-    {
-      "matchTitle": "MATCH TITLE",
-      "blue": {
-        "name": "NO TEAM",
-        "logo": "",
-        "picks": [
-          "130",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "pNames": [
-          "Abdull?",
-          "PLAYER 2",
-          "PLAYER 3",
-          "PLAYER 4",
-          "PLAYER 5"
-        ],
-        "pIds": [
-          "580834130",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "bans": [
-          "0",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "score": 0,
-        "kills": 0,
-        "spells": [
-          "20060",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "lanes": [
-          "0",
-          "",
-          "",
-          "",
-          ""
-        ]
-      },
-      "red": {
-        "name": "RED TEAM",
-        "logo": "",
-        "picks": [
-          "21",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "pNames": [
-          "[Computer] Hayabusa",
-          "PLAYER 2",
-          "PLAYER 3",
-          "PLAYER 4",
-          "PLAYER 5"
-        ],
-        "pIds": [
-          "1",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "bans": [
-          "0",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "score": 0,
-        "kills": 0,
-        "spells": [
-          "20020",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "lanes": [
-          "4",
-          "",
-          "",
-          "",
-          ""
-        ]
-      },
-      "game": {
-        "matchTitle": "MATCH TITLE",
-        "phase": "PREPARING",
-        "timer": 331,
-        "turn": "blue",
-        "isIntroActive": false,
-        "isGameControlEnabled": false,
-        "bestOf": 3,
-        "visibility": {
-          "phase": true,
-          "timer": true,
-          "turn": true,
-          "score": true,
-          "isAutoSync": true
-        }
-      },
-      "gameData": {
-        "type": "heartbeat",
-        "debug": {
-          "manager_found": true,
-          "game_state": 7,
-          "feature_enabled": true
-        },
-        "data": {
-          "room_info": {
-            "player_count": 3,
-            "players": [
-              {
-                "lUid": 1,
-                "_sName": "[Computer] Hayabusa",
-                "iCamp": 2,
-                "heroid": 21,
-                "uiRankLevel": 146,
-                "summonSkillId": 20020,
-                "banHero": 0,
-                "iRoad": 4,
-                "uiZoneId": 0,
-                "heroskin": 1216
-              },
-              {
-                "lUid": 580834130,
-                "_sName": "Abdull?",
-                "iCamp": 1,
-                "heroid": 130,
-                "uiRankLevel": 146,
-                "summonSkillId": 20060,
-                "banHero": 0,
-                "iRoad": 0,
-                "uiZoneId": 8338,
-                "heroskin": 2302
-              },
-              {
-                "lUid": 2055252516,
-                "_sName": "macom07",
-                "iCamp": 5,
-                "heroid": 0,
-                "uiRankLevel": 39,
-                "summonSkillId": 0,
-                "banHero": 0,
-                "iRoad": 0,
-                "uiZoneId": 19662,
-                "heroskin": 0
-              }
-            ],
-            "logic_players": [
-              {
-                "m_ID": 130,
-                "totalGold": 3977,
-                "_TripleKillTimes": 0,
-                "_QuadraKillTimes": 0,
-                "_PentaKillTimes": 0,
-                "m_TotalExp": 5396
-              },
-              {
-                "m_ID": 21,
-                "totalGold": 2358,
-                "_TripleKillTimes": 0,
-                "_QuadraKillTimes": 0,
-                "_PentaKillTimes": 0,
-                "m_TotalExp": 2827
-              }
-            ]
-          },
-          "battle_stats": {
-            "time": 331.652,
-            "m_iCampAKill": 0,
-            "m_iCampBKill": 0,
-            "m_CampAGold": 3827,
-            "m_CampBGold": 2358,
-            "m_CampAExp": 5171,
-            "m_CampBExp": 2827,
-            "m_CampAKillTower": 3,
-            "m_CampBKillTower": 0,
-            "m_CampAKillLingZhu": 0,
-            "m_CampBKillLingZhu": 0,
-            "m_CampAKillShenGui": 0,
-            "m_CampBKillShenGui": 0
-          }
-        }
-      },
-      "winner": "draw",
-      "date": "2026-01-17T11:03:27.556Z",
-      "id": "1768647807594"
-    }
-  ],
+  "history": [],
   "gameData": {
     "type": "heartbeat",
     "debug": {
       "manager_found": true,
-      "game_state": 6,
+      "game_state": 3,
       "feature_enabled": true
     },
     "data": {
@@ -528,234 +175,154 @@
         "players": [
           {
             "lUid": 1,
-            "_sName": "[Computer] Zilong",
+            "_sName": "CounterStrike",
             "iCamp": 2,
-            "heroid": 16,
-            "uiRankLevel": 66,
-            "summonSkillId": 20150,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
             "banHero": 0,
-            "iRoad": 1,
-            "uiZoneId": 0,
-            "heroskin": 1162
-          },
-          {
-            "lUid": 2,
-            "_sName": "[Computer] Balmond",
-            "iCamp": 2,
-            "heroid": 2,
-            "uiRankLevel": 66,
-            "summonSkillId": 20150,
-            "banHero": 0,
-            "iRoad": 4,
-            "uiZoneId": 0,
-            "heroskin": 1021
-          },
-          {
-            "lUid": 3,
-            "_sName": "[Computer] Miya",
-            "iCamp": 2,
-            "heroid": 1,
-            "uiRankLevel": 66,
-            "summonSkillId": 20040,
-            "banHero": 0,
-            "iRoad": 5,
-            "uiZoneId": 0,
-            "heroskin": 1012
-          },
-          {
-            "lUid": 4,
-            "_sName": "[Computer] Tigreal",
-            "iCamp": 2,
-            "heroid": 6,
-            "uiRankLevel": 66,
-            "summonSkillId": 20070,
-            "banHero": 0,
-            "iRoad": 3,
-            "uiZoneId": 0,
-            "heroskin": 1062
-          },
-          {
-            "lUid": 5,
-            "_sName": "[Computer] Vexana",
-            "iCamp": 2,
-            "heroid": 38,
-            "uiRankLevel": 66,
-            "summonSkillId": 20150,
-            "banHero": 0,
-            "iRoad": 2,
+            "iRoad": 0,
             "uiZoneId": 0,
             "heroskin": 0
           },
           {
-            "lUid": 128846591,
-            "_sName": "Z.Acr1t",
-            "iCamp": 1,
-            "heroid": 51,
-            "uiRankLevel": 85,
-            "summonSkillId": 20050,
+            "lUid": 2,
+            "_sName": "Ristha",
+            "iCamp": 2,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
             "banHero": 0,
             "iRoad": 0,
-            "uiZoneId": 2652,
-            "heroskin": 1514
+            "uiZoneId": 0,
+            "heroskin": 0
           },
           {
-            "lUid": 1373118169,
-            "_sName": "IBZZANTIMODE",
-            "iCamp": 1,
-            "heroid": 79,
-            "uiRankLevel": 129,
-            "summonSkillId": 20100,
-            "banHero": 0,
-            "iRoad": 5,
-            "uiZoneId": 15635,
-            "heroskin": 1793
-          },
-          {
-            "lUid": 1667203574,
-            "_sName": "PREMAN PENSIUN",
-            "iCamp": 1,
-            "heroid": 40,
-            "uiRankLevel": 59,
-            "summonSkillId": 20190,
+            "lUid": 3,
+            "_sName": "CaioFabio",
+            "iCamp": 2,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
             "banHero": 0,
             "iRoad": 0,
-            "uiZoneId": 18070,
-            "heroskin": 1402
+            "uiZoneId": 0,
+            "heroskin": 0
           },
           {
-            "lUid": 1909692916,
-            "_sName": "Intan&469",
-            "iCamp": 1,
-            "heroid": 122,
-            "uiRankLevel": 66,
-            "summonSkillId": 20020,
+            "lUid": 4,
+            "_sName": "RRQbatu",
+            "iCamp": 2,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
             "banHero": 0,
             "iRoad": 0,
-            "uiZoneId": 19042,
+            "uiZoneId": 0,
+            "heroskin": 0
+          },
+          {
+            "lUid": 5,
+            "_sName": "Tzxuan",
+            "iCamp": 1,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
+            "heroskin": 0
+          },
+          {
+            "lUid": 6,
+            "_sName": "BurkeSciron",
+            "iCamp": 1,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
+            "heroskin": 0
+          },
+          {
+            "lUid": 7,
+            "_sName": "Ryan",
+            "iCamp": 1,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
+            "heroskin": 0
+          },
+          {
+            "lUid": 8,
+            "_sName": "rajud",
+            "iCamp": 1,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
+            "heroskin": 0
+          },
+          {
+            "lUid": 9,
+            "_sName": "ArnoAstuto",
+            "iCamp": 1,
+            "heroid": 0,
+            "uiRankLevel": 15,
+            "summonSkillId": 0,
+            "banHero": 0,
+            "iRoad": 0,
+            "uiZoneId": 0,
             "heroskin": 0
           },
           {
             "lUid": 2060454251,
             "_sName": "macom08",
-            "iCamp": 1,
-            "heroid": 60,
-            "uiRankLevel": 1,
-            "summonSkillId": 20020,
+            "iCamp": 2,
+            "heroid": 18,
+            "uiRankLevel": 15,
+            "summonSkillId": 20050,
             "banHero": 0,
             "iRoad": 0,
             "uiZoneId": 19636,
             "heroskin": 0
           }
         ],
-        "logic_players": [
-          {
-            "m_ID": 122,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 1726
-          },
-          {
-            "m_ID": 79,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 4682
-          },
-          {
-            "m_ID": 60,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 3082
-          },
-          {
-            "m_ID": 40,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 3142
-          },
-          {
-            "m_ID": 51,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 2977
-          },
-          {
-            "m_ID": 16,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 4821
-          },
-          {
-            "m_ID": 2,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 3635
-          },
-          {
-            "m_ID": 1,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 3607
-          },
-          {
-            "m_ID": 6,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 3263
-          },
-          {
-            "m_ID": 38,
-            "totalGold": -2146189312,
-            "_DoubleKillTimes": 0,
-            "_TripleKillTimes": 0,
-            "_QuadraKillTimes": 0,
-            "_PentaKillTimes": 0,
-            "m_TotalExp": 4190
-          }
-        ]
+        "logic_players": []
       },
       "battle_stats": {
-        "time": 355.882,
-        "m_iCampAKill": 6,
-        "m_iCampBKill": 8,
-        "m_CampAGold": 12233,
-        "m_CampBGold": 14833,
-        "m_CampAExp": 15609,
-        "m_CampBExp": 19516,
+        "time": 190.236,
+        "m_iCampAKill": 0,
+        "m_iCampBKill": 0,
+        "m_CampAGold": 0,
+        "m_CampBGold": 0,
+        "m_CampAExp": 0,
+        "m_CampBExp": 0,
         "m_CampAKillTower": 0,
-        "m_CampBKillTower": 1,
+        "m_CampBKillTower": 0,
         "m_CampAKillLingZhu": 0,
         "m_CampBKillLingZhu": 0,
         "m_CampAKillShenGui": 0,
         "m_CampBKillShenGui": 0
-      }
+      },
+      "logic_players": [
+        {
+          "m_ID": 1,
+          "totalGold": 0,
+          "_DoubleKillTimes": 7,
+          "_TripleKillTimes": 0,
+          "_QuadraKillTimes": 0,
+          "_PentaKillTimes": 7,
+          "m_TotalExp": 0
+        }
+      ]
     }
   },
-  "status": "connecting"
+  "status": "connected"
 }

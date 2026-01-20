@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { AppState, BattleStats } from '../types';
+import KillNotification from './KillNotification';
 
 interface BattleOverlayProps {
   data: AppState;
@@ -52,6 +53,7 @@ const BattleOverlay: React.FC<BattleOverlayProps> = ({ data }) => {
 
   return (
     <>
+    {/* <KillNotification data={data} /> */}
     <link href="https://fonts.googleapis.com/css2?family=League+Gothic&display=swap" rel="stylesheet" />
     <style>
     {`

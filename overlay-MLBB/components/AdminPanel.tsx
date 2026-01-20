@@ -505,6 +505,127 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
                      </div>
                 </div>
             </div>
+
+            {/* --- KILL SIMULATION --- */}
+            <div className="bg-slate-800/30 p-6 rounded-2xl border border-slate-700">
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    Kill Simulation Trigger
+                </h3>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => {
+                            // Step 1: Ensure we are in State 6 first with a base player if needed
+                            setState(prev => {
+                                const newLogicPlayers = prev.gameData?.data?.logic_players ? [...prev.gameData.data.logic_players] : [];
+                                if (newLogicPlayers.length === 0) {
+                                    newLogicPlayers.push({ m_ID: 1, totalGold: 0, _DoubleKillTimes: 0, _TripleKillTimes: 0, _QuadraKillTimes: 0, _PentaKillTimes: 0, m_TotalExp: 0 });
+                                }
+                                
+                                const newRoomPlayers = prev.gameData?.data?.room_info?.players ? [...prev.gameData.data.room_info.players] : [];
+                                if (!newRoomPlayers.find(p => p.heroid === 1)) {
+                                    newRoomPlayers.push({ lUid: 123, _sName: "Pro Player", iCamp: 1, heroid: 1, uiRankLevel: 1, summonSkillId: 0, banHero: 0, iRoad: 0, uiZoneId: 0, heroskin: 0 });
+                                }
+
+                                return {
+                                    ...prev,
+                                    gameData: {
+                                        ...prev.gameData,
+                                        debug: { ...prev.gameData?.debug, game_state: 6 },
+                                        data: {
+                                            ...prev.gameData?.data,
+                                            logic_players: newLogicPlayers,
+                                            room_info: { ...prev.gameData?.data?.room_info, players: newRoomPlayers }
+                                        }
+                                    }
+                                };
+                            });
+
+                            // Step 2: Increment after a short delay to allow React to process the state change (Ref init)
+                            setTimeout(() => {
+                                setState(prev => {
+                                    const newLogicPlayers = [...(prev.gameData?.data?.logic_players || [])];
+                                    if (newLogicPlayers.length > 0) {
+                                        newLogicPlayers[0] = {
+                                            ...newLogicPlayers[0],
+                                            _DoubleKillTimes: (newLogicPlayers[0]._DoubleKillTimes || 0) + 1
+                                        };
+                                    }
+                                    return {
+                                        ...prev,
+                                        gameData: {
+                                            ...prev.gameData,
+                                            data: {
+                                                ...prev.gameData?.data,
+                                                logic_players: newLogicPlayers
+                                            }
+                                        }
+                                    };
+                                });
+                            }, 100);
+                        }}
+                        className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white rounded font-bold text-xs uppercase shadow-lg transform active:scale-95 transition-all"
+                    >
+                        Trigger Double Kill
+                    </button>
+                    
+                    <button
+                        onClick={() => {
+                            // Step 1: Ensure State 6
+                            setState(prev => {
+                                const newLogicPlayers = prev.gameData?.data?.logic_players ? [...prev.gameData.data.logic_players] : [];
+                                if (newLogicPlayers.length === 0) {
+                                     newLogicPlayers.push({ m_ID: 1, totalGold: 0, _DoubleKillTimes: 0, _TripleKillTimes: 0, _QuadraKillTimes: 0, _PentaKillTimes: 0, m_TotalExp: 0 });
+                                }
+                                
+                                const newRoomPlayers = prev.gameData?.data?.room_info?.players ? [...prev.gameData.data.room_info.players] : [];
+                                if (!newRoomPlayers.find(p => p.heroid === 1)) {
+                                    newRoomPlayers.push({ lUid: 123, _sName: "MVP Player", iCamp: 1, heroid: 1, uiRankLevel: 1, summonSkillId: 0, banHero: 0, iRoad: 0, uiZoneId: 0, heroskin: 0 });
+                                }
+
+                                return {
+                                    ...prev,
+                                    gameData: {
+                                        ...prev.gameData,
+                                        debug: { ...prev.gameData?.debug, game_state: 6 },
+                                        data: {
+                                            ...prev.gameData?.data,
+                                            logic_players: newLogicPlayers,
+                                            room_info: { ...prev.gameData?.data?.room_info, players: newRoomPlayers }
+                                        }
+                                    }
+                                }
+                            });
+
+                            // Step 2: Increment
+                            setTimeout(() => {
+                                setState(prev => {
+                                    const newLogicPlayers = [...(prev.gameData?.data?.logic_players || [])];
+                                    if (newLogicPlayers.length > 0) {
+                                        newLogicPlayers[0] = {
+                                            ...newLogicPlayers[0],
+                                            _PentaKillTimes: (newLogicPlayers[0]._PentaKillTimes || 0) + 1
+                                        };
+                                    }
+                                    return {
+                                        ...prev,
+                                        gameData: {
+                                            ...prev.gameData,
+                                            data: {
+                                                ...prev.gameData?.data,
+                                                logic_players: newLogicPlayers
+                                            }
+                                        }
+                                    };
+                                });
+                            }, 100);
+                        }}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white rounded font-bold text-xs uppercase shadow-lg transform active:scale-95 transition-all"
+                    >
+                        Trigger Savage
+                    </button>
+                </div>
+            </div>
         </div>
       );
   };

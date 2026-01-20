@@ -1,0 +1,68 @@
+.infokill,
+.infokill * {
+  box-sizing: border-box;
+}
+.infokill {
+  position: relative;
+}
+.bg-02 {
+  width: 532px;
+  height: 81px;
+  position: absolute;
+  left: calc(50% - 305px);
+  top: 122px;
+  overflow: visible;
+  object-fit: cover;
+}
+.bg-01 {
+  width: 524px;
+  height: 81px;
+  position: absolute;
+  left: 610px;
+  top: 96px;
+  overflow: visible;
+  object-fit: cover;
+}
+.nama-player {
+  color: #ffffff;
+  text-align: center;
+  font-family: "LilitaOne-Regular", sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  position: absolute;
+  right: 38.2%;
+  left: 40.98%;
+  width: 20.82%;
+  bottom: 0%;
+  top: 87.19%;
+  height: 12.81%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.infokill2 {
+  color: #ffffff;
+  text-align: center;
+  font-family: "LilitaOne-Regular", sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  position: absolute;
+  right: 17.7%;
+  left: 28.2%;
+  width: 54.1%;
+  bottom: 12.81%;
+  top: 47.29%;
+  height: 39.9%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-potrait {
+  width: 157px;
+  height: 203px;
+  position: absolute;
+  left: 26px;
+  top: 0px;
+  overflow: visible;
+  object-fit: cover;
+}
