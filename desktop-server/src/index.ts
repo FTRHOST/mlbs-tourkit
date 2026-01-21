@@ -97,6 +97,108 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+app.post('/api/import-teams', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    try {
+        console.log('Received teams zip:', req.file.originalname);
+        const zip = new AdmZip(req.file.path);
+        const zipEntries = zip.getEntries();
+        
+        // 1. Find and Parse Excel
+        const excelEntry = zipEntries.find(entry => entry.entryName.match(/\.xlsx$/i));
+        if (!excelEntry) {
+            await fs.remove(req.file.path);
+            return res.status(400).json({ message: 'No .xlsx file found in the zip.' });
+        }
+
+        const workbook = XLSX.read(excelEntry.getData(), { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        if (!sheetName) {
+             await fs.remove(req.file.path);
+             return res.status(400).json({ message: 'Excel file contains no sheets.' });
+        }
+        const worksheet = workbook.Sheets[sheetName];
+        if (!worksheet) {
+             await fs.remove(req.file.path);
+             return res.status(400).json({ message: 'Sheet not found in workbook.' });
+        }
+        const rawData: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+        // 2. Extract Logos
+        const teamLogosDir = path.join(PUBLIC_DIR, 'assets', 'teams');
+        fs.ensureDirSync(teamLogosDir);
+
+        const newLibrary: TeamLibraryEntry[] = [];
+
+        for (const row of rawData) {
+            const teamName = row['TeamName'] || row['Name'] || 'Unknown Team';
+            const shortName = row['ShortName'] || row['Abbreviation'] || teamName;
+            const logoFileName = row['LogoFileName'] || row['Logo'];
+            const captainId = row['CaptainID'] || row['LeaderID'] || ''; // Optional
+
+            let logoUrl = '';
+
+            if (logoFileName) {
+                // Try to find the logo in the zip (case-insensitive search)
+                const logoEntry = zipEntries.find(e => 
+                    !e.isDirectory && 
+                    (e.entryName === logoFileName || e.entryName === `logos/${logoFileName}` || e.entryName.toLowerCase().endsWith(logoFileName.toLowerCase()))
+                );
+
+                if (logoEntry) {
+                    // Extract to assets/teams
+                    const targetFileName = `${Date.now()}_${path.basename(logoFileName)}`;
+                    const targetPath = path.join(teamLogosDir, targetFileName);
+                    
+                    await new Promise<void>((resolve, reject) => {
+                        logoEntry.getDataAsync((data, err) => {
+                            if (err) reject(err);
+                            fs.writeFileSync(targetPath, data);
+                            resolve();
+                        });
+                    });
+                    
+                    logoUrl = `assets/teams/${targetFileName}`;
+                }
+            }
+
+            newLibrary.push({
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                name: teamName,
+                shortName: shortName,
+                logoUrl: logoUrl,
+                captainId: captainId
+            });
+        }
+
+        // 3. Update State (Atomic replacement or append? Let's append to library)
+        // If teamLibrary doesn't exist, init it
+        if (!appState.teamLibrary) appState.teamLibrary = [];
+        
+        // Filter out duplicates based on name if desired, or just append
+        // Let's just append for now, user can clear if needed via reset
+        appState.teamLibrary = [...appState.teamLibrary, ...newLibrary];
+
+        saveState();
+        io.emit('state_update', appState);
+
+        console.log(`Imported ${newLibrary.length} teams.`);
+        res.status(200).json({ message: `Successfully imported ${newLibrary.length} teams.`, count: newLibrary.length });
+
+    } catch (e) {
+        const error = e as Error;
+        console.error("Failed to process teams zip:", error);
+        res.status(500).json({ message: 'Error processing zip file.', error: error.message });
+    } finally {
+        if (req.file) {
+            await fs.remove(req.file.path);
+        }
+    }
+});
+
 app.post('/api/import-ads', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
@@ -466,6 +568,45 @@ io.on('connection', (socket) => {
         
         // Broadcast to others (excluding sender)
         socket.broadcast.emit('state_update', appState);
+    });
+
+    // --- ATOMIC REGISTRY OPERATIONS (Fixes Race Conditions) ---
+    socket.on('add_registry_team', (team: any) => {
+        if (!appState.registry) appState.registry = [];
+        // Prevent duplicates by ID
+        if (!appState.registry.find((t: any) => t.id === team.id)) {
+            appState.registry.push(team);
+            saveState();
+            io.emit('state_update', appState); // Force sync everyone
+        }
+    });
+
+    socket.on('update_registry_team', (team: any) => {
+        if (appState.registry) {
+            const idx = appState.registry.findIndex((t: any) => t.id === team.id);
+            if (idx !== -1) {
+                appState.registry[idx] = team;
+                saveState();
+                io.emit('state_update', appState);
+            }
+        }
+    });
+
+    socket.on('remove_registry_team', (teamId: string) => {
+        if (appState.registry) {
+            const initialLen = appState.registry.length;
+            appState.registry = appState.registry.filter((t: any) => t.id !== teamId);
+            if (appState.registry.length !== initialLen) {
+                saveState();
+                io.emit('state_update', appState);
+            }
+        }
+    });
+
+    socket.on('clear_team_library', () => {
+        appState.teamLibrary = [];
+        saveState();
+        io.emit('state_update', appState);
     });
 
     socket.on('disconnect', () => {

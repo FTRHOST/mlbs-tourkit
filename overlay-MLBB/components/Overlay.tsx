@@ -3,6 +3,7 @@ import { AppState } from '../types';
 import BattleOverlay from './BattleOverlay';
 import OverviewDraft from './OverviewDraft';
 import AdContent from './AdContent';
+import NextMatchOverlay from './NextMatchOverlay';
 
 interface OverlayProps {
   data: AppState;
@@ -197,6 +198,11 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
 
   if (showBattleOverlay) {
     return <BattleOverlay data={data} />;
+  }
+
+  // If gameState is 0 (Idle/Next Match), show NextMatchOverlay
+  if (gameState === 0) {
+      return <NextMatchOverlay data={data} />;
   }
 
   // If gameState is 4 or 5, or (6 and waiting), show OverviewDraft

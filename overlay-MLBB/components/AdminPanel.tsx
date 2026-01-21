@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AppState, TeamData, AdConfig, RegisteredTeam, SyncControl, AppTheme } from '../types';
+import { syncService } from '../services/SyncService';
 
 interface AdminPanelProps {
   state: AppState;
@@ -124,6 +125,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
         if (JSON.stringify(state.registry) !== JSON.stringify(prev.registry)) { nextDraft.registry = state.registry; hasChanges = true; }
         if (JSON.stringify(state.history) !== JSON.stringify(prev.history)) { nextDraft.history = state.history; hasChanges = true; }
         if (JSON.stringify(state.theme) !== JSON.stringify(prev.theme)) { nextDraft.theme = state.theme; hasChanges = true; }
+        if (JSON.stringify(state.manualMatch) !== JSON.stringify(prev.manualMatch)) { nextDraft.manualMatch = state.manualMatch; hasChanges = true; }
 
         return hasChanges ? nextDraft : currentDraft;
     });
@@ -316,6 +318,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   const handleImageUpload = (side: 'blue' | 'red' | 'ads' | 'prepare', e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    console.log(`[AdminPanel] Handling image upload for ${side}`, files[0].name);
 
     if (side === 'ads') {
         const newAds: string[] = [];
@@ -350,21 +353,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     if (!newTeamName || !newTeamLeader) return;
 
     if (editingTeamId) {
-        // Update Existing
-        setDraft(prev => ({
-            ...prev,
-            registry: (prev.registry || []).map(t => 
-                t.id === editingTeamId 
-                ? { ...t, name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo }
-                : t
-            )
-        }));
+        // Update Existing (Atomic)
+        const updatedTeam = (state.registry || []).find(t => t.id === editingTeamId);
+        if (updatedTeam) {
+            syncService.updateRegistryTeam({ 
+                ...updatedTeam, 
+                name: newTeamName, 
+                leaderId: newTeamLeader, 
+                logo: newTeamLogo 
+            });
+        }
         setEditingTeamId(null);
     } else {
-        // Add New
+        // Add New (Atomic)
         const newTeam: RegisteredTeam = { id: Date.now().toString(), name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo };
-        setDraft(prev => ({ ...prev, registry: [...(prev.registry || []), newTeam] }));
+        syncService.addRegistryTeam(newTeam);
     }
+    // Clear form immediately
     setNewTeamName(''); setNewTeamLeader(''); setNewTeamLogo('');
   };
 
@@ -382,8 +387,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   
   const removeTeamFromRegistry = (id: string) => {
       if (editingTeamId === id) cancelEditingTeam();
-      setDraft(prev => ({ ...prev, registry: (prev.registry || []).filter(t => t.id !== id) }));
+      // Atomic Remove
+      syncService.removeRegistryTeam(id);
   };
+
+  const updateManualMatch = (field: string, value: any) => {
+      setDraft(prev => ({
+          ...prev,
+          manualMatch: {
+              ...prev.manualMatch,
+              [field]: value
+          }
+      }));
+  };
+
   const updateDraftAdConfig = (field: keyof AdConfig, value: any) => setDraft(prev => ({ ...prev, adConfig: { ...prev.adConfig, [field]: value } }));
   const updateLiveGame = (field: string, value: any) => {
     setState(prev => ({ ...prev, game: { ...prev.game, [field]: value } }));
@@ -1156,21 +1173,125 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
     </div>
   );
 
-  const renderPrepare = () => (
-      <div className={`bg-slate-800/30 rounded-2xl border p-6 transition-all duration-300 ${isRegistryDirty() ? 'border-purple-500/50 shadow-lg shadow-purple-500/5' : 'border-slate-700/50'}`}>
-         <div className="flex justify-between items-center mb-6">
-            <h3 className="text-purple-400 font-black uppercase tracking-widest">Team Registry & Data</h3>
-            <div className="flex gap-2">
-               <button onClick={handleFactoryReset} className="text-[10px] font-black bg-red-600 hover:bg-red-500 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⚠️ FACTORY RESET</span></button>
-               <button onClick={() => downloadJson(state.teamLibrary, 'team-library.json')} className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ EXPORT JSON</span></button>
-               <a href="/template.zip" download className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ TEMPLATE</span></a>
-               <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full transition-all shadow-lg cursor-pointer flex items-center gap-2"><span>📂 IMPORT ZIP</span><input type="file" accept=".zip" className="hidden" onChange={handleImportTeams} /></label>
-               {isRegistryDirty() && <button onClick={applyRegistryChanges} className="text-[10px] font-black bg-purple-500 text-white px-4 py-1.5 rounded-full hover:bg-purple-400 transition-all shadow-lg">APPLY CHANGES</button>}
+    const renderPrepare = () => (
+        <div className={`bg-slate-800/30 rounded-2xl border p-6 transition-all duration-300 ${isRegistryDirty() ? 'border-purple-500/50 shadow-lg shadow-purple-500/5' : 'border-slate-700/50'}`}>
+           <div className="flex justify-between items-center mb-6">
+              <h3 className="text-purple-400 font-black uppercase tracking-widest">Team Registry & Data</h3>
+              <div className="flex gap-2">
+                 <button onClick={handleFactoryReset} className="text-[10px] font-black bg-red-600 hover:bg-red-500 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⚠️ FACTORY RESET</span></button>
+                 <button onClick={() => downloadJson(state.teamLibrary, 'team-library.json')} className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ EXPORT JSON</span></button>
+                 <a href="/template.zip" download className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full transition-all shadow-lg flex items-center gap-2"><span>⬇️ TEMPLATE</span></a>
+                 <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full transition-all shadow-lg cursor-pointer flex items-center gap-2"><span>📂 IMPORT ZIP</span><input type="file" accept=".zip" className="hidden" onChange={handleImportTeams} /></label>
+                 {isRegistryDirty() && <button onClick={applyRegistryChanges} className="text-[10px] font-black bg-purple-500 text-white px-4 py-1.5 rounded-full hover:bg-purple-400 transition-all shadow-lg">APPLY CHANGES</button>}
+              </div>
+           </div>
+         <div className="flex flex-col gap-6">
+           {/* MANUAL MATCH OVERRIDE (SAFETY) */}
+           <div className="bg-slate-900/50 p-4 rounded-xl border border-amber-500/30 space-y-4">
+              <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-bold text-amber-400 uppercase">Manual Match / Safety Override (Game State 0)</h4>
+                  <span className="text-[9px] text-slate-500">Visible when Game State is 0 (Idle)</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase">Team A (Left)</label>
+                      <select 
+                          value={draft.manualMatch?.teamAId || ''} 
+                          onChange={(e) => updateManualMatch('teamAId', e.target.value)}
+                          className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-bold"
+                      >
+                          <option value="">-- Select Team --</option>
+                          {(draft.registry || []).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      </select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase">Team B (Right)</label>
+                      <select 
+                          value={draft.manualMatch?.teamBId || ''} 
+                          onChange={(e) => updateManualMatch('teamBId', e.target.value)}
+                          className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-bold"
+                      >
+                          <option value="">-- Select Team --</option>
+                          {(draft.registry || []).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      </select>
+                  </div>
+                                  <div className="flex flex-col gap-1">
+                                      <label className="text-[9px] font-bold text-slate-500 uppercase">Wins / Series Score</label>
+                                      <div className="flex items-center gap-2">                          <input type="number" value={draft.manualMatch?.scoreA || 0} onChange={(e) => updateManualMatch('scoreA', parseInt(e.target.value))} className="bg-slate-800 border border-slate-700 rounded px-2 py-2 text-xs font-bold w-12 text-center"/>
+                          <span className="text-slate-500">-</span>
+                          <input type="number" value={draft.manualMatch?.scoreB || 0} onChange={(e) => updateManualMatch('scoreB', parseInt(e.target.value))} className="bg-slate-800 border border-slate-700 rounded px-2 py-2 text-xs font-bold w-12 text-center"/>
+                      </div>
+                  </div>
+                  <div className="flex flex-col gap-1 justify-end">
+                       <button onClick={() => {
+                           // Quick swap
+                           const temp = draft.manualMatch;
+                           setDraft(prev => ({
+                               ...prev,
+                               manualMatch: { ...temp, teamAId: temp.teamBId, teamBId: temp.teamAId, scoreA: temp.scoreB, scoreB: temp.scoreA }
+                           }));
+                       }} className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded text-[10px] font-bold uppercase">Swap Sides</button>
+                  </div>
+              </div>
+           </div>
+  
+           {(state.teamLibrary && state.teamLibrary.length > 0) && (
+            <div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2">
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4>
+                        <button 
+                            onClick={() => {
+                                if (confirm('Clear all imported library teams? This will not affect the active registry below.')) {
+                                    syncService.clearTeamLibrary();
+                                }
+                            }} 
+                            className="text-[8px] bg-red-900/50 hover:bg-red-600 text-red-200 hover:text-white px-2 py-0.5 rounded uppercase transition-colors"
+                        >
+                            Clear Lib
+                        </button>
+                    </div>
+                    <button onClick={() => {
+                        // Add ALL to registry if not exists
+                        state.teamLibrary.forEach(libTeam => {
+                            if (!state.registry.find(r => r.name === libTeam.name)) {
+                                syncService.addRegistryTeam({
+                                    id: Date.now().toString() + Math.random(),
+                                    name: libTeam.name,
+                                    leaderId: libTeam.captainId || '',
+                                    logo: libTeam.logoUrl
+                                });
+                            }
+                        });
+                    }} className="text-[9px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded font-bold uppercase">Add All to Registry</button>
+                </div>
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                    {state.teamLibrary.map(t => (
+                        <div key={t.id} className="bg-slate-800 px-3 py-2 rounded border border-slate-700 flex items-center gap-3 group hover:border-blue-500 transition-colors">
+                            {t.logoUrl ? <img src={t.logoUrl.startsWith('assets/') ? '/' + t.logoUrl : t.logoUrl} className="w-6 h-6 object-contain" /> : <div className="w-6 h-6 bg-black/30 rounded text-[8px] flex items-center justify-center">N/A</div>}
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-white leading-tight">{t.name}</span>
+                                <span className="text-[8px] text-slate-500">{t.shortName}</span>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    syncService.addRegistryTeam({
+                                        id: Date.now().toString(),
+                                        name: t.name,
+                                        leaderId: t.captainId || '',
+                                        logo: t.logoUrl
+                                    });
+                                }}
+                                className="ml-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white p-1 rounded transition-colors"
+                                title="Add to Active Registry"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
-         </div>
-       <div className="flex flex-col gap-6">
-                  {(state.teamLibrary && state.teamLibrary.length > 0) && (<div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2"><h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4><div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar">{state.teamLibrary.map(t => (<div key={t.id} className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px] text-white flex items-center gap-2">{t.logoUrl && <img src={t.logoUrl.startsWith('assets/') ? '/' + t.logoUrl : t.logoUrl} className="w-4 h-4 object-contain" />}<span>{t.name}</span></div>))}</div></div>)}
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-4">
+         )}                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-4">
                      <h4 className="text-xs font-bold text-slate-400 uppercase">{editingTeamId ? 'Edit Team' : 'Add New Team'}</h4>
                      <div className="flex flex-wrap gap-4 items-end">
                          <div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Team Name</label><input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS LEGENDS" /></div>

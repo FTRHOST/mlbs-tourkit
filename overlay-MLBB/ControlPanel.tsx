@@ -14,21 +14,21 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, updateState, resetSt
   const previewRef = useRef<HTMLDivElement>(null);
   const [showPreview, setShowPreview] = useState(true);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      updateState(prev => {
-        if (!prev?.game?.isGameControlEnabled || prev.game.timer <= 0) return prev;
-        return {
-          ...prev,
-          game: {
-            ...prev.game,
-            timer: prev.game.timer - 1
-          }
-        };
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [updateState]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     updateState(prev => {
+  //       if (!prev?.game?.isGameControlEnabled || prev.game.timer <= 0) return prev;
+  //       return {
+  //         ...prev,
+  //         game: {
+  //           ...prev.game,
+  //           timer: prev.game.timer - 1
+  //         }
+  //       };
+  //     });
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, [updateState]);
 
   useEffect(() => {
     if (state.game.isIntroActive) {

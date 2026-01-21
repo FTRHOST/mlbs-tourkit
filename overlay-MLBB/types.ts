@@ -130,6 +130,15 @@ export interface GameData {
     };
 }
 
+export interface ManualMatch {
+  teamAId: string;
+  teamBId: string;
+  scoreA: number;
+  scoreB: number;
+  matchTitle: string;
+  bestOf: number;
+}
+
 export interface AppState {
   blue: TeamData;
   red: TeamData;
@@ -144,6 +153,7 @@ export interface AppState {
   history: any[];
   status?: string;
   gameData?: GameData;
+  manualMatch: ManualMatch;
 }
 
 export const DEFAULT_GAME_DATA: GameData = {
@@ -244,5 +254,13 @@ export const DEFAULT_APP_STATE: AppState = {
   registry: [],
   teamLibrary: [],
   history: [],
-  gameData: DEFAULT_GAME_DATA
+  gameData: DEFAULT_GAME_DATA,
+  manualMatch: {
+      teamAId: '',
+      teamBId: '',
+      scoreA: 0,
+      scoreB: 0,
+      matchTitle: 'NEXT MATCH',
+      bestOf: 3
+  }
 };
