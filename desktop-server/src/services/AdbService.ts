@@ -1,12 +1,13 @@
 import { exec } from 'child_process';
 
 export class AdbService {
-    private retryInterval: number = 2000;
+    private retryInterval: number = 2000; // Check every 2 seconds
     private isForwarding: boolean = false;
 
     constructor() {}
 
     public setupForwarding(): void {
+        console.log('Starting ADB Forwarding service...');
         this.runForwardCommand();
     }
 
@@ -14,46 +15,17 @@ export class AdbService {
         const command = 'adb forward tcp:12345 localabstract:mlbs_ipc';
 
         exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`ADB Forwarding failed: ${error.message}`);
-                console.log(`Retrying in ${this.retryInterval / 1000} seconds...`);
-                this.isForwarding = false;
-                setTimeout(() => this.runForwardCommand(), this.retryInterval);
-                return;
+            const wasForwarding = this.isForwarding;
+            this.isForwarding = !error;
+
+            if (this.isForwarding && !wasForwarding) {
+                console.log('ADB forwarding is active. Waiting for device connection...');
+            } else if (!this.isForwarding && wasForwarding) {
+                console.error('ADB connection lost. Will keep trying to reconnect...');
             }
-
-            if (stderr) {
-                console.error(`ADB Stderr: ${stderr}`);
-                // Sometimes stderr acts as info, but often it's an error.
-                // We'll treat it as a potential failure if it wasn't already caught by 'error'.
-                // However, adb often prints to stderr for info.
-                // Let's assume if 'error' is null, it might be fine, but we'll log it.
-            }
-
-            if (!this.isForwarding) {
-                console.log('ADB Forwarding setup successful (tcp:12345 -> localabstract:mlbs_ipc)');
-                this.isForwarding = true;
-            }
-
-            // Periodically check or re-apply?
-            // The instruction says "If failed, try again every 2 seconds".
-            // Once successful, we usually don't need to loop unless the device disconnects.
-            // But to be robust against disconnects, we could verify or just catch errors elsewhere.
-            // For now, let's implement a simple "Keep Alive" or just relying on the initial success.
-            // However, typically if the device disconnects, the forward rule might be lost.
-            // Let's verify periodically or just wait.
-            // The requirement implies: "Add retry mechanism: If failed, try again every 2 seconds (useful when HP is new plugged in)."
-
-            // To be robust, let's check periodically if the device is attached?
-            // Or just try to run the forward command periodically if we want to be super persistent.
-            // But let's stick to the "If failed" part.
-
-            // Note: If adb server is killed or device unplugged, the forward might need re-applying.
-            // Let's schedule a re-run every few seconds just to be safe/ensure it sticks?
-            // Or better, just let it be. If the socket connection in GameListener fails, maybe we can trigger this?
-            // But GameListener is separate.
-
-            // Let's just implement the loop on failure as requested.
+            
+            // Always schedule the next check to handle device disconnections and reconnections.
+            setTimeout(() => this.runForwardCommand(), this.retryInterval);
         });
     }
 }

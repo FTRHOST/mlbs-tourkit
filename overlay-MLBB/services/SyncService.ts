@@ -59,6 +59,11 @@ class SyncService {
     });
 
     // 2. Game Data Updates (Real-time from ADB/Zygisk)
+    // NOTE: Backend now sends fully mapped state via 'state_update'.
+    // The 'update' event (raw GameData) is legacy, but we keep listening
+    // to populate 'gameData' field for the Admin Panel's "Live Monitor" functionality
+    // (if it chooses to use raw data for debugging/logging).
+    // The AppState from 'state_update' handles the actual picks/bans.
     this.socket.on('update', (data: GameData) => {
       // console.log('🎮 Game Data received');
       this._updateInternalState({ gameData: data });
@@ -93,9 +98,43 @@ class SyncService {
     }
   }
 
+  // --- ATOMIC REGISTRY OPERATIONS ---
+  addRegistryTeam(team: any) {
+      if (this.socket && this.socket.connected) {
+          this.socket.emit('add_registry_team', team);
+      }
+  }
+
+  updateRegistryTeam(team: any) {
+      if (this.socket && this.socket.connected) {
+          this.socket.emit('update_registry_team', team);
+      }
+  }
+
+  removeRegistryTeam(teamId: string) {
+      if (this.socket && this.socket.connected) {
+          this.socket.emit('remove_registry_team', teamId);
+      }
+  }
+
+  clearTeamLibrary() {
+      if (this.socket && this.socket.connected) {
+          this.socket.emit('clear_team_library');
+      }
+  }
+
   saveState(state: AppState) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('update_state', state);
+      // Create a shallow copy to modify
+      const payload: any = { ...state };
+      
+      // Remove large/atomic collections to prevent overwriting with stale data
+      // These lists are managed by atomic events (add/remove/update) or specific API calls
+      delete payload.registry;
+      delete payload.teamLibrary;
+      delete payload.history;
+
+      this.socket.emit('update_state', payload);
     }
   }
 

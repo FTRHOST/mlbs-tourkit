@@ -6,7 +6,7 @@ export class GameListener extends EventEmitter {
     private port: number = 12345;
     private host: string = '127.0.0.1';
     private buffer: string = '';
-    private reconnectInterval: number = 1000;
+    private reconnectInterval: number = 2000; // Increased interval
     private isConnected: boolean = false;
 
     constructor() {
@@ -20,27 +20,32 @@ export class GameListener extends EventEmitter {
         this.client.on('connect', () => {
             console.log('Connected to Game (via ADB Forward)');
             this.isConnected = true;
+            this.emit('status', 'connected');
         });
 
         this.client.on('close', () => {
-            if (this.isConnected) {
-                console.log('Game Connection Closed. Reconnecting...');
-            }
+            const wasConnected = this.isConnected;
             this.isConnected = false;
+            if (wasConnected) {
+                console.log('Game Connection Closed. Reconnecting...');
+                this.emit('status', 'reconnecting');
+            }
             this.scheduleReconnect();
         });
 
         this.client.on('error', (err: any) => {
-            if (err.code === 'ECONNREFUSED') {
-                // Squelch this specific error as it's expected when polling
-            } else {
+            if (err.code !== 'ECONNREFUSED') {
                 console.error('Socket Error:', err.message);
             }
+            // The 'close' event will be called immediately after an error,
+            // which handles the reconnect logic. We just update the state here.
             this.isConnected = false;
         });
     }
 
     public start(): void {
+        console.log('Game listener started. Trying to connect...');
+        this.emit('status', 'connecting');
         this.connect();
     }
 
@@ -71,17 +76,8 @@ export class GameListener extends EventEmitter {
         try {
             const json = JSON.parse(message);
             this.emit('data', json);
-
-            if (json.data && json.data.logic_players && Array.isArray(json.data.logic_players)) {
-                // Keep the simple log for debugging
-                const player = json.data.logic_players[0];
-                if (player && player.totalGold !== undefined) {
-                     console.log(`[GAME DATA] Gold: ${player.totalGold}`);
-                }
-            }
-
         } catch (e) {
-            console.error('Failed to parse JSON:', e);
+            console.error('Failed to parse JSON message:', message, e);
         }
     }
 }

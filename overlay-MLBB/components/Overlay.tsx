@@ -1,6 +1,9 @@
-
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { AppState } from '../types';
+import BattleOverlay from './BattleOverlay';
+import OverviewDraft from './OverviewDraft';
+import AdContent from './AdContent';
+import NextMatchOverlay from './NextMatchOverlay';
 
 interface OverlayProps {
   data: AppState;
@@ -23,7 +26,7 @@ const PickSlot: React.FC<{
   side: 'blue' | 'red'; 
   index: number;
   delay?: string;
-}> = ({ pick, name, side, index, delay }) => {
+}> = React.memo(({ pick, name, side, index, delay }) => {
   const [animating, setAnimating] = useState(false);
   const prevPickRef = useRef(pick);
 
@@ -59,9 +62,9 @@ const PickSlot: React.FC<{
       </div>
     </div>
   );
-};
+});
 
-const BanSlot: React.FC<{ ban: string; delay?: string }> = ({ ban, delay }) => {
+const BanSlot: React.FC<{ ban: string; delay?: string }> = React.memo(({ ban, delay }) => {
   const isReset = (!ban || ban.trim() === "" || ban.trim() === "0");
   const imgSrc = isReset ? PLACEHOLDERS.ban : `${ASSETS}hero-icon/${ban}.png`;
   
@@ -75,85 +78,9 @@ const BanSlot: React.FC<{ ban: string; delay?: string }> = ({ ban, delay }) => {
        />
     </div>
   );
-};
+});
 
-const AdContent: React.FC<{ data: AppState }> = ({ data }) => {
-  const { adConfig, ads } = data;
-  const [fadeIndex, setFadeIndex] = useState(0);
-
-  useEffect(() => {
-    if (adConfig.effect === 'fade') {
-      const interval = setInterval(() => {
-        if (adConfig.type === 'images' && ads.length > 0) {
-          setFadeIndex(prev => (prev + 1) % ads.length);
-        }
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [adConfig.effect, adConfig.type, ads.length]);
-
-  const renderMarquee = (children: React.ReactNode) => (
-    <div 
-      className="marquee-wrapper"
-      style={{ '--speed': `${adConfig.speed}s` } as any}
-    >
-      <div className="marquee-content">{children}</div>
-      <div className="marquee-content">{children}</div>
-    </div>
-  );
-
-  const getAdSrc = (ad: string) => {
-    if (ad.startsWith('data:')) return ad;
-    return `${ASSETS}${ad}.png`;
-  };
-
-  if (adConfig.type === 'text') {
-    if (adConfig.effect === 'scroll') {
-      return renderMarquee(
-        <span className="font-gothic text-[40px] uppercase tracking-widest px-[50px] text-white">
-          {adConfig.text}
-        </span>
-      );
-    } else {
-      return (
-        <div className="w-full h-full flex items-center justify-center font-gothic text-[40px] animate-fade uppercase tracking-wide text-white">
-          {adConfig.text}
-        </div>
-      );
-    }
-  }
-
-  if (adConfig.effect === 'scroll') {
-    return renderMarquee(
-      <div className="flex items-center gap-[100px] px-[50px]">
-        {ads.map((ad, idx) => (
-          <img 
-            key={idx}
-            src={getAdSrc(ad)} 
-            className="h-[45px] w-auto object-contain" 
-            onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${ad.substring(0, 10)}`; }}
-          />
-        ))}
-      </div>
-    );
-  } else {
-    const activeAd = ads[fadeIndex] || ads[0];
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        {activeAd && (
-          <img 
-            key={activeAd}
-            src={getAdSrc(activeAd)} 
-            className="h-[48px] w-auto object-contain animate-fade" 
-            onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${activeAd.substring(0, 10)}`; }}
-          />
-        )}
-      </div>
-    );
-  }
-};
-
-const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = ({ turn }) => {
+const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = React.memo(({ turn }) => {
   const isRed = turn === 'red';
   const rot = isRed ? '0deg' : '180deg';
   const style = {
@@ -169,23 +96,25 @@ const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = ({ turn }) => {
       <div className="animate-arrow-3 text-[40px] leading-none text-white">▶</div>
     </div>
   );
-};
+});
 
-const ScoreIndicator: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red' }> = ({ score, bestOf, side }) => {
-  // bestOf 1 -> 1 slot (1 win)
-  // bestOf 3 -> 2 slots (2 wins)
-  // bestOf 5 -> 3 slots (3 wins)
-  const maxWins = Math.ceil(bestOf / 2); 
-  const dots = Array.from({ length: maxWins }, (_, i) => i < score);
+const ScoreBars: React.FC<{ score: number; bestOf: number; side: 'blue' | 'red'; theme: AppState['theme'] }> = ({ score, bestOf, side, theme }) => {
+  const maxWins = Math.ceil(bestOf / 2);
+  const activeColor = side === 'blue' ? theme.scoreActiveColorBlue : theme.scoreActiveColorRed;
+  const inactiveColor = side === 'blue' ? theme.scoreInactiveColorBlue : theme.scoreInactiveColorRed;
 
   return (
-    <div className={`flex gap-1 ${side === 'blue' ? 'flex-row-reverse' : 'flex-row'}`}>
-      {dots.map((active, i) => (
-        <div 
-          key={i} 
-          className={`w-3 h-3 rotate-45 border border-white transition-all duration-300 ${active ? (side === 'blue' ? 'bg-cyan-400 shadow-[0_0_10px_cyan]' : 'bg-red-500 shadow-[0_0_10px_red]') : 'bg-black/50'}`} 
-        />
-      ))}
+    <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+      {Array.from({ length: maxWins }).map((_, i) => {
+        const isActive = i < score;
+        return (
+          <div 
+            key={i} 
+            className="w-[10px] h-[35px] transition-all duration-500 shadow-[0_0_5px_rgba(0,0,0,0.5)] border border-white/20"
+            style={{ backgroundColor: isActive ? activeColor : inactiveColor }}
+          />
+        );
+      })}
     </div>
   );
 };
@@ -204,12 +133,114 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
     return `${ASSETS}${logo}.png`;
   };
 
+  // Logic for switching overlays
+  const gameState = data.gameData?.debug?.game_state;
+  const [showBattleOverlay, setShowBattleOverlay] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+  const [isFading, setIsFading] = useState(false);
+  const prevGameState = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const current = gameState;
+    const previous = prevGameState.current;
+
+    // Only run logic if state actually changed or it's the first run
+    if (current !== previous) {
+        if (current === 4 || current === 5) {
+             setShowOverview(true);
+             setIsFading(false);
+             setShowBattleOverlay(false);
+        } else if (current === 6) {
+          // If previous was undefined, it means we just loaded the page and state is ALREADY 6.
+          // In this case, show immediately (no delay).
+          if (previous === undefined) {
+             setShowBattleOverlay(true);
+             setShowOverview(false);
+          } else if (previous === 4 || previous === 5) {
+             // We transitioned from state 4/5 to 6. This is a live event.
+             // 1. Start fade out of Overview
+             setIsFading(true);
+             
+             // 2. After fade duration (1s), hide Overview
+             const fadeTimer = setTimeout(() => {
+                 setShowOverview(false);
+             }, 1000);
+
+             // 3. Wait 18 seconds before showing Battle Overlay
+             const battleTimer = setTimeout(() => {
+                setShowBattleOverlay(true);
+             }, 18000);
+             
+             return () => {
+                 clearTimeout(fadeTimer);
+                 clearTimeout(battleTimer);
+             };
+          } else {
+             // Transition from other states (unexpected for 6), just show battle
+             setShowBattleOverlay(true);
+             setShowOverview(false);
+          }
+        } else {
+          // For any other state (< 4 or > 6), hide these specific overlays
+          setShowBattleOverlay(false);
+          setShowOverview(false);
+        }
+    }
+    
+    prevGameState.current = current;
+  }, [gameState]);
+
+  // If Game State is 5 (Battle) or higher, we hide the Draft Pick overlay.
+  // We now introduce OverviewDraft for state 4 and 5.
+  // Standard Draft: state < 4
+  // Overview Draft: state 4 or 5 (or 6 while waiting)
+  // Battle Overlay: state 6 (active)
+
+  if (showBattleOverlay) {
+    return <BattleOverlay data={data} />;
+  }
+
+  // If gameState is 0 (Idle/Next Match), show NextMatchOverlay
+  if (gameState === 0) {
+      return <NextMatchOverlay data={data} />;
+  }
+
+  // If gameState is 4 or 5, or (6 and waiting), show OverviewDraft
+  if (showOverview) {
+      return (
+        <div style={{ 
+            opacity: isFading ? 0 : 1, 
+            transition: 'opacity 1s ease-out',
+            width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 50
+        }}>
+            <OverviewDraft data={data} />
+        </div>
+      );
+  }
+
+  // If Draft is not visible (which means logic above handled it or state is weird), return null.
+  // But wait, the logic above handles 4, 5, 6. 
+  // What about 0, 1, 2, 3? That's the standard Draft Overlay below.
+  // So we just continue if state < 4.
+  const isDraftVisible = gameState === undefined || gameState < 4;
+
+  if (!isDraftVisible) {
+      return null; 
+  }
+
   const isIntro = data.game.isIntroActive;
   const isRedTurn = data.game.turn === 'red';
   const isControlEnabled = data.game.isGameControlEnabled;
+  const theme = data.theme || {
+    scoreActiveColorBlue: '#22d3ee',
+    scoreInactiveColorBlue: '#1e293b',
+    scoreActiveColorRed: '#ef4444',
+    scoreInactiveColorRed: '#1e293b'
+  };
 
   return (
     <div className="relative w-[1920px] h-[1080px] text-white overflow-hidden pointer-events-none">
+      <link rel="stylesheet" href="/marquee.css" />
       
       {/* --- INTRO VS LAYER --- */}
       {isIntro && (
@@ -247,17 +278,22 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
         src={getAsset('logo', PLACEHOLDERS.logo)} 
       />
 
+      {/* BLUE TEAM BAR & SCORE */}
       <div 
         className={`absolute w-[168px] h-[53px] top-[704px] left-[674px] ${isIntro ? 'intro-item' : ''}`}
         style={isIntro ? { animationDelay: '6.6s' } : {}}
       >
         <img className="w-full h-full object-contain" src={getAsset('union1', PLACEHOLDERS.union1)} />
+        <ScoreBars score={data.blue.score} bestOf={data.game.bestOf} side="blue" theme={theme} />
       </div>
+
+      {/* RED TEAM BAR & SCORE */}
       <div 
         className={`absolute w-[168px] h-[53px] top-[704px] left-[1078px] ${isIntro ? 'intro-item' : ''}`}
         style={isIntro ? { animationDelay: '6.6s' } : {}}
       >
         <img className="w-full h-full object-contain scale-x-[-1]" src={getAsset('union1', PLACEHOLDERS.union1)} />
+        <ScoreBars score={data.red.score} bestOf={data.game.bestOf} side="red" theme={theme} />
       </div>
 
       <div 
@@ -275,10 +311,10 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
 
       {/* --- AD MARQUEE --- */}
       <div 
-        className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] bg-[#18252C] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
-        style={isIntro ? { animationDelay: '8.5s' } : {}}
+        className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
+        style={{ backgroundColor: data.adConfig.backgroundColor || '#18252C', ...(isIntro ? { animationDelay: '8.5s' } : {}) }}
       >
-        <AdContent data={data} />
+        <AdContent adConfig={data.adConfig} ads={data.ads} />
       </div>
 
       {!isIntro && (
@@ -295,12 +331,6 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
           <div className="absolute w-[150px] h-[24px] top-[886px] left-[745px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
             {data.blue.name}
           </div>
-          {/* Blue Score */}
-          {(data.game.visibility?.score ?? true) && (
-            <div className="absolute top-[865px] left-[745px] w-[150px] flex justify-end pr-2">
-              <ScoreIndicator score={data.blue.score} bestOf={data.game.bestOf} side="blue" />
-            </div>
-          )}
       </div>
 
       {/* Red Team Info */}
@@ -311,12 +341,6 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
           <div className="absolute w-[150px] h-[24px] top-[886px] left-[1021px] font-gothic text-[32px] flex items-center justify-center text-center uppercase tracking-wider text-white">
             {data.red.name}
           </div>
-          {/* Red Score */}
-          {(data.game.visibility?.score ?? true) && (
-            <div className="absolute top-[865px] left-[1021px] w-[150px] flex justify-start pl-2">
-              <ScoreIndicator score={data.red.score} bestOf={data.game.bestOf} side="red" />
-            </div>
-          )}
       </div>
 
       <div className={`${isIntro ? 'intro-item' : ''}`} style={isIntro ? { animationDelay: '7s' } : {}}>

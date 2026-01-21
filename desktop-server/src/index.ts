@@ -18,7 +18,7 @@ import { Database } from './services/Database.js'; // Assuming this exists or we
 
 // Types & Constants
 import { INITIAL_STATE, DEFAULT_GAME_DATA } from './types.js';
-import type { AppState, TeamLibraryEntry, GameData } from './types.js';
+import type { AppState, TeamLibraryEntry, GameData, TeamData, SyncControl } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -97,9 +97,173 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+app.post('/api/import-teams', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    try {
+        console.log('Received teams zip:', req.file.originalname);
+        const zip = new AdmZip(req.file.path);
+        const zipEntries = zip.getEntries();
+        
+        // 1. Find and Parse Excel
+        const excelEntry = zipEntries.find(entry => entry.entryName.match(/\.xlsx$/i));
+        if (!excelEntry) {
+            await fs.remove(req.file.path);
+            return res.status(400).json({ message: 'No .xlsx file found in the zip.' });
+        }
+
+        const workbook = XLSX.read(excelEntry.getData(), { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        if (!sheetName) {
+             await fs.remove(req.file.path);
+             return res.status(400).json({ message: 'Excel file contains no sheets.' });
+        }
+        const worksheet = workbook.Sheets[sheetName];
+        if (!worksheet) {
+             await fs.remove(req.file.path);
+             return res.status(400).json({ message: 'Sheet not found in workbook.' });
+        }
+        const rawData: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+        // 2. Extract Logos
+        const teamLogosDir = path.join(PUBLIC_DIR, 'assets', 'teams');
+        fs.ensureDirSync(teamLogosDir);
+
+        const newLibrary: TeamLibraryEntry[] = [];
+
+        for (const row of rawData) {
+            const teamName = row['TeamName'] || row['Name'] || 'Unknown Team';
+            const shortName = row['ShortName'] || row['Abbreviation'] || teamName;
+            const logoFileName = row['LogoFileName'] || row['Logo'];
+            const captainId = row['CaptainID'] || row['LeaderID'] || ''; // Optional
+
+            let logoUrl = '';
+
+            if (logoFileName) {
+                // Try to find the logo in the zip (case-insensitive search)
+                const logoEntry = zipEntries.find(e => 
+                    !e.isDirectory && 
+                    (e.entryName === logoFileName || e.entryName === `logos/${logoFileName}` || e.entryName.toLowerCase().endsWith(logoFileName.toLowerCase()))
+                );
+
+                if (logoEntry) {
+                    // Extract to assets/teams
+                    const targetFileName = `${Date.now()}_${path.basename(logoFileName)}`;
+                    const targetPath = path.join(teamLogosDir, targetFileName);
+                    
+                    await new Promise<void>((resolve, reject) => {
+                        logoEntry.getDataAsync((data, err) => {
+                            if (err) reject(err);
+                            fs.writeFileSync(targetPath, data);
+                            resolve();
+                        });
+                    });
+                    
+                    logoUrl = `assets/teams/${targetFileName}`;
+                }
+            }
+
+            newLibrary.push({
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                name: teamName,
+                shortName: shortName,
+                logoUrl: logoUrl,
+                captainId: captainId
+            });
+        }
+
+        // 3. Update State (Atomic replacement or append? Let's append to library)
+        // If teamLibrary doesn't exist, init it
+        if (!appState.teamLibrary) appState.teamLibrary = [];
+        
+        // Filter out duplicates based on name if desired, or just append
+        // Let's just append for now, user can clear if needed via reset
+        appState.teamLibrary = [...appState.teamLibrary, ...newLibrary];
+
+        saveState();
+        io.emit('state_update', appState);
+
+        console.log(`Imported ${newLibrary.length} teams.`);
+        res.status(200).json({ message: `Successfully imported ${newLibrary.length} teams.`, count: newLibrary.length });
+
+    } catch (e) {
+        const error = e as Error;
+        console.error("Failed to process teams zip:", error);
+        res.status(500).json({ message: 'Error processing zip file.', error: error.message });
+    } finally {
+        if (req.file) {
+            await fs.remove(req.file.path);
+        }
+    }
+});
+
+app.post('/api/import-ads', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    try {
+        console.log('Received ads zip:', req.file.originalname);
+        const zip = new AdmZip(req.file.path);
+        const zipEntries = zip.getEntries();
+        const adAssetsDir = path.join(UPLOAD_DIR, 'ads');
+        fs.ensureDirSync(adAssetsDir);
+
+        let imageEntries = zipEntries.filter(entry =>
+            !entry.isDirectory &&
+            entry.entryName.toLowerCase().startsWith('images/') &&
+            /\.(png|jpg|jpeg|gif|webp)$/i.test(entry.entryName)
+        );
+
+        // Fallback for flat structure if no images are in the "images/" folder
+        if (imageEntries.length === 0) {
+            imageEntries = zipEntries.filter(entry =>
+                !entry.isDirectory &&
+                !entry.entryName.includes('/') &&
+                /\.(png|jpg|jpeg|gif|webp)$/i.test(entry.entryName)
+            );
+        }
+
+        if (imageEntries.length === 0) {
+            await fs.remove(req.file.path);
+            return res.status(400).json({ message: 'No images found in the "images/" folder or at the root of the zip file.' });
+        }
+
+        const newAdUrls: string[] = [];
+        for (const entry of imageEntries) {
+            const fileName = path.basename(entry.entryName);
+            const targetPath = path.join(adAssetsDir, fileName);
+            entry.getDataAsync((data, err) => {
+                if (data) {
+                    fs.writeFileSync(targetPath, data);
+                }
+            });
+            newAdUrls.push(path.join('/upload/ads', fileName).replace(/\\/g, '/'));
+        }
+
+        appState.ads = newAdUrls;
+        saveState();
+        io.emit('state_update', appState);
+
+        res.status(200).json({ message: `${newAdUrls.length} ad images imported successfully.`, ads: newAdUrls });
+
+    } catch (e) {
+        const error = e as Error;
+        console.error("Failed to process ads zip:", error);
+        res.status(500).json({ message: 'Error processing zip file.', error: error.message });
+    } finally {
+        if (req.file) {
+            await fs.remove(req.file.path); // Clean up uploaded zip
+        }
+    }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: "*", methods: ["GET", "POST"] }
+    cors: { origin: "*", methods: ["GET", "POST"] },
+    maxHttpBufferSize: 5e7 // 50MB
 });
 
 // --- SERVICES INITIALIZATION ---
@@ -107,10 +271,163 @@ const adbService = new AdbService();
 adbService.setupForwarding();
 
 const gameListener = new GameListener();
+
+gameListener.on('status', (status: string) => {
+    if (appState.status !== status) {
+        appState.status = status;
+        console.log(`Game connection status updated: ${status}`);
+        io.emit('state_update', { status });
+    }
+});
+
 gameListener.start(); // Starts connecting to localhost:12345
+
+// --- LOGIC HELPER: Process Raw Game Data to AppState ---
+const processGameData = (raw: GameData, currentState: AppState): Partial<AppState> => {
+    const roomInfo = raw.data?.room_info;
+    const players = roomInfo?.players || [];
+
+    const syncControl = currentState.syncControl || INITIAL_STATE.syncControl;
+    const blueTeamPlayers = players.filter((p: any) => p.iCamp === 1);
+    const redTeamPlayers = players.filter((p: any) => p.iCamp === 2);
+
+    const battleStats = raw.data?.battle_stats;
+
+    const processSide = (sidePlayers: any[], currentTeam: TeamData, currentState: AppState, syncControl: SyncControl, sideKills: number): TeamData => {
+        const resultingTeam = { ...currentTeam };
+
+        // 1. Set Live Kills from API
+        resultingTeam.kills = sideKills;
+
+        // 2. Find a registered team match from the players on this side
+        let teamIdToMatch: string | null = null;
+        if (syncControl.isTeamNameSyncEnabled) {
+            for (const p of sidePlayers) {
+                if (!p._sName && !p.lUid) continue; // Skip empty player slots
+                const pUid = String(p.lUid || '');
+                const pName = String(p._sName || '').trim().toLowerCase();
+
+                const regTeam = currentState.registry?.find(t => {
+                    const leader = String(t.leaderId || '').trim().toLowerCase();
+                    return (pUid && leader === pUid) || (pName && pName.length > 2 && leader === pName);
+                });
+                if (regTeam) {
+                    teamIdToMatch = regTeam.name;
+                    break;
+                }
+                const libTeam = currentState.teamLibrary?.find(t => {
+                    const capId = String(t.captainId || '');
+                    return pUid && capId === pUid;
+                });
+                if (libTeam) {
+                    teamIdToMatch = libTeam.name;
+                    break;
+                }
+            }
+        }
+        
+        // 3. Process player-specific data
+        const picks: string[] = Array(5).fill('');
+        const bans: string[] = Array(5).fill('');
+        const spells: string[] = Array(5).fill('');
+        const lanes: string[] = Array(5).fill('');
+        const pNames: string[] = Array(5).fill('').map((_, i) => `PLAYER ${i + 1}`);
+        const pIds: string[] = Array(5).fill('');
+        sidePlayers.forEach((p, idx) => {
+            if (idx < 5) {
+                if (syncControl.isPickSyncEnabled) picks[idx] = String(p.heroid || 0);
+                if (syncControl.isBanSyncEnabled) bans[idx] = String(p.banHero || 0);
+                spells[idx] = String(p.summonSkillId || 0);
+                lanes[idx] = String(p.iRoad || 0);
+                pNames[idx] = p._sName || `PLAYER ${idx + 1}`;
+                pIds[idx] = String(p.lUid || '');
+            }
+        });
+        resultingTeam.picks = picks;
+        resultingTeam.bans = bans;
+        resultingTeam.spells = spells;
+        resultingTeam.lanes = lanes;
+        resultingTeam.pNames = pNames;
+        resultingTeam.pIds = pIds;
+
+        // 4. Apply final name and logo based on match result
+        if (syncControl.isTeamNameSyncEnabled) {
+            let matchedName = "";
+
+            if (teamIdToMatch) {
+                // A registered team was found, so we ALWAYS use its data.
+                const libTeam = currentState.teamLibrary?.find(t => t.name === teamIdToMatch);
+                const regTeam = currentState.registry?.find(t => t.name === teamIdToMatch);
+                if (regTeam) {
+                    resultingTeam.name = regTeam.name;
+                    resultingTeam.logo = regTeam.logo;
+                    matchedName = regTeam.name;
+                } else if (libTeam) {
+                    resultingTeam.name = libTeam.name;
+                    resultingTeam.logo = libTeam.logoUrl;
+                    matchedName = libTeam.name;
+                }
+            } else {
+                // No registered team found. Check previous name.
+                const isCurrentNameRegistered = 
+                    currentState.registry?.some(t => t.name === currentTeam.name) || 
+                    currentState.teamLibrary?.some(t => t.name === currentTeam.name);
+
+                if (isCurrentNameRegistered) {
+                    resultingTeam.name = "NO TEAM";
+                    resultingTeam.logo = "";
+                } else {
+                    // Keep manual name
+                    matchedName = resultingTeam.name;
+                }
+            }
+
+            // 5. Auto-Calculate Series Wins from History
+            // Only recalculate if current series win count is 0 (start of match)
+            if (matchedName && matchedName !== "NO TEAM" && matchedName !== "BLUE TEAM" && matchedName !== "RED TEAM" && resultingTeam.score === 0) {
+                 const currentMatchTitle = currentState.game.matchTitle.trim();
+                 if (currentMatchTitle) {
+                     const wins = currentState.history?.filter(m => 
+                        m.matchTitle === currentMatchTitle && 
+                        (m.winner === 'blue' ? m.blue.name === matchedName : 
+                         m.winner === 'red' ? m.red.name === matchedName : false)
+                     ).length || 0;
+                     
+                     if (wins > 0) {
+                         resultingTeam.score = wins;
+                         console.log(`[AutoScore] ${matchedName} has ${wins} series wins in ${currentMatchTitle}`);
+                     }
+                 }
+            }
+        }
+
+        return resultingTeam;
+    };
+
+    const newBlue = processSide(blueTeamPlayers, currentState.blue, currentState, syncControl, battleStats?.m_iCampAKill || 0);
+    const newRed = processSide(redTeamPlayers, currentState.red, currentState, syncControl, battleStats?.m_iCampBKill || 0);
+
+    const changes: Partial<AppState> = {};
+
+    // Detect changes to reduce noise (optional, but good practice)
+    if (JSON.stringify(newBlue) !== JSON.stringify(currentState.blue)) changes.blue = newBlue;
+    if (JSON.stringify(newRed) !== JSON.stringify(currentState.red)) changes.red = newRed;
+
+    // Timer sync
+    if (battleStats && battleStats.time > 0) {
+        if (currentState.game.timer !== Math.floor(battleStats.time)) {
+             changes.game = { ...currentState.game, timer: Math.floor(battleStats.time) };
+        }
+    }
+
+    return changes;
+};
 
 // Handle Game Data from Zygisk/GameListener
 gameListener.on('data', (incoming: any) => {
+    // Emit raw stream for debugging tools
+    io.emit('debug_stream', incoming);
+
     // Merge logic to handle partial updates
     const current = appState.gameData || DEFAULT_GAME_DATA;
     
@@ -135,7 +452,7 @@ gameListener.on('data', (incoming: any) => {
              if (incomingPlayers.length === 0 && currentPlayers.length > 0 && gameState !== 0) {
                  // Keep old players, but update other room info if any
                  incomingRoom.players = currentPlayers;
-                 incomingRoom.player_count = currentRoom.player_count; // Keep count too
+                 incomingRoom.player_count = currentRoom ? currentRoom.player_count : 0; // Keep count too
              }
         }
 
@@ -145,11 +462,26 @@ gameListener.on('data', (incoming: any) => {
         };
     }
 
-    // Update Internal State
+    // Update Internal GameData State
     appState.gameData = mergedData;
 
-    // Broadcast MERGED update to clients
-    io.emit('update', mergedData); 
+    // --- APPLY MAPPING LOGIC ---
+    // Only apply if AutoSync is globally enabled (legacy check) OR if we rely on granular SyncControl
+    // But since SyncControl is granular, we can just run it. SyncControl defaults to TRUE.
+    if (appState.game.visibility.isAutoSync) {
+        const mappedChanges = processGameData(mergedData, appState);
+
+        // Merge mapped changes into AppState
+        if (Object.keys(mappedChanges).length > 0) {
+            appState = { ...appState, ...mappedChanges };
+        }
+    }
+
+    // Broadcast FULL AppState update to clients (instead of just gameData)
+    // This allows frontend to use state.blue/red directly
+    io.emit('state_update', appState);
+
+    io.emit('update', mergedData); // Keep legacy stream of raw data
 });
 
 io.on('connection', (socket) => {
@@ -167,10 +499,12 @@ io.on('connection', (socket) => {
 
             const output = { ...target };
             Object.keys(source).forEach(key => {
-                if (source[key] instanceof Object && key in target) {
-                    output[key] = merge(target[key], source[key]);
+                const sourceValue = source[key];
+                const targetValue = output[key];
+                if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue) && targetValue && typeof targetValue === 'object' && !Array.isArray(targetValue)) {
+                    output[key] = merge(targetValue, sourceValue);
                 } else {
-                    output[key] = source[key];
+                    output[key] = sourceValue;
                 }
             });
             return output;
@@ -179,15 +513,228 @@ io.on('connection', (socket) => {
         // Apply deep merge
         appState = merge(appState, newState);
         
+        // --- AUTO-CALCULATE SCORE ON TITLE CHANGE ---
+        if (newState.game && 'matchTitle' in newState.game) {
+            const currentTitle = appState.game.matchTitle.trim();
+            const blueName = appState.blue.name;
+            const redName = appState.red.name;
+            
+            console.log(`[AutoScore] Match Title changed to "${currentTitle}". Recalculating scores...`);
+
+            if (currentTitle) {
+                // Calculate Blue Wins
+                if (blueName && !["NO TEAM", "BLUE TEAM", "Computer"].includes(blueName)) {
+                    const wins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        ((m.winner === 'blue' && m.blue.name === blueName) || 
+                         (m.winner === 'red' && m.red.name === blueName)) // Handle swapping sides if needed, but usually winner stores the team
+                    ).length;
+                    
+                    // Actually, the history stores snapshot. 
+                    // Strict check: m.winner === 'blue' means the team in blue slot won.
+                    // We need to check if THAT team is the current blue team.
+                    
+                    const blueWins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        (
+                            (m.winner === 'blue' && m.blue.name === blueName) ||
+                            (m.winner === 'red' && m.red.name === blueName)
+                        )
+                    ).length;
+                    
+                    appState.blue.score = blueWins;
+                } else {
+                    appState.blue.score = 0;
+                }
+
+                // Calculate Red Wins
+                if (redName && !["NO TEAM", "RED TEAM", "Computer"].includes(redName)) {
+                    const redWins = appState.history.filter((m: any) => 
+                        m.matchTitle === currentTitle && 
+                        (
+                            (m.winner === 'blue' && m.blue.name === redName) ||
+                            (m.winner === 'red' && m.red.name === redName)
+                        )
+                    ).length;
+                    
+                    appState.red.score = redWins;
+                } else {
+                    appState.red.score = 0;
+                }
+            }
+        }
+
         saveState();
         
         // Broadcast to others (excluding sender)
         socket.broadcast.emit('state_update', appState);
     });
 
+    // --- ATOMIC REGISTRY OPERATIONS (Fixes Race Conditions) ---
+    socket.on('add_registry_team', (team: any) => {
+        if (!appState.registry) appState.registry = [];
+        // Prevent duplicates by ID
+        if (!appState.registry.find((t: any) => t.id === team.id)) {
+            appState.registry.push(team);
+            saveState();
+            io.emit('state_update', appState); // Force sync everyone
+        }
+    });
+
+    socket.on('update_registry_team', (team: any) => {
+        if (appState.registry) {
+            const idx = appState.registry.findIndex((t: any) => t.id === team.id);
+            if (idx !== -1) {
+                appState.registry[idx] = team;
+                saveState();
+                io.emit('state_update', appState);
+            }
+        }
+    });
+
+    socket.on('remove_registry_team', (teamId: string) => {
+        if (appState.registry) {
+            const initialLen = appState.registry.length;
+            appState.registry = appState.registry.filter((t: any) => t.id !== teamId);
+            if (appState.registry.length !== initialLen) {
+                saveState();
+                io.emit('state_update', appState);
+            }
+        }
+    });
+
+    socket.on('clear_team_library', () => {
+        appState.teamLibrary = [];
+        saveState();
+        io.emit('state_update', appState);
+    });
+
     socket.on('disconnect', () => {
         // console.log('Client Disconnected');
     });
+});
+
+// --- API Endpoints for Reset ---
+app.get('/api/game-data', (req, res) => {
+    res.json(appState.gameData || DEFAULT_GAME_DATA);
+});
+
+app.post('/api/reset', (req, res) => {
+    console.log('Received request to reset state.');
+    
+    // Preserve persistent data that shouldn't be wiped on a simple reset
+    const preserved = {
+        registry: appState.registry,
+        teamLibrary: appState.teamLibrary,
+        history: appState.history,
+        assets: appState.assets,
+        syncControl: appState.syncControl,
+        status: appState.status,
+        gameData: appState.gameData,
+        theme: appState.theme
+    };
+
+    // Reset state but keep preserved data
+    appState = {
+        ...INITIAL_STATE,
+        registry: preserved.registry,
+        teamLibrary: preserved.teamLibrary,
+        history: preserved.history,
+        assets: preserved.assets,
+        syncControl: preserved.syncControl,
+        theme: preserved.theme, // Preserve theme
+        ...(preserved.gameData && { gameData: preserved.gameData }),
+        ...(preserved.status && { status: preserved.status })
+    };
+
+    saveState();
+    io.emit('state_update', appState); // Force all clients to update
+    res.status(200).json({ message: 'State has been reset.' });
+});
+
+app.post('/api/factory-reset', async (req, res) => {
+    console.log('!!! FACTORY RESET INITIATED !!!');
+    try {
+        // Reset in-memory state to pristine defaults
+        appState = { ...INITIAL_STATE, ...(appState.status && { status: appState.status }) };
+        io.emit('state_update', appState);
+
+        // Delete configuration files
+        await fs.remove(METADATA_FILE);
+        await fs.remove(HISTORY_FILE);
+        await fs.remove(VISIBILITY_FILE);
+        console.log('Deleted config files.');
+
+        // Clear uploaded team logos and ad assets
+        const teamLogosDir = path.join(PUBLIC_DIR, 'assets', 'teams');
+        await fs.emptyDir(teamLogosDir);
+        await fs.emptyDir(UPLOAD_DIR);
+        console.log('Cleared team logos and upload directories.');
+
+        // Re-create cleared directories
+        fs.ensureDirSync(UPLOAD_DIR);
+        fs.ensureDirSync(teamLogosDir);
+        
+        saveState(); // This will create a fresh metadata.json
+
+        res.status(200).json({ message: 'Factory reset successful.' });
+    } catch (e) {
+        const error = e as Error;
+        console.error('Factory reset failed:', error);
+        res.status(500).json({ message: 'Factory reset failed.', error: error.message });
+    }
+});
+
+// --- API Endpoints for History ---
+app.post('/api/save-history', (req, res) => {
+    const matchData = req.body;
+    if (!matchData) return res.status(400).json({ message: 'No data provided' });
+
+    // Add ID and Date if missing
+    const newMatch = {
+        ...matchData,
+        id: matchData.id || Date.now().toString(),
+        date: matchData.date || new Date().toISOString()
+    };
+
+    appState.history.push(newMatch);
+    saveState();
+    io.emit('state_update', appState);
+    
+    res.status(200).json({ message: 'Match history saved', match: newMatch });
+});
+
+app.post('/api/update-history', (req, res) => {
+    const { id, ...updates } = req.body;
+    if (!id) return res.status(400).json({ message: 'Match ID required' });
+
+    const matchIndex = appState.history.findIndex((m: any) => m.id === id);
+    if (matchIndex === -1) return res.status(404).json({ message: 'Match not found' });
+
+    // Update specific fields
+    appState.history[matchIndex] = { ...appState.history[matchIndex], ...updates };
+    
+    saveState();
+    io.emit('state_update', appState);
+
+    res.status(200).json({ message: 'Match updated', match: appState.history[matchIndex] });
+});
+
+app.post('/api/delete-history', (req, res) => {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ message: 'Match ID required' });
+
+    const initialLength = appState.history.length;
+    appState.history = appState.history.filter((m: any) => m.id !== id);
+
+    if (appState.history.length === initialLength) {
+        return res.status(404).json({ message: 'Match not found' });
+    }
+
+    saveState();
+    io.emit('state_update', appState);
+
+    res.status(200).json({ message: 'Match deleted' });
 });
 
 // --- START SERVER ---

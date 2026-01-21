@@ -6,6 +6,9 @@ export interface TeamData {
   pIds: string[];
   bans: string[];
   score: number;
+  kills: number;
+  spells: string[];
+  lanes: string[];
 }
 
 export interface GameState {
@@ -39,6 +42,13 @@ export interface AdConfig {
   speed: number;
 }
 
+export interface SyncControl {
+  isBanSyncEnabled: boolean;
+  isPickSyncEnabled: boolean;
+  isGoldSyncEnabled: boolean;
+  isTeamNameSyncEnabled: boolean;
+}
+
 export interface RegisteredTeam {
   id: string;
   name: string;
@@ -54,30 +64,11 @@ export interface TeamLibraryEntry {
   captainId?: string;
 }
 
-export interface AppState {
-  blue: TeamData;
-  red: TeamData;
-  game: GameState;
-  ads: string[];
-  adConfig: AdConfig;
-  assets: AppAssets;
-  registry: RegisteredTeam[];
-  teamLibrary: TeamLibraryEntry[];
-  history: any[];
-  status?: string;
-  gameData?: GameData;
-}
-
-export interface BracketMatch {
-  id: string;
-  round: string;
-  matchTitle: string;
-  team1Id?: string;
-  team2Id?: string;
-  score1?: number;
-  score2?: number;
-  winnerId?: string;
-  nextMatchId?: string;
+export interface AppTheme {
+  scoreActiveColorBlue: string;
+  scoreInactiveColorBlue: string;
+  scoreActiveColorRed: string;
+  scoreInactiveColorRed: string;
 }
 
 // Interfaces matching C++ JSON output
@@ -139,6 +130,32 @@ export interface GameData {
     };
 }
 
+export interface ManualMatch {
+  teamAId: string;
+  teamBId: string;
+  scoreA: number;
+  scoreB: number;
+  matchTitle: string;
+  bestOf: number;
+}
+
+export interface AppState {
+  blue: TeamData;
+  red: TeamData;
+  game: GameState;
+  ads: string[];
+  adConfig: AdConfig;
+  syncControl: SyncControl;
+  assets: AppAssets;
+  theme: AppTheme;
+  registry: RegisteredTeam[];
+  teamLibrary: TeamLibraryEntry[];
+  history: any[];
+  status?: string;
+  gameData?: GameData;
+  manualMatch?: ManualMatch;
+}
+
 export const DEFAULT_GAME_DATA: GameData = {
     type: 'init',
     debug: {
@@ -177,7 +194,10 @@ export const INITIAL_STATE: AppState = {
     pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
-    score: 0
+    score: 0,
+    kills: 0,
+    spells: ['', '', '', '', ''],
+    lanes: ['', '', '', '', '']
   },
   red: {
     name: 'MANSABA B',
@@ -186,7 +206,10 @@ export const INITIAL_STATE: AppState = {
     pNames: ['PLAYER 1', 'PLAYER 2', 'PLAYER 3', 'PLAYER 4', 'PLAYER 5'],
     pIds: ['', '', '', '', ''],
     bans: ['', '', '', '', ''],
-    score: 0
+    score: 0,
+    kills: 0,
+    spells: ['', '', '', '', ''],
+    lanes: ['', '', '', '', '']
   },
   game: {
     matchTitle: 'MATCH DAY 1',
@@ -201,7 +224,7 @@ export const INITIAL_STATE: AppState = {
       timer: true,
       turn: true,
       score: true,
-      isAutoSync: false
+      isAutoSync: true
     }
   },
   ads: ['AD 1', 'AD 2', 'AD 3'],
@@ -211,14 +234,34 @@ export const INITIAL_STATE: AppState = {
     text: 'WELCOME TO THE TOURNAMENT! ENJOY THE MATCH!',
     speed: 25
   },
+  syncControl: {
+    isBanSyncEnabled: true,
+    isPickSyncEnabled: true,
+    isGoldSyncEnabled: true,
+    isTeamNameSyncEnabled: true
+  },
   assets: {
     union1: '',
     union2: '',
     logo: '',
     gradient: ''
   },
+  theme: {
+    scoreActiveColorBlue: '#22d3ee',
+    scoreInactiveColorBlue: '#1e293b',
+    scoreActiveColorRed: '#ef4444',
+    scoreInactiveColorRed: '#1e293b'
+  },
   registry: [],
   teamLibrary: [],
   history: [],
-  gameData: DEFAULT_GAME_DATA
+  gameData: DEFAULT_GAME_DATA,
+  manualMatch: {
+      teamAId: '',
+      teamBId: '',
+      scoreA: 0,
+      scoreB: 0,
+      matchTitle: 'NEXT MATCH',
+      bestOf: 3
+  }
 };
