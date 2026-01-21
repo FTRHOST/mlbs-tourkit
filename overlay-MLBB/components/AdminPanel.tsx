@@ -46,6 +46,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamLeader, setNewTeamLeader] = useState('');
   const [newTeamLogo, setNewTeamLogo] = useState('');
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
 
   // History Modal State
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -313,28 +314,76 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
   };
 
   const handleImageUpload = (side: 'blue' | 'red' | 'ads' | 'prepare', e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      if (side === 'blue' || side === 'red') updateDraftTeam(side, 'logo', base64);
-      else if (side === 'ads') setDraft(prev => ({ ...prev, ads: [...prev.ads, base64] }));
-      else if (side === 'prepare') setNewTeamLogo(base64);
-    };
-    reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (side === 'ads') {
+        const newAds: string[] = [];
+        let processedCount = 0;
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                newAds.push(event.target?.result as string);
+                processedCount++;
+                if (processedCount === files.length) {
+                    setDraft(prev => ({ ...prev, ads: [...prev.ads, ...newAds] }));
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    } else {
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const base64 = event.target?.result as string;
+            if (side === 'blue' || side === 'red') updateDraftTeam(side, 'logo', base64);
+            else if (side === 'prepare') setNewTeamLogo(base64);
+        };
+        reader.readAsDataURL(file);
+    }
   };
 
   const removeAd = (index: number) => setDraft(prev => ({ ...prev, ads: prev.ads.filter((_, i) => i !== index) }));
   
-  const addTeamToRegistry = () => {
+  const handleSaveRegistryTeam = () => {
     if (!newTeamName || !newTeamLeader) return;
-    const newTeam: RegisteredTeam = { id: Date.now().toString(), name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo };
-    setDraft(prev => ({ ...prev, registry: [...(prev.registry || []), newTeam] }));
+
+    if (editingTeamId) {
+        // Update Existing
+        setDraft(prev => ({
+            ...prev,
+            registry: (prev.registry || []).map(t => 
+                t.id === editingTeamId 
+                ? { ...t, name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo }
+                : t
+            )
+        }));
+        setEditingTeamId(null);
+    } else {
+        // Add New
+        const newTeam: RegisteredTeam = { id: Date.now().toString(), name: newTeamName, leaderId: newTeamLeader, logo: newTeamLogo };
+        setDraft(prev => ({ ...prev, registry: [...(prev.registry || []), newTeam] }));
+    }
     setNewTeamName(''); setNewTeamLeader(''); setNewTeamLogo('');
   };
+
+  const startEditingTeam = (team: RegisteredTeam) => {
+      setEditingTeamId(team.id);
+      setNewTeamName(team.name);
+      setNewTeamLeader(team.leaderId);
+      setNewTeamLogo(team.logo);
+  };
+
+  const cancelEditingTeam = () => {
+      setEditingTeamId(null);
+      setNewTeamName(''); setNewTeamLeader(''); setNewTeamLogo('');
+  };
   
-  const removeTeamFromRegistry = (id: string) => setDraft(prev => ({ ...prev, registry: (prev.registry || []).filter(t => t.id !== id) }));
+  const removeTeamFromRegistry = (id: string) => {
+      if (editingTeamId === id) cancelEditingTeam();
+      setDraft(prev => ({ ...prev, registry: (prev.registry || []).filter(t => t.id !== id) }));
+  };
   const updateDraftAdConfig = (field: keyof AdConfig, value: any) => setDraft(prev => ({ ...prev, adConfig: { ...prev.adConfig, [field]: value } }));
   const updateLiveGame = (field: string, value: any) => {
     setState(prev => ({ ...prev, game: { ...prev.game, [field]: value } }));
@@ -647,6 +696,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
           </div>
           {draft.adConfig.type === 'text' && (<div className="flex flex-col gap-1 md:col-span-2"><span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Ad Text</span><textarea value={draft.adConfig.text} onChange={(e) => updateDraftAdConfig('text', e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold h-20" placeholder="Enter ticker text here..." /></div>)}
           <div className="flex flex-col gap-1"><span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Speed (Seconds / Duration)</span><input type="number" value={draft.adConfig.speed} onChange={(e) => updateDraftAdConfig('speed', parseInt(e.target.value) || 0)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold" /></div>
+          <div className="flex flex-col gap-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Background Color</span>
+              <div className="flex gap-2">
+                  <input type="color" value={draft.adConfig.backgroundColor || '#18252C'} onChange={(e) => updateDraftAdConfig('backgroundColor', e.target.value)} className="h-8 w-8 rounded cursor-pointer bg-transparent border-0 p-0" />
+                  <input type="text" value={draft.adConfig.backgroundColor || '#18252C'} onChange={(e) => updateDraftAdConfig('backgroundColor', e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs font-bold w-full uppercase" />
+              </div>
+          </div>
         </div>
         <div className="flex justify-end gap-2">{isAdsDirty() && (<button onClick={applyAdChanges} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-black text-[10px] uppercase shadow-lg">Apply Ad Changes</button>)}
         </div>
@@ -655,9 +711,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-amber-400 font-black uppercase tracking-widest">Ad Images</h3>
           <div className="flex items-center gap-2">
+            <button onClick={() => { if(confirm('Are you sure you want to remove ALL ads?')) setDraft(prev => ({...prev, ads: []})); }} className="text-[10px] font-black bg-red-600 hover:bg-red-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg"><span>🗑️ CLEAR ALL</span></button>
             <a href="/ads-template.zip" download className="text-[10px] font-black bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg"><span>⬇️ TEMPLATE</span></a>
             <label className="text-[10px] font-black bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg"><span>📂 IMPORT ZIP</span><input type="file" accept=".zip" className="hidden" onChange={handleImportAds} /></label>
-            <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg"><span>+ ADD IMAGE</span><input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload('ads', e)} /></label>
+            <label className="text-[10px] font-black bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full cursor-pointer transition-all shadow-lg"><span>+ ADD IMAGE</span><input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleImageUpload('ads', e)} /></label>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -1112,10 +1169,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ state, setState, resetState }) 
             </div>
          </div>
        <div className="flex flex-col gap-6">
-         {(state.teamLibrary && state.teamLibrary.length > 0) && (<div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2"><h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4><div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar">{state.teamLibrary.map(t => (<div key={t.id} className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px] text-white flex items-center gap-2">{t.logoUrl && <img src={t.logoUrl.startsWith('assets/') ? '/' + t.logoUrl : t.logoUrl} className="w-4 h-4 object-contain" />}<span>{t.name}</span></div>))}</div></div>)}
-         <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-4"><h4 className="text-xs font-bold text-slate-400 uppercase">Add New Team</h4><div className="flex flex-wrap gap-4 items-end"><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Team Name</label><input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS LEGENDS" /></div><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Leader ID / Trigger</label><input value={newTeamLeader} onChange={(e) => setNewTeamLeader(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS.REKT" /></div><div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Logo</label><div className="relative group">{newTeamLogo ? <img src={newTeamLogo} className="w-9 h-9 object-contain bg-black/20 rounded border border-slate-600" /> : <div className="w-9 h-9 bg-slate-800 border border-slate-600 rounded flex items-center justify-center text-[8px]">UP</div>}<input type="file" accept="image/*" onChange={(e) => handleImageUpload('prepare', e)} className="absolute inset-0 opacity-0 cursor-pointer" /></div></div><button onClick={addTeamToRegistry} className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded text-[10px] font-black uppercase tracking-wide">Add Team</button></div></div>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{(draft.registry || []).map((team) => (<div key={team.id} className="bg-slate-800 border border-slate-700 rounded-lg p-3 flex items-center justify-between group"><div className="flex items-center gap-3">{team.logo ? <img src={team.logo.startsWith('data:') ? team.logo : (team.logo.startsWith('assets/') ? '/' + team.logo : `/assets/${team.logo}.png`)} className="w-10 h-10 object-contain bg-black/20 rounded" /> : <div className="w-10 h-10 bg-slate-900 rounded flex items-center justify-center text-[8px]">N/A</div>}<div className="flex flex-col"><span className="text-xs font-black text-white">{team.name}</span><span className="text-[9px] text-purple-400 font-bold uppercase">{team.leaderId}</span></div></div><button onClick={() => removeTeamFromRegistry(team.id)} className="text-slate-600 hover:text-red-500 transition-colors p-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div>))}
-</div>
+                  {(state.teamLibrary && state.teamLibrary.length > 0) && (<div className="bg-slate-900/50 p-4 rounded-xl border border-blue-500/30 space-y-2"><h4 className="text-xs font-bold text-blue-400 uppercase">Imported Team Library ({state.teamLibrary.length})</h4><div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar">{state.teamLibrary.map(t => (<div key={t.id} className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px] text-white flex items-center gap-2">{t.logoUrl && <img src={t.logoUrl.startsWith('assets/') ? '/' + t.logoUrl : t.logoUrl} className="w-4 h-4 object-contain" />}<span>{t.name}</span></div>))}</div></div>)}
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-4">
+                     <h4 className="text-xs font-bold text-slate-400 uppercase">{editingTeamId ? 'Edit Team' : 'Add New Team'}</h4>
+                     <div className="flex flex-wrap gap-4 items-end">
+                         <div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Team Name</label><input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS LEGENDS" /></div>
+                         <div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Leader ID / Trigger</label><input value={newTeamLeader} onChange={(e) => setNewTeamLeader(e.target.value)} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs font-semibold w-40" placeholder="Ex: EVOS.REKT" /></div>
+                         <div className="flex flex-col gap-1"><label className="text-[9px] font-bold text-slate-500 uppercase">Logo</label><div className="relative group">{newTeamLogo ? <img src={newTeamLogo} className="w-9 h-9 object-contain bg-black/20 rounded border border-slate-600" /> : <div className="w-9 h-9 bg-slate-800 border border-slate-600 rounded flex items-center justify-center text-[8px]">UP</div>}<input type="file" accept="image/*" onChange={(e) => handleImageUpload('prepare', e)} className="absolute inset-0 opacity-0 cursor-pointer" /></div></div>
+                         <div className="flex gap-2">
+                             <button onClick={handleSaveRegistryTeam} className={`px-4 py-2 ${editingTeamId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-purple-600 hover:bg-purple-500'} text-white rounded text-[10px] font-black uppercase tracking-wide`}>
+                                 {editingTeamId ? 'UPDATE' : 'ADD'}
+                             </button>
+                             {editingTeamId && (
+                                 <button onClick={cancelEditingTeam} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-[10px] font-black uppercase tracking-wide">
+                                     CANCEL
+                                 </button>
+                             )}
+                         </div>
+                     </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{(draft.registry || []).map((team) => (
+                     <div key={team.id} className={`bg-slate-800 border rounded-lg p-3 flex items-center justify-between group transition-all ${editingTeamId === team.id ? 'border-amber-500/50 bg-amber-900/10' : 'border-slate-700'}`}>
+                         <div className="flex items-center gap-3">
+                             {team.logo ? <img src={team.logo.startsWith('data:') ? team.logo : (team.logo.startsWith('assets/') ? '/' + team.logo : `/assets/${team.logo}.png`)} className="w-10 h-10 object-contain bg-black/20 rounded" /> : <div className="w-10 h-10 bg-slate-900 rounded flex items-center justify-center text-[8px]">N/A</div>}
+                             <div className="flex flex-col"><span className="text-xs font-black text-white">{team.name}</span><span className="text-[9px] text-purple-400 font-bold uppercase">{team.leaderId}</span></div>
+                         </div>
+                         <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
+                             <button onClick={() => startEditingTeam(team)} className="text-slate-400 hover:text-amber-400 transition-colors p-1.5 bg-slate-900/50 rounded hover:bg-slate-900" title="Edit Team">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                             </button>
+                             <button onClick={() => removeTeamFromRegistry(team.id)} className="text-slate-400 hover:text-red-500 transition-colors p-1.5 bg-slate-900/50 rounded hover:bg-slate-900" title="Delete Team">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                             </button>
+                         </div>
+                     </div>
+                  ))}</div>
        </div>
     </div>
   );

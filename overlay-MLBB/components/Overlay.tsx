@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { AppState } from '../types';
 import BattleOverlay from './BattleOverlay';
 import OverviewDraft from './OverviewDraft';
+import AdContent from './AdContent';
 
 interface OverlayProps {
   data: AppState;
@@ -76,124 +77,6 @@ const BanSlot: React.FC<{ ban: string; delay?: string }> = React.memo(({ ban, de
        />
     </div>
   );
-});
-
-const AdContent: React.FC<{ adConfig: AppState['adConfig']; ads: AppState['ads'] }> = React.memo(({ adConfig, ads }) => {
-  const [fadeIndex, setFadeIndex] = useState(0);
-  const [shouldScroll, setShouldScroll] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (adConfig.effect === 'fade') {
-      const interval = setInterval(() => {
-        if (adConfig.type === 'images' && ads.length > 0) {
-          setFadeIndex(prev => (prev + 1) % ads.length);
-        }
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [adConfig.effect, adConfig.type, ads.length]);
-
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (containerRef.current && contentRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const contentWidth = contentRef.current.scrollWidth;
-        // Aktifkan scroll hanya jika konten lebih lebar dari container
-        setShouldScroll(contentWidth > containerWidth);
-      }
-    };
-
-    if (adConfig.effect === 'scroll') {
-      checkOverflow();
-      // Beri waktu sedikit untuk logo termuat sebelum menghitung lebar
-      const timer = setTimeout(checkOverflow, 1000);
-      window.addEventListener('resize', checkOverflow);
-      return () => {
-        window.removeEventListener('resize', checkOverflow);
-        clearTimeout(timer);
-      };
-    } else {
-      setShouldScroll(false);
-    }
-  }, [adConfig, ads]);
-
-  const renderMarquee = (children: React.ReactNode) => (
-    <div 
-      ref={containerRef}
-      className="marquee-wrapper"
-      style={{ '--speed': `${adConfig.speed}s` } as any}
-    >
-      <div 
-        className={`marquee-content ${!shouldScroll ? 'w-full !justify-center !animate-none' : ''}`}
-      >
-        <div ref={contentRef} className="flex items-center">
-          {children}
-        </div>
-      </div>
-      {shouldScroll && (
-        <div className="marquee-content">
-          <div className="flex items-center">
-            {children}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-  const getAdSrc = (ad: string) => {
-    if (ad.startsWith('data:')) return ad;
-    return `${ASSETS}${ad}.png`;
-  };
-
-  if (adConfig.type === 'text') {
-    if (adConfig.effect === 'scroll') {
-      return renderMarquee(
-        <span className="font-gothic text-[40px] uppercase tracking-widest px-[50px] text-white">
-          {adConfig.text}
-        </span>
-      );
-    } else {
-      return (
-        <div className="w-full h-full flex items-center justify-center font-gothic text-[40px] animate-fade uppercase tracking-wide text-white">
-          {adConfig.text}
-        </div>
-      );
-    }
-  }
-
-  if (adConfig.effect === 'scroll') {
-    return renderMarquee(
-      <div className="flex items-center gap-[100px] px-[50px]">
-        {ads.map((ad, idx) => (
-          <img 
-            key={idx}
-            src={getAdSrc(ad)} 
-            className="h-[45px] w-auto object-contain" 
-            onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${ad.substring(0, 10)}`; }}
-          />
-        ))}
-      </div>
-    );
-  } else {
-    const activeAd = ads[fadeIndex] || ads[0];
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        {activeAd && (
-          <img 
-            key={activeAd}
-            src={getAdSrc(activeAd)} 
-            className="h-[48px] w-auto object-contain animate-fade" 
-            onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${activeAd.substring(0, 10)}`; }}
-          />
-        )}
-      </div>
-    );
-  }
-}, (prev, next) => {
-  return JSON.stringify(prev.adConfig) === JSON.stringify(next.adConfig) &&
-         JSON.stringify(prev.ads) === JSON.stringify(next.ads);
 });
 
 const TurnIndicator: React.FC<{ turn: 'blue' | 'red' }> = React.memo(({ turn }) => {
@@ -351,6 +234,7 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
 
   return (
     <div className="relative w-[1920px] h-[1080px] text-white overflow-hidden pointer-events-none">
+      <link rel="stylesheet" href="/marquee.css" />
       
       {/* --- INTRO VS LAYER --- */}
       {isIntro && (
@@ -421,8 +305,8 @@ const Overlay: React.FC<OverlayProps> = ({ data }) => {
 
       {/* --- AD MARQUEE --- */}
       <div 
-        className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] bg-[#18252C] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
-        style={isIntro ? { animationDelay: '8.5s' } : {}}
+        className={`absolute w-[1837px] h-[58px] left-[42px] top-[1022px] overflow-hidden ${isIntro ? 'intro-bottom' : ''}`}
+        style={{ backgroundColor: data.adConfig.backgroundColor || '#18252C', ...(isIntro ? { animationDelay: '8.5s' } : {}) }}
       >
         <AdContent adConfig={data.adConfig} ads={data.ads} />
       </div>

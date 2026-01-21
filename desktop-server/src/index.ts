@@ -160,7 +160,8 @@ app.post('/api/import-ads', upload.single('file'), async (req, res) => {
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: "*", methods: ["GET", "POST"] }
+    cors: { origin: "*", methods: ["GET", "POST"] },
+    maxHttpBufferSize: 5e7 // 50MB
 });
 
 // --- SERVICES INITIALIZATION ---

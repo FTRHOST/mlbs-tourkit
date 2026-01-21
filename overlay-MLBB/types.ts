@@ -220,7 +220,8 @@ export const DEFAULT_APP_STATE: AppState = {
     type: 'text',
     effect: 'scroll',
     text: 'WAITING FOR DATA...',
-    speed: 10
+    speed: 10,
+    backgroundColor: '#18252C'
   },
   syncControl: {
     isBanSyncEnabled: true,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { AppState } from '../types';
 
 const ASSETS = "/assets/";
@@ -36,6 +36,9 @@ const AdContent: React.FC<AdContentProps> = React.memo(({ adConfig, ads, forceFa
       
       setGridPages(newPages);
       setIsGridPaginated(newPages.length > 1);
+      
+      // Reset to page 0 if we are out of bounds or just to be safe when content changes
+      setGridPage(0);
     }
   }, [layout, ads]); 
 
@@ -43,46 +46,60 @@ const AdContent: React.FC<AdContentProps> = React.memo(({ adConfig, ads, forceFa
   useEffect(() => {
       if (layout === 'grid' && isGridPaginated) {
           const interval = setInterval(() => {
-              setGridPage(prev => (prev + 1) % gridPages.length);
+              setGridPage(prev => {
+                  const next = prev + 1;
+                  // Safety check: if next page doesn't exist, go back to 0
+                  return next >= gridPages.length ? 0 : next;
+              });
           }, 5000); // 5 seconds per page
           return () => clearInterval(interval);
       }
   }, [layout, isGridPaginated, gridPages.length]);
 
 
-  // --- LOGIC FOR SINGLE LAYOUT ---
+  // --- LOGIC FOR SINGLE LAYOUT (Strip/Marquee) ---
+  
+  // Robust Overflow Check
+  const checkOverflow = useCallback(() => {
+    if (containerRef.current && contentRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const contentWidth = contentRef.current.scrollWidth;
+      // If content is significantly larger (buffer 5px), we scroll/cycle
+      setShouldScroll(contentWidth > containerWidth + 5);
+    }
+  }, []);
+
+  // Reset Fade Index when Ads Change
   useEffect(() => {
-    if (layout === 'single' && effectiveEffect === 'fade') {
+      setFadeIndex(0);
+  }, [ads]);
+
+  // Interval for Fade rotation (Single Layout)
+  useEffect(() => {
+    // Only rotate if we are in 'fade' mode AND content overflows (needs rotation)
+    // If it fits, we just show it static.
+    if (layout === 'single' && effectiveEffect === 'fade' && shouldScroll) {
       const interval = setInterval(() => {
         if (adConfig.type === 'images' && ads.length > 0) {
           setFadeIndex(prev => (prev + 1) % ads.length);
         }
-      }, 5000);
+      }, 5000); // 5s matches CSS animation
       return () => clearInterval(interval);
+    } else if (layout === 'single' && !shouldScroll) {
+        setFadeIndex(0);
     }
-  }, [layout, effectiveEffect, adConfig.type, ads.length]);
+  }, [layout, effectiveEffect, adConfig.type, ads.length, shouldScroll]);
 
+  // Initial and Resize Check
   useEffect(() => {
-    const checkOverflow = () => {
-      if (layout === 'single' && effectiveEffect === 'scroll' && containerRef.current && contentRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const contentWidth = contentRef.current.scrollWidth;
-        setShouldScroll(contentWidth > containerWidth);
-      }
-    };
-
-    if (layout === 'single' && effectiveEffect === 'scroll') {
-      checkOverflow();
-      const timer = setTimeout(checkOverflow, 1000);
-      window.addEventListener('resize', checkOverflow);
-      return () => {
+    checkOverflow();
+    const timer = setTimeout(checkOverflow, 1000);
+    window.addEventListener('resize', checkOverflow);
+    return () => {
         window.removeEventListener('resize', checkOverflow);
         clearTimeout(timer);
-      };
-    } else if (layout === 'single') {
-      setShouldScroll(false);
-    }
-  }, [layout, effectiveEffect, ads]);
+    };
+  }, [ads, adConfig.type, layout, checkOverflow]);
 
   const getAdSrc = (ad: string) => {
     if (ad.startsWith('data:')) return ad;
@@ -91,7 +108,7 @@ const AdContent: React.FC<AdContentProps> = React.memo(({ adConfig, ads, forceFa
 
   // --- RENDER: GRID LAYOUT ---
   if (layout === 'grid') {
-      const currentAds = isGridPaginated ? gridPages[gridPage] : ads;
+      const currentAds = (isGridPaginated && gridPages[gridPage]) ? gridPages[gridPage] : ads;
 
       return (
           <div 
@@ -152,6 +169,11 @@ const AdContent: React.FC<AdContentProps> = React.memo(({ adConfig, ads, forceFa
     }
   }
 
+  // Images
+  const displayAds = effectiveEffect === 'fade' && shouldScroll
+      ? [...ads.slice(fadeIndex), ...ads.slice(0, fadeIndex)]
+      : ads;
+
   if (effectiveEffect === 'scroll') {
     return renderMarquee(
       <div className="flex items-center gap-[100px] px-[50px]">
@@ -160,23 +182,35 @@ const AdContent: React.FC<AdContentProps> = React.memo(({ adConfig, ads, forceFa
             key={idx}
             src={getAdSrc(ad)} 
             className="h-[45px] w-auto object-contain" 
+            onLoad={checkOverflow}
             onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${ad.substring(0, 10)}`; }}
           />
         ))}
       </div>
     );
   } else {
-    const activeAd = ads[fadeIndex] || ads[0];
+    // FADE / STATIC STRIP
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        {activeAd && (
-          <img 
-            key={activeAd}
-            src={getAdSrc(activeAd)} 
-            className="h-[100%] w-auto object-contain animate-fade" 
-            onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${activeAd.substring(0, 10)}`; }}
-          />
-        )}
+      <div 
+        ref={containerRef}
+        className="w-full h-full overflow-hidden flex items-center justify-center relative"
+      >
+         <div 
+            key={fadeIndex} // Forces re-render to sync with CSS animation
+            ref={contentRef}
+            className={`flex items-center gap-[100px] px-[50px] h-full ${shouldScroll ? 'animate-fade justify-start' : 'justify-center'}`}
+            style={{ width: shouldScroll ? 'max-content' : '100%' }}
+         >
+            {displayAds.map((ad, idx) => (
+              <img 
+                key={`${ad}-${idx}`}
+                src={getAdSrc(ad)} 
+                className="h-[45px] w-auto object-contain" 
+                onLoad={checkOverflow}
+                onError={(e) => { e.currentTarget.src = `https://placehold.co/150x45/18252C/ffffff?text=${ad.substring(0, 10)}`; }}
+              />
+            ))}
+         </div>
       </div>
     );
   }

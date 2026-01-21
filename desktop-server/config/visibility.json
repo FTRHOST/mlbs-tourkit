@@ -3,5 +3,5 @@
   "timer": true,
   "turn": true,
   "score": true,
-  "isAutoSync": true
+  "isAutoSync": false
 }
