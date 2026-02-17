@@ -25,6 +25,13 @@
 #include "obfuscate.h"
 #include "dobby.h"
 
+// Step 2: Probe Hook Variables
+void (*original_OnRecv)(void* thisPtr, void* msg) = nullptr;
+void hooked_OnRecv(void* thisPtr, void* msg) {
+    LOGI("Paket Room Info Masuk!");
+    if(original_OnRecv) original_OnRecv(thisPtr, msg);
+}
+
 GlobalState g_State;
 std::chrono::steady_clock::time_point g_battleStartTime;
 std::chrono::duration<float> g_elapsedBattleTime(0);
@@ -754,6 +761,16 @@ void MonitorBattleState() {
 
 void InitGameLogic() {
     InitDynamicOffsets();
+
+    // Step 2: Probe Hook
+    void *methodOnRecv = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "OnRecv", 1);
+    if (methodOnRecv) {
+        utils::hook(methodOnRecv, (func_t)hooked_OnRecv, (func_t*)&original_OnRecv);
+        LOGI("Hooked OnRecv at %p", methodOnRecv);
+    } else {
+        LOGE("Failed to hook OnRecv: Method not found!");
+    }
+
     LoadConfig();
     LOGI("GameLogic Initialized. Mod Enabled: %s", g_State.isModEnabled ? "true" : "false");
 }

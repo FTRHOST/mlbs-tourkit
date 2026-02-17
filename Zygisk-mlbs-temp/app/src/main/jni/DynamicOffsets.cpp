@@ -1,6 +1,7 @@
 #include "DynamicOffsets.h"
 #include "Il2Cpp.h"
 #include "obfuscate.h"
+#include "log.h"
 
 // Define Variables
 uintptr_t OFF_LogicPlayer_m_ID = 0;
@@ -524,6 +525,20 @@ uintptr_t OFF_BattlePlayerInfo_uiSkinId = 0;
 uintptr_t OFF_SystemData_m_uiID = 0;
 
 void InitDynamicOffsets() {
+    // Step 1: Setup "Mata" (Dynamic Resolver)
+    void *cmdRoomGetInfoSC = Il2CppGetClassType("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC");
+    if (cmdRoomGetInfoSC) {
+        LOGD("Class Cmd_Room_GetInfo_SC Found at %p", cmdRoomGetInfoSC);
+        void *methodOnRecv = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "OnRecv", 1);
+        if (methodOnRecv) {
+            LOGD("Method OnRecv Found at %p", methodOnRecv);
+        } else {
+            LOGE("Method OnRecv NOT Found!");
+        }
+    } else {
+        LOGE("Class Cmd_Room_GetInfo_SC NOT Found!");
+    }
+
     // LogicPlayer (Base: LogicFighter -> EntityBase)
     OFF_LogicPlayer_m_ID = Il2CppGetFieldOffset("Assembly-CSharp.dll", "Battle", "EntityBase", "m_ID");
 
