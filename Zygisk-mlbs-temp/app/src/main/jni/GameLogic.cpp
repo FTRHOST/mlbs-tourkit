@@ -754,62 +754,11 @@ void MonitorBattleState() {
 }
 
 // Hook function
-void (*old_OnGetRoomGetInfoMsg)(void* instance, void* ack) = nullptr;
+void (*old_OnRoomGetInfo)(void* instance, void* msg) = nullptr;
 
-void new_OnGetRoomGetInfoMsg(void* instance, void* ack) {
-    LOGI("Zygisk: Paket Room Info Diterima dari Server!");
-    if (old_OnGetRoomGetInfoMsg) old_OnGetRoomGetInfoMsg(instance, ack);
-    if (!ack) return;
-
-    static size_t off_stRoomInfo = 0;
-    static size_t off_vecPlayers = 0;
-    static size_t off_ulUid = 0;
-    static size_t off_strName = 0;
-    static size_t off_uiRankLevel = 0;
-
-    if (off_stRoomInfo == 0) {
-        off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stRoomInfo");
-        off_vecPlayers = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomInfo", "vecPlayers");
-        off_ulUid = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "ulUid");
-        off_strName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "strName");
-        off_uiRankLevel = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiRankLevel");
-    }
-
-    void* stRoomInfo = nullptr;
-    if (off_stRoomInfo > 0) read_memory_safe((void*)((uintptr_t)ack + off_stRoomInfo), &stRoomInfo, sizeof(void*));
-    if (!stRoomInfo) return;
-
-    void* vecPlayers = nullptr;
-    if (off_vecPlayers > 0) read_memory_safe((void*)((uintptr_t)stRoomInfo + off_vecPlayers), &vecPlayers, sizeof(void*));
-    if (!vecPlayers) return;
-
-    auto* list = (monoList<void*>*)vecPlayers;
-    int size = list->getSize();
-
-    std::stringstream ss;
-    ss << "{\"type\":\"room_info_event\",\"data\":[";
-    for(int i=0; i<size; i++) {
-        void* player = list->getItems()[i];
-        if(!player) continue;
-
-        uint64_t uid = 0;
-        if(off_ulUid > 0) read_memory_safe((void*)((uintptr_t)player + off_ulUid), &uid, sizeof(uint64_t));
-
-        uint32_t rank = 0;
-        if(off_uiRankLevel > 0) read_memory_safe((void*)((uintptr_t)player + off_uiRankLevel), &rank, sizeof(uint32_t));
-
-        std::string name = "";
-        uintptr_t namePtr = 0;
-        if(off_strName > 0) {
-             read_memory_safe((void*)((uintptr_t)player + off_strName), &namePtr, sizeof(uintptr_t));
-             name = SafeReadString(namePtr);
-        }
-
-        if(i > 0) ss << ",";
-        ss << "{\"uid\":" << uid << ",\"name\":\"" << name << "\",\"rank\":" << rank << "}";
-    }
-    ss << "]}";
-    BroadcastData(ss.str());
+void new_OnRoomGetInfo(void* instance, void* msg) {
+    LOGI("MLBS_CORE: [PROBE] Packet Cmd_Room_GetInfo_SC Masuk! Msg Pointer: %p", msg);
+    if (old_OnRoomGetInfo) old_OnRoomGetInfo(instance, msg);
 }
 
 void InitGameLogic() {
@@ -821,7 +770,7 @@ void InitGameLogic() {
     void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "Friends", "RoomDataManager", "OnGetRoomGetInfoMsg", 1);
     if (addr) {
         LOGI("Found OnGetRoomGetInfoMsg at %p", addr);
-        DobbyHook(addr, (void*)new_OnGetRoomGetInfoMsg, (void**)&old_OnGetRoomGetInfoMsg);
+        DobbyHook(addr, (void*)new_OnRoomGetInfo, (void**)&old_OnRoomGetInfo);
     } else {
         LOGE("Failed to find OnGetRoomGetInfoMsg");
     }
