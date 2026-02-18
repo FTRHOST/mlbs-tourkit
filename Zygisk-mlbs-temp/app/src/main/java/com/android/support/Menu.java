@@ -205,7 +205,7 @@ context.open = (InputStream) null;
                 "</html>", "text/html", "utf-8");
         wView.setBackgroundColor(0x00000000); //Transparent
         wView.setAlpha(ICON_ALPHA);
-        wView.getSettings().setAppCacheEnabled(true);
+        //wView.getSettings().setAppCacheEnabled(true);
         wView.setOnTouchListener(onTouchListener());
 
         //********** Settings icon **********
@@ -1769,7 +1769,7 @@ context.open = (InputStream) null;
         wView.loadData(text, "text/html", "utf-8");
         wView.setBackgroundColor(0x00000000); //Transparent
         wView.setPadding(0, 5, 0, 5);
-        wView.getSettings().setAppCacheEnabled(false);
+        //wView.getSettings().setAppCacheEnabled(false);
         linLayout.addView(wView);
     }
 
