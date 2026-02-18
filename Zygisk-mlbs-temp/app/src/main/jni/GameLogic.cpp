@@ -677,88 +677,37 @@ void UpdatePlayerInfo() {
     }
 }
 
-void MonitorBattleState() {
-    static int configTick = 0;
-    if (++configTick >= 180) { LoadConfig(); configTick = 0; }
-    if (!g_State.isModEnabled) {
-        std::lock_guard<std::mutex> lock(g_State.stateMutex);
-        g_State.players.clear(); g_State.logicPlayers.clear(); return;
-    }
-    static int logicTick = 0, infoTick = 0;
-    logicTick++; infoTick++;
-    void *logicBattleManager = nullptr;
-    Il2CppGetStaticFieldValue(OBFUSCATE("Assembly-CSharp.dll"), "", OBFUSCATE("LogicBattleManager"), OBFUSCATE("Instance"), &logicBattleManager);
-    bool isManagerValid = (logicBattleManager != nullptr);
-    int currentBattleState = -1;
-    if (isManagerValid) {
-        currentBattleState = GetBattleState(logicBattleManager);
-        { std::lock_guard<std::mutex> lock(g_State.stateMutex); g_State.battleState = currentBattleState; }
-        
-        if (currentBattleState == 6 && !g_isBattleTimerRunning) {
-             g_battleStartTime = std::chrono::steady_clock::now();
-             g_isBattleTimerRunning = true;
-        } else if (currentBattleState == 7 && g_isBattleTimerRunning) {
-             g_isBattleTimerRunning = false;
-        }
-        if (g_isBattleTimerRunning) {
-             g_elapsedBattleTime = std::chrono::steady_clock::now() - g_battleStartTime;
-        }
+// =============================================================
+// Variabel Global untuk Hook (Simpan Pointer Asli)
+// =============================================================
+void (*old_OnRecv_RoomInfo)(void* instance, void* msg) = nullptr;
+void (*old_OnRecv_RoomEnter)(void* instance, void* msg) = nullptr;
+void (*old_OnRecv_BanPick)(void* instance, void* msg) = nullptr;
 
-        if (currentBattleState == 2 && infoTick >= 60) { UpdatePlayerInfo(); infoTick = 0; }
-        else if (currentBattleState >= 3) {
-             if (logicTick >= 15) { UpdateBattleStats(logicBattleManager); logicTick = 0; }
-             if (infoTick >= 60) { UpdatePlayerInfo(); infoTick = 0; }
-        }
-    }
-    static int frameTick = 0;
-    if (++frameTick % 60 == 0) {
-        std::stringstream ss;
-        ss << "{\"type\":\"heartbeat\",\"debug\":{\"manager_found\":" << (isManagerValid?"true":"false") << ",\"game_state\":" << currentBattleState << ",\"feature_enabled\":true},\"data\":{";
-        {
-             std::lock_guard<std::mutex> lock(g_State.stateMutex);
-             ss << "\"room_info\":{\"player_count\":" << g_State.players.size() << ",\"players\":[";
-             for (size_t i = 0; i < g_State.players.size(); ++i) {
-                 const auto& p = g_State.players[i];
-                 ss << "{\"lUid\":" << p.lUid << ",\"_sName\":\"" << p._sName << "\",\"iCamp\":" << p.iCamp << ",\"heroid\":" << p.heroid << ",\"uiRankLevel\":" << p.uiRankLevel << ",\"summonSkillId\":" << p.summonSkillId 
-                    << ",\"banHero\":" << p.banHero << ",\"iRoad\":" << p.iRoad << ",\"uiZoneId\":" << p.uiZoneId << ",\"heroskin\":" << p.heroskin << "}";
-                 if (i < g_State.players.size() - 1) ss << ",";
-             }
-             ss << "],\"logic_players\":[";
-             for (size_t i = 0; i < g_State.logicPlayers.size(); ++i) {
-                 const auto& s = g_State.logicPlayers[i];
-                 ss << "{\"m_ID\":" << s.m_ID << ",\"totalGold\":" << s.totalGold 
-                    << ",\"_DoubleKillTimes\":" << s.DoubleKillTimes
-                    << ",\"_TripleKillTimes\":" << s.TripleKillTimes 
-                    << ",\"_QuadraKillTimes\":" << s.QuadraKillTimes 
-                    << ",\"_PentaKillTimes\":" << s.PentaKillTimes 
-                    << ",\"m_TotalExp\":" << s.m_TotalExp << "}";
-                 if (i < g_State.logicPlayers.size() - 1) ss << ",";
-             }
-             ss << "]},\"battle_stats\":{\"time\":" << g_elapsedBattleTime.count() 
-                << ",\"m_iCampAKill\":" << g_State.battleStats.m_iCampAKill 
-                << ",\"m_iCampBKill\":" << g_State.battleStats.m_iCampBKill 
-                << ",\"m_CampAGold\":" << g_State.battleStats.m_CampAGold 
-                << ",\"m_CampBGold\":" << g_State.battleStats.m_CampBGold
-                << ",\"m_CampAExp\":" << g_State.battleStats.m_CampAExp
-                << ",\"m_CampBExp\":" << g_State.battleStats.m_CampBExp
-                << ",\"m_CampAKillTower\":" << g_State.battleStats.m_CampAKillTower
-                << ",\"m_CampBKillTower\":" << g_State.battleStats.m_CampBKillTower
-                << ",\"m_CampAKillLingZhu\":" << g_State.battleStats.m_CampAKillLingZhu
-                << ",\"m_CampBKillLingZhu\":" << g_State.battleStats.m_CampBKillLingZhu
-                << ",\"m_CampAKillShenGui\":" << g_State.battleStats.m_CampAKillShenGui
-                << ",\"m_CampBKillShenGui\":" << g_State.battleStats.m_CampBKillShenGui
-                << "}}}";
-        }
-        BroadcastData(ss.str());
-    }
+// =============================================================
+// Fungsi Detour (Palsu) - Untuk Mencegat Data
+// =============================================================
+
+// 1. Menangkap Data Room Utama (Full Data)
+void new_OnRecv_RoomInfo(void* instance, void* msg) {
+    LOGI("MLBS_CORE: [HOOK] Cmd_Room_GetInfo_SC::OnRecv Terpanggil! MsgPtr: %p", msg);
+
+    // Panggil fungsi asli agar game tidak error
+    if(old_OnRecv_RoomInfo) old_OnRecv_RoomInfo(instance, msg);
 }
 
-// Hook function
-void (*old_OnRoomGetInfo)(void* instance, void* msg) = nullptr;
+// 2. Menangkap Player Masuk (Incremental Data)
+void new_OnRecv_RoomEnter(void* instance, void* msg) {
+    LOGI("MLBS_CORE: [HOOK] Cmd_Room_Enter_SC::OnRecv Terpanggil! MsgPtr: %p", msg);
 
-void new_OnRoomGetInfo(void* instance, void* msg) {
-    LOGI("MLBS_CORE: [PROBE] Packet Cmd_Room_GetInfo_SC Masuk! Msg Pointer: %p", msg);
-    if (old_OnRoomGetInfo) old_OnRoomGetInfo(instance, msg);
+    if(old_OnRecv_RoomEnter) old_OnRecv_RoomEnter(instance, msg);
+}
+
+// 3. Menangkap Timer Ban/Pick
+void new_OnRecv_BanPick(void* instance, void* msg) {
+    LOGI("MLBS_CORE: [HOOK] Cmd_Notify_StartBanTogether::OnRecv Terpanggil! MsgPtr: %p", msg);
+
+    if(old_OnRecv_BanPick) old_OnRecv_BanPick(instance, msg);
 }
 
 void InitGameLogic() {
@@ -766,12 +715,31 @@ void InitGameLogic() {
     LoadConfig();
     LOGI("GameLogic Initialized. Mod Enabled: %s", g_State.isModEnabled ? "true" : "false");
 
-    // Install hook for OnGetRoomGetInfoMsg
-    void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "Friends", "RoomDataManager", "OnGetRoomGetInfoMsg", 1);
-    if (addr) {
-        LOGI("Found OnGetRoomGetInfoMsg at %p", addr);
-        DobbyHook(addr, (void*)new_OnRoomGetInfo, (void**)&old_OnRoomGetInfo);
+    // --- HOOK 1: Cmd_Room_GetInfo_SC (Saat loading masuk room) ---
+    void* addrRoomInfo = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "OnRecv", 1);
+    if (addrRoomInfo) {
+        LOGI("Found Cmd_Room_GetInfo_SC::OnRecv at %p", addrRoomInfo);
+        DobbyHook(addrRoomInfo, (void*)new_OnRecv_RoomInfo, (void**)&old_OnRecv_RoomInfo);
     } else {
-        LOGE("Failed to find OnGetRoomGetInfoMsg");
+        LOGE("Failed to find Cmd_Room_GetInfo_SC::OnRecv");
     }
+
+    // --- HOOK 2: Cmd_Room_Enter_SC (Saat player lain masuk) ---
+    void* addrRoomEnter = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_Enter_SC", "OnRecv", 1);
+    if (addrRoomEnter) {
+        LOGI("Found Cmd_Room_Enter_SC::OnRecv at %p", addrRoomEnter);
+        DobbyHook(addrRoomEnter, (void*)new_OnRecv_RoomEnter, (void**)&old_OnRecv_RoomEnter);
+    }
+
+    // --- HOOK 3: Cmd_Notify_StartBanTogether (Saat fase ban dimulai) ---
+    void* addrBanPick = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Notify_StartBanTogether", "OnRecv", 1);
+    if (addrBanPick) {
+        LOGI("Found Cmd_Notify_StartBanTogether::OnRecv at %p", addrBanPick);
+        DobbyHook(addrBanPick, (void*)new_OnRecv_BanPick, (void**)&old_OnRecv_BanPick);
+    }
+}
+
+void MonitorBattleState() {
+    // Placeholder to satisfy linker.
+    // The main logic is now driven by hooks in InitGameLogic.
 }
