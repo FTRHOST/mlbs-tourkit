@@ -467,7 +467,61 @@ void new_OnRecv_BanPick(void* instance, void* msg) {
     if(old_OnRecv_BanPick) old_OnRecv_BanPick(instance, msg);
 }
 
+// =========================================================
+// FITUR DIAGNOSA: Mencari kombinasi Namespace/Class yang benar
+// =========================================================
+void DiagnoseServerData() {
+    LOGI("=== MLBS DIAGNOSE START ===");
+
+    // 1. Variasi Nama Assembly (DLL)
+    const char* assemblies[] = {
+        "Assembly-CSharp.dll",
+        "Assembly-CSharp",
+        "System.dll"
+    };
+
+    // 2. Variasi Namespace
+    const char* namespaces[] = {
+        "",             // Global
+        "MTTDProto",    // Protokol MLBB
+        nullptr         // Null pointer (Kadang diperlukan oleh library tertentu)
+    };
+
+    // 3. Target Class
+    const char* targetClass = "Cmd_Room_GetInfo_SC";
+
+    bool found = false;
+
+    // Loop semua kombinasi untuk mencari yang cocok
+    for (const char* asmName : assemblies) {
+        for (const char* ns : namespaces) {
+            // Kita coba cari Method 'OnRecv' dengan argumen 1
+            void* addr = Il2CppGetMethodOffset(asmName, ns, targetClass, "OnRecv", 1);
+
+            // Format log supaya kita tahu apa yang sedang dites
+            const char* nsLog = (ns == nullptr) ? "nullptr" : (ns[0] == '\0' ? "EMPTY_STRING" : ns);
+
+            if (addr != nullptr) {
+                LOGI("[SUKSES] DITEMUKAN! >> Assembly: '%s' | Namespace: '%s' | Class: '%s' | Addr: %p",
+                     asmName, nsLog, targetClass, addr);
+                found = true;
+            } else {
+                LOGI("[GAGAL] Mencoba: Assembly: '%s' | Namespace: '%s'", asmName, nsLog);
+            }
+        }
+    }
+
+    if (!found) {
+        LOGE("!!! FATAL: Tidak ada kombinasi yang cocok untuk %s. Cek nama class di dump.cs lagi !!!", targetClass);
+    }
+
+    LOGI("=== MLBS DIAGNOSE END ===");
+}
+
 void InitGameLogic() {
+    // 1. Jalankan Diagnosa DULU
+    DiagnoseServerData();
+
     InitDynamicOffsets();
     LoadConfig();
     LOGI("GameLogic Initialized. Mod Enabled: %s", g_State.isModEnabled ? "true" : "false");
@@ -483,7 +537,7 @@ void InitGameLogic() {
         LOGI("Found Cmd_Room_GetInfo_SC::OnRecv at %p", addrRoomInfo);
         DobbyHook(addrRoomInfo, (void*)new_OnRecv_RoomInfo, (void**)&old_OnRecv_RoomInfo);
     } else {
-        LOGE("Failed to find Cmd_Room_GetInfo_SC::OnRecv (Cek Namespace!)");
+        LOGE("Failed to find Cmd_Room_GetInfo_SC::OnRecv");
     }
 
     // 2. Hook Player Enter
