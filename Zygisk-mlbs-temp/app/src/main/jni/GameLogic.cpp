@@ -43,6 +43,61 @@ void (*old_Cmd_Room_Enter_SC_visit)(void* instance, void* unpacker, bool bOpt) =
 void (*old_Cmd_Notify_StartBanTogether_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
 
 // =============================================================
+// Helper Functions for Data Extraction
+// =============================================================
+
+// Extract Player List from RoomInfo
+void ParseRoomInfo(void* cmdInstance) {
+    if (!cmdInstance) return;
+
+    // 1. Ambil Offset stRoomInfo (RoomInfo) dari Cmd_Room_GetInfo_SC
+    // Class: MTTDProto.Cmd_Room_GetInfo_SC
+    // Field: stRoomInfo (Type: MTTDProto.RoomInfo)
+    static int off_stRoomInfo = 0;
+    if (off_stRoomInfo == 0) {
+        off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stRoomInfo");
+    }
+
+    if (off_stRoomInfo == 0) {
+        LOGE("Failed to find offset: Cmd_Room_GetInfo_SC.stRoomInfo");
+        return;
+    }
+
+    // Pointer ke objek RoomInfo
+    // Cmd Instance + Offset = Pointer ke Address RoomInfo Object
+    // Kita perlu dereference pointer tersebut untuk mendapatkan Address RoomInfo Object yang sebenarnya
+    void* roomInfoObj = *(void**)((uint64_t)cmdInstance + off_stRoomInfo);
+
+    if (!roomInfoObj) {
+        LOGE("RoomInfo object is null!");
+        return;
+    }
+
+    LOGI("Got RoomInfo Object at %p", roomInfoObj);
+
+    // 2. Ambil Offset vecPlayers (List<RoomPlayerInfo>) dari class MTTDProto.RoomInfo
+    // Field name 'vecPlayers' based on dump.cs check
+    static int off_vecPlayers = 0;
+    if (off_vecPlayers == 0) {
+        off_vecPlayers = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomInfo", "vecPlayers");
+    }
+
+    if (off_vecPlayers == 0) {
+        LOGE("Failed to find offset: RoomInfo.vecPlayers");
+        return;
+    }
+
+    void* playerListObj = *(void**)((uint64_t)roomInfoObj + off_vecPlayers);
+
+    if (playerListObj) {
+        LOGI("DAPAT PLAYER LIST POINTER: %p", playerListObj);
+        // TODO: Next step is to iterate this list
+    } else {
+        LOGI("Player list is null/empty");
+    }
+}
+
+// =============================================================
 // Fungsi Detour (Palsu) - Untuk Mencegat Data
 // =============================================================
 
@@ -54,7 +109,8 @@ void new_Cmd_Room_GetInfo_SC_visit(void* instance, void* unpacker, bool bOpt) {
     // 2. Sekarang 'instance' sudah berisi data yang didecode
     LOGI("MLBS_CORE: [HOOK] Cmd_Room_GetInfo_SC::visit Selesai! Data Ready di Instance: %p", instance);
 
-    // TODO: Extract stRoomInfo field
+    // 3. Extract Data
+    ParseRoomInfo(instance);
 }
 
 // 2. Menangkap Player Masuk (Incremental Data)
@@ -95,11 +151,6 @@ void DiagnoseServerData() {
             LOGI("[SUKSES] Found %s::visit(Unpacker) at %p", className, addr);
         } else {
             LOGI("[GAGAL] Failed to find %s::visit(Unpacker)", className);
-            // Coba debug tanpa args types (mungkin akan ambigu)
-            void* addrAmbiguous = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", className, "visit", 2);
-            if (addrAmbiguous) {
-                 LOGI("   -> TAPI ditemukan overload ambigu (Packer/Unpacker?) at %p", addrAmbiguous);
-            }
         }
     }
 
