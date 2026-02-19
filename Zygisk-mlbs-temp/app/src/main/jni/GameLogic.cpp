@@ -98,11 +98,11 @@ void ProcessPlayerList(void* listPointer) {
     static int off_size = 0;
 
     if (off_items == 0) {
-        off_items = Il2CppGetFieldOffset("mscorlib.dll", "System.Collections.Generic", "List`1", "_items");
+        off_items = Il2CppGetFieldOffset(OBFUSCATE("mscorlib.dll"), OBFUSCATE("System.Collections.Generic"), OBFUSCATE("List`1"), OBFUSCATE("_items"));
         if (off_items == 0) off_items = 0x10;
     }
     if (off_size == 0) {
-        off_size = Il2CppGetFieldOffset("mscorlib.dll", "System.Collections.Generic", "List`1", "_size");
+        off_size = Il2CppGetFieldOffset(OBFUSCATE("mscorlib.dll"), OBFUSCATE("System.Collections.Generic"), OBFUSCATE("List`1"), OBFUSCATE("_size"));
         if (off_size == 0) off_size = 0x18;
     }
 
@@ -137,23 +137,23 @@ void ProcessPlayerList(void* listPointer) {
 
     // Initialize offsets (Lazy load)
     if (off_ulUid == 0) {
-        off_ulUid = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "ulUid");
-        off_uiSvrId = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiSvrId");
-        off_iPos = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iPos");
-        off_strName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "strName");
-        off_uiLevel = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiLevel");
-        off_uiFaceId = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiFaceId");
-        off_uiNationality = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiNationality");
-        off_uiRankLevel = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiRankLevel");
-        off_uiRankLevelBig = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiRankLevelBig");
-        off_iFaceBorderId = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iFaceBorderId");
-        off_sFacePath = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "sFacePath");
-        off_bStarVip = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "bStarVip");
-        off_iPingVal = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iPingVal");
-        off_uiPingLimit = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "uiPingLimit");
-        off_bIsWhiteName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "bIsWhiteName");
-        off_iHeroId = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iHeroId");
-        off_iScrambleHeroId = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iScrambleHeroId");
+        off_ulUid = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("ulUid"));
+        off_uiSvrId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiSvrId"));
+        off_iPos = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iPos"));
+        off_strName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("strName"));
+        off_uiLevel = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiLevel"));
+        off_uiFaceId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiFaceId"));
+        off_uiNationality = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiNationality"));
+        off_uiRankLevel = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiRankLevel"));
+        off_uiRankLevelBig = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiRankLevelBig"));
+        off_iFaceBorderId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iFaceBorderId"));
+        off_sFacePath = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("sFacePath"));
+        off_bStarVip = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("bStarVip"));
+        off_iPingVal = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iPingVal"));
+        off_uiPingLimit = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiPingLimit"));
+        off_bIsWhiteName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("bIsWhiteName"));
+        off_iHeroId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iHeroId"));
+        off_iScrambleHeroId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iScrambleHeroId"));
     }
 
     uint64_t arrayStart = (uint64_t)itemsArray + 0x20;
@@ -259,10 +259,10 @@ void ParseRoomInfo(void* cmdInstance) {
 
     static int off_stRoomInfo = 0;
     if (off_stRoomInfo == 0) {
-        off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stRoomInfo");
+        off_stRoomInfo = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Room_GetInfo_SC"), OBFUSCATE("stRoomInfo"));
     }
     if (off_stRoomInfo == 0) {
-        off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stInfo");
+        off_stRoomInfo = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Room_GetInfo_SC"), OBFUSCATE("stInfo"));
     }
 
     if (off_stRoomInfo == 0) {
@@ -275,7 +275,7 @@ void ParseRoomInfo(void* cmdInstance) {
 
     static int off_vecPlayers = 0;
     if (off_vecPlayers == 0) {
-        off_vecPlayers = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomInfo", "vecPlayers");
+        off_vecPlayers = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomInfo"), OBFUSCATE("vecPlayers"));
     }
 
     if (off_vecPlayers == 0) {
@@ -311,7 +311,7 @@ void new_Cmd_Notify_StartBanTogether_visit(void* instance, void* unpacker, bool 
     if(old_Cmd_Notify_StartBanTogether_visit) old_Cmd_Notify_StartBanTogether_visit(instance, unpacker, bOpt);
 
     static int off_iTime = 0;
-    if (off_iTime == 0) off_iTime = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Notify_StartBanTogether", "iTime");
+    if (off_iTime == 0) off_iTime = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Notify_StartBanTogether"), OBFUSCATE("iTime"));
 
     if (off_iTime > 0) {
         uint32_t timer = *(uint32_t*)((uint64_t)instance + off_iTime);
@@ -351,7 +351,7 @@ void DiagnoseServerData() {
         bool found = false;
         for (int i = 0; i < 2; i++) {
             const char** args = argsVariants[i];
-            void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", className, "visit", (char**)args, 2);
+            void* addr = Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), className, OBFUSCATE("visit"), (char**)args, 2);
             if (addr) {
                 LOGI("[SUKSES] Found %s::visit(%s) at %p", className, args[0], addr);
                 found = true;
@@ -380,9 +380,9 @@ void InitGameLogic() {
     const char* argsShort[] = { "SdpUnpacker", "System.Boolean" };
 
     auto findMethod = [&](const char* cls) -> void* {
-        void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", cls, "visit", (char**)argsFull, 2);
+        void* addr = Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), cls, OBFUSCATE("visit"), (char**)argsFull, 2);
         if (!addr) {
-            addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", cls, "visit", (char**)argsShort, 2);
+            addr = Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), cls, OBFUSCATE("visit"), (char**)argsShort, 2);
         }
         return addr;
     };
