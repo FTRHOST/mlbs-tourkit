@@ -39,7 +39,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void hack_start(const char *_game_data_dir) {
     LOGI("hack start | %s", _game_data_dir);
     
-    // 1. Wait for library
+    // 1. Wait for library (libil2cpp.so)
     do {
         sleep(1);
         g_TargetModule = utils::find_module(TargetLibName);
@@ -52,9 +52,16 @@ void hack_start(const char *_game_data_dir) {
     g_State.roomInfoEnabled = true;
     StartIpcServer(); 
 
-    // 3. Attach Il2Cpp and Init Logic
+    // 3. Attach Il2Cpp
     Il2CppAttach(TargetLibName);
-    InitGameLogic(); // Install Hooks (e.g. UIRankHero)
+
+    // 4. Wait for Assembly-CSharp.dll to load
+    // Using simple sleep as requested to ensure assembly is fully loaded
+    LOGI("MLBS_CORE: Waiting 6 seconds for Assembly-CSharp.dll to load...");
+    sleep(6);
+
+    // 5. Init Logic (Install Hooks)
+    InitGameLogic();
 
     g_IsGameReady = true;
 }
