@@ -5,6 +5,7 @@
 #include <android/log.h>
 #include <vector>
 #include <string>
+#include <cstring> // Untuk strstr
 #include <mutex>
 #include <sstream>
 #include <map>
@@ -470,62 +471,63 @@ void new_OnRecv_BanPick(void* instance, void* msg) {
 // =========================================================
 // FITUR DIAGNOSA: Mencari kombinasi Namespace/Class yang benar
 // =========================================================
-void DiagnoseServerData() {
-    LOGI("=== MLBS DIAGNOSE START ===");
 
-    // 1. Variasi Nama Assembly (DLL)
-    const char* assemblies[] = {
-        "Assembly-CSharp.dll",
-        "Assembly-CSharp",
-        "System.dll"
-    };
 
-    // 2. Variasi Namespace
-    const char* namespaces[] = {
-        "",             // Global
-        "MTTDProto",    // Protokol MLBB
-        nullptr         // Null pointer (Kadang diperlukan oleh library tertentu)
-    };
+void DiagnoseServerClasses() {
+    LOGI("=== MLBS DIAGNOSE: CLASS SCAN START ===");
 
-    // 3. Target Class
-    const char* targetClass = "Cmd_Room_GetInfo_SC";
+    // 1. Coba dapatkan Image Assembly-CSharp
+    // Kita coba nama tanpa ekstensi dulu, lalu pakai ekstensi
+    void* image = Il2CppGetImage("Assembly-CSharp");
+    if (!image) image = Il2CppGetImage("Assembly-CSharp.dll");
 
-    bool found = false;
+    if (!image) {
+        LOGE("!!! FATAL: Image 'Assembly-CSharp' TIDAK DITEMUKAN di memori saat ini.");
+        LOGE("Solusi: Pastikan delay hook cukup lama atau library sudah ter-load.");
+        return;
+    }
 
-    // Loop semua kombinasi untuk mencari yang cocok
-    for (const char* asmName : assemblies) {
-        for (const char* ns : namespaces) {
-            // Kita coba cari Method 'OnRecv' dengan argumen 1
-            void* addr = Il2CppGetMethodOffset(asmName, ns, targetClass, "OnRecv", 1);
+    LOGI("SUCCESS: Image 'Assembly-CSharp' ditemukan di %p. Memulai scan class...", image);
 
-            // Format log supaya kita tahu apa yang sedang dites
-            const char* nsLog = (ns == nullptr) ? "nullptr" : (ns[0] == '\0' ? "EMPTY_STRING" : ns);
+    // 2. Iterasi manual semua class di image tersebut
+    // Kita gunakan helper Il2Cpp yang umum (perlu akses ke il2cpp_image_get_class_count)
+    // Jika error compile, pastikan header il2cpp-api-functions.h ter-include
+    
+    // NOTE: Kode di bawah asumsi kita punya akses ke API Il2Cpp standar yang sudah di-resolve
+    // Jika gagal compile, beritahu saya agar saya berikan versi ByNameModding-nya.
+    
+    size_t classCount = il2cpp_image_get_class_count((Il2CppImage*)image);
+    int matchCount = 0;
 
-            if (addr != nullptr) {
-                LOGI("[SUKSES] DITEMUKAN! >> Assembly: '%s' | Namespace: '%s' | Class: '%s' | Addr: %p",
-                     asmName, nsLog, targetClass, addr);
-                found = true;
-            } else {
-                LOGI("[GAGAL] Mencoba: Assembly: '%s' | Namespace: '%s'", asmName, nsLog);
-            }
+    for (int i = 0; i < classCount; i++) {
+        Il2CppClass* klass = il2cpp_image_get_class((Il2CppImage*)image, i);
+        if (!klass) continue;
+
+        const char* name = il2cpp_class_get_name(klass);
+        const char* ns = il2cpp_class_get_namespace(klass);
+
+        // Filter: Hanya cari yang namanya mirip target kita untuk mengurangi spam log
+        if (name && strstr(name, "Cmd_Room") != nullptr) {
+            LOGI(">>> DITEMUKAN: Namespace: '%s' | Class: '%s'", ns ? ns : "<kosong>", name);
+            matchCount++;
         }
     }
 
-    if (!found) {
-        LOGE("!!! FATAL: Tidak ada kombinasi yang cocok untuk %s. Cek nama class di dump.cs lagi !!!", targetClass);
+    if (matchCount == 0) {
+        LOGW("Scan Selesai: Tidak ada class dengan nama 'Cmd_Room' ditemukan. Apakah nama diobfuscate?");
+    } else {
+        LOGI("Scan Selesai: %d kandidat ditemukan.", matchCount);
     }
-
-    LOGI("=== MLBS DIAGNOSE END ===");
+    
+    LOGI("=== MLBS DIAGNOSE: CLASS SCAN END ===");
 }
 
 void InitGameLogic() {
-    // 1. Jalankan Diagnosa DULU
-    DiagnoseServerData();
-
+    
     InitDynamicOffsets();
     LoadConfig();
     LOGI("GameLogic Initialized. Mod Enabled: %s", g_State.isModEnabled ? "true" : "false");
-
+    DiagnoseServerClasses();
     // ==============================================================================
     // PERBAIKAN: Ubah Namespace "MTTDProto" menjadi "" (Kosong)
     // Karena Cmd_... biasanya ada di root namespace Assembly-CSharp.dll
