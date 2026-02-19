@@ -26,6 +26,33 @@
 #include "obfuscate.h"
 #include "dobby.h"
 
+// Helper Manual untuk mendapatkan Pointer Image (Assembly)
+void* MyGetImageByName(const char* imageName) {
+    // Dapatkan Domain aplikasi
+    Il2CppDomain* domain = il2cpp_domain_get(); 
+    if (!domain) {
+        LOGE("Il2Cpp Domain belum siap!");
+        return nullptr;
+    }
+
+    // Dapatkan semua Assembly yang dimuat
+    size_t size = 0;
+    const Il2CppAssembly** assemblies = il2cpp_domain_get_assemblies(domain, &size);
+    
+    // Loop cari yang namanya cocok
+    for (size_t i = 0; i < size; ++i) {
+        const Il2CppImage* image = il2cpp_assembly_get_image(assemblies[i]);
+        const char* name = il2cpp_image_get_name(image);
+        
+        // Cek jika nama mengandung string yang kita cari (misal "Assembly-CSharp")
+        if (name && strstr(name, imageName) != nullptr) {
+            return (void*)image;
+        }
+    }
+    
+    return nullptr;
+}
+
 GlobalState g_State;
 std::chrono::steady_clock::time_point g_battleStartTime;
 std::chrono::duration<float> g_elapsedBattleTime(0);
@@ -474,28 +501,23 @@ void new_OnRecv_BanPick(void* instance, void* msg) {
 
 
 void DiagnoseServerClasses() {
-    LOGI("=== MLBS DIAGNOSE: CLASS SCAN START ===");
+    LOGI("=== MLBS DIAGNOSA: CLASS SCAN START ===");
 
-    // 1. Coba dapatkan Image Assembly-CSharp
-    // Kita coba nama tanpa ekstensi dulu, lalu pakai ekstensi
-    void* image = Il2CppGetImage("Assembly-CSharp");
-    if (!image) image = Il2CppGetImage("Assembly-CSharp.dll");
+    // [PERBAIKAN] Gunakan fungsi manual kita
+    void* image = MyGetImageByName("Assembly-CSharp");
+    
+    // Fallback: Coba pakai .dll jika yang polos gagal
+    if (!image) image = MyGetImageByName("Assembly-CSharp.dll");
 
     if (!image) {
-        LOGE("!!! FATAL: Image 'Assembly-CSharp' TIDAK DITEMUKAN di memori saat ini.");
-        LOGE("Solusi: Pastikan delay hook cukup lama atau library sudah ter-load.");
+        LOGE("!!! FATAL: Image 'Assembly-CSharp' TIDAK DITEMUKAN.");
+        LOGE("Tips: Library game belum dimuat sepenuhnya. Coba delay 5-10 detik.");
         return;
     }
 
-    LOGI("SUCCESS: Image 'Assembly-CSharp' ditemukan di %p. Memulai scan class...", image);
+    LOGI("SUCCESS: Image ditemukan di %p. Memulai scan...", image);
 
-    // 2. Iterasi manual semua class di image tersebut
-    // Kita gunakan helper Il2Cpp yang umum (perlu akses ke il2cpp_image_get_class_count)
-    // Jika error compile, pastikan header il2cpp-api-functions.h ter-include
-    
-    // NOTE: Kode di bawah asumsi kita punya akses ke API Il2Cpp standar yang sudah di-resolve
-    // Jika gagal compile, beritahu saya agar saya berikan versi ByNameModding-nya.
-    
+    // Iterasi Class
     size_t classCount = il2cpp_image_get_class_count((Il2CppImage*)image);
     int matchCount = 0;
 
@@ -506,21 +528,16 @@ void DiagnoseServerClasses() {
         const char* name = il2cpp_class_get_name(klass);
         const char* ns = il2cpp_class_get_namespace(klass);
 
-        // Filter: Hanya cari yang namanya mirip target kita untuk mengurangi spam log
+        // Filter pencarian: Cmd_Room
         if (name && strstr(name, "Cmd_Room") != nullptr) {
             LOGI(">>> DITEMUKAN: Namespace: '%s' | Class: '%s'", ns ? ns : "<kosong>", name);
             matchCount++;
         }
     }
-
-    if (matchCount == 0) {
-        LOGW("Scan Selesai: Tidak ada class dengan nama 'Cmd_Room' ditemukan. Apakah nama diobfuscate?");
-    } else {
-        LOGI("Scan Selesai: %d kandidat ditemukan.", matchCount);
-    }
     
-    LOGI("=== MLBS DIAGNOSE: CLASS SCAN END ===");
+    LOGI("=== SCAN SELESAI: %d Class Ditemukan ===", matchCount);
 }
+
 
 void InitGameLogic() {
     
