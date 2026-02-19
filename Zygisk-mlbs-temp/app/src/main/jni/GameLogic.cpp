@@ -336,6 +336,37 @@ void new_Cmd_Room_Hero_Confirm_SC_visit(void* instance, void* unpacker, bool bOp
 }
 
 // =========================================================
+// FITUR DIAGNOSA
+// =========================================================
+void DiagnoseServerData() {
+    LOGI("=== MLBS DIAGNOSE START ===");
+
+    const char* targets[] = { "Cmd_Room_GetInfo_SC" };
+    const char* argsVariants[][2] = {
+        { "MTTDProto.SdpUnpacker", "System.Boolean" },
+        { "SdpUnpacker", "System.Boolean" }
+    };
+
+    for (const char* className : targets) {
+        bool found = false;
+        for (int i = 0; i < 2; i++) {
+            const char** args = argsVariants[i];
+            void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", className, "visit", (char**)args, 2);
+            if (addr) {
+                LOGI("[SUKSES] Found %s::visit(%s) at %p", className, args[0], addr);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            LOGI("[INFO] Diagnose: %s::visit not found (yet).", className);
+        }
+    }
+
+    LOGI("=== MLBS DIAGNOSE END ===");
+}
+
+// =========================================================
 // Initialization
 // =========================================================
 
