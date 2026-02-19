@@ -43,8 +43,119 @@ void (*old_Cmd_Room_Enter_SC_visit)(void* instance, void* unpacker, bool bOpt) =
 void (*old_Cmd_Notify_StartBanTogether_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
 
 // =============================================================
-// Helper Functions for Data Extraction
+// Helper Functions
 // =============================================================
+
+// Helper membaca C# String (UTF-16) ke std::string (UTF-8)
+std::string ReadMonoString(void* monoString) {
+    if (!monoString) return "";
+
+    // Offset length is typically 0x10 on 64-bit Unity
+    int length = 0;
+    if (!read_memory_safe((void*)((uint64_t)monoString + 0x10), &length, sizeof(length))) return "";
+    if (length <= 0 || length > 4096) return "";
+
+    // Chars start at 0x14
+    std::vector<char16_t> buf(length);
+    if (!read_memory_safe((void*)((uint64_t)monoString + 0x14), buf.data(), length * sizeof(char16_t))) return "";
+
+    std::string result;
+    result.reserve(length);
+    for (int i = 0; i < length; i++) {
+        if (buf[i] < 128) {
+            result += (char)buf[i];
+        } else {
+            result += '?'; // Simplify non-ascii
+        }
+    }
+    return result;
+}
+
+// Iterate List<RoomPlayerInfo> and extract details
+void ProcessPlayerList(void* listPointer) {
+    if (!listPointer) return;
+
+    // 1. Dapatkan Offset internal List (Standard Unity/Mono)
+    // Field: _items (Array) dan _size (Count)
+    static int off_items = 0;
+    static int off_size = 0;
+
+    if (off_items == 0) {
+        // Try to find generic list fields. If fails, use hardcoded 64-bit standard offsets.
+        off_items = Il2CppGetFieldOffset("mscorlib.dll", "System.Collections.Generic", "List`1", "_items");
+        if (off_items == 0) off_items = 0x10; // Fallback for 64-bit
+    }
+    if (off_size == 0) {
+        off_size = Il2CppGetFieldOffset("mscorlib.dll", "System.Collections.Generic", "List`1", "_size");
+        if (off_size == 0) off_size = 0x18;   // Fallback for 64-bit
+    }
+
+    // 2. Baca Array dan Size
+    void* itemsArray = nullptr;
+    int size = 0;
+
+    // Read list internals safely
+    if (!read_memory_safe((void*)((uint64_t)listPointer + off_items), &itemsArray, sizeof(itemsArray))) return;
+    if (!read_memory_safe((void*)((uint64_t)listPointer + off_size), &size, sizeof(size))) return;
+
+    LOGI("MLBS_CORE: [PARSER] Found %d players in list.", size);
+
+    if (!itemsArray || size <= 0 || size > 20) return;
+
+    // 3. Persiapkan Offset Data Player (Hanya cari sekali)
+    // Namespace: MTTDProto, Class: RoomPlayerInfo
+    static int off_strName = 0;
+    static int off_ulUid = 0;
+    static int off_iPos = 0; // Dump shows iPos, using that to infer camp
+
+    if (off_strName == 0) off_strName = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "strName");
+    if (off_ulUid == 0) off_ulUid = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "ulUid");
+    if (off_iPos == 0) off_iPos = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "RoomPlayerInfo", "iPos");
+
+    // Array data dimulai di offset 0x20 (pada ARM64 Il2Cpp Array)
+    uint64_t arrayStart = (uint64_t)itemsArray + 0x20;
+
+    std::stringstream json;
+    json << "[";
+
+    for (int i = 0; i < size; i++) {
+        // Ambil pointer ke object RoomPlayerInfo ke-i
+        void* playerObj = nullptr;
+        if (!read_memory_safe((void*)(arrayStart + (i * 8)), &playerObj, sizeof(playerObj))) continue;
+
+        if (playerObj) {
+            // A. Ambil Nama
+            void* namePtr = nullptr;
+            read_memory_safe((void*)((uint64_t)playerObj + off_strName), &namePtr, sizeof(namePtr));
+            std::string name = ReadMonoString(namePtr);
+
+            // B. Ambil UID
+            uint64_t uid = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_ulUid), &uid, sizeof(uid));
+
+            // C. Ambil Pos/Camp
+            // Note: iCamp field not found in dump, using iPos.
+            // In MLBB usually pos 1-5 is one team, 6-10 is another, or derived from it.
+            // Just logging raw pos for now.
+            uint32_t pos = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_iPos), &pos, sizeof(pos));
+
+            LOGI(" >> Player %d: %s | UID: %lu | Pos: %u", i, name.c_str(), uid, pos);
+
+            // Format JSON Sederhana
+            if (i > 0) json << ",";
+            json << "{\"name\":\"" << name << "\",\"uid\":" << uid << ",\"pos\":" << pos << "}";
+        }
+    }
+    json << "]";
+
+    std::string finalJson = json.str();
+    // Use LOGI for output to match user expectation
+    LOGI("JSON OUTPUT: %s", finalJson.c_str());
+
+    // Broadcast via IPC
+    BroadcastToClients(finalJson);
+}
 
 // Extract Player List from RoomInfo
 void ParseRoomInfo(void* cmdInstance) {
@@ -55,26 +166,19 @@ void ParseRoomInfo(void* cmdInstance) {
     if (off_stRoomInfo == 0) {
         off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stRoomInfo");
     }
-
+    // Fallback if needed
     if (off_stRoomInfo == 0) {
-        // Fallback: Coba field name lain jika 'stRoomInfo' gagal (misal 'stInfo')
         off_stRoomInfo = Il2CppGetFieldOffset("Assembly-CSharp.dll", "MTTDProto", "Cmd_Room_GetInfo_SC", "stInfo");
     }
 
     if (off_stRoomInfo == 0) {
-        LOGE("Failed to find offset: Cmd_Room_GetInfo_SC.stRoomInfo (or stInfo)");
+        LOGE("Failed to find offset: Cmd_Room_GetInfo_SC.stRoomInfo");
         return;
     }
 
-    // Dereference pointer to get RoomInfo object
     void* roomInfoObj = *(void**)((uint64_t)cmdInstance + off_stRoomInfo);
 
-    if (!roomInfoObj) {
-        LOGE("RoomInfo object is null!");
-        return;
-    }
-
-    LOGI("Got RoomInfo Object at %p", roomInfoObj);
+    if (!roomInfoObj) return; // Silent return if null to reduce log spam on empty objects
 
     // 2. Ambil Offset vecPlayers (List<RoomPlayerInfo>)
     static int off_vecPlayers = 0;
@@ -90,10 +194,7 @@ void ParseRoomInfo(void* cmdInstance) {
     void* playerListObj = *(void**)((uint64_t)roomInfoObj + off_vecPlayers);
 
     if (playerListObj) {
-        LOGI("DAPAT PLAYER LIST POINTER: %p", playerListObj);
-        // TODO: Iterate list
-    } else {
-        LOGI("Player list is null/empty");
+        ProcessPlayerList(playerListObj);
     }
 }
 
@@ -104,20 +205,21 @@ void ParseRoomInfo(void* cmdInstance) {
 // 1. Menangkap Data Room Utama (Full Data) - Post-Deserialization
 void new_Cmd_Room_GetInfo_SC_visit(void* instance, void* unpacker, bool bOpt) {
     if(old_Cmd_Room_GetInfo_SC_visit) old_Cmd_Room_GetInfo_SC_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Room_GetInfo_SC::visit Selesai! Data Ready at %p", instance);
+    // Data is ready here
     ParseRoomInfo(instance);
 }
 
 // 2. Menangkap Player Masuk (Incremental Data)
 void new_Cmd_Room_Enter_SC_visit(void* instance, void* unpacker, bool bOpt) {
     if(old_Cmd_Room_Enter_SC_visit) old_Cmd_Room_Enter_SC_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Room_Enter_SC::visit Selesai! Data Ready at %p", instance);
+    // LOGI("MLBS_CORE: [HOOK] Cmd_Room_Enter_SC::visit Selesai!");
+    // Ideally we parse this too, but focusing on RoomInfo list for now
 }
 
 // 3. Menangkap Timer Ban/Pick
 void new_Cmd_Notify_StartBanTogether_visit(void* instance, void* unpacker, bool bOpt) {
     if(old_Cmd_Notify_StartBanTogether_visit) old_Cmd_Notify_StartBanTogether_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Notify_StartBanTogether::visit Selesai! Data Ready at %p", instance);
+    LOGI("MLBS_CORE: [HOOK] Ban/Pick Timer Update");
 }
 
 // =========================================================
@@ -126,18 +228,15 @@ void new_Cmd_Notify_StartBanTogether_visit(void* instance, void* unpacker, bool 
 void DiagnoseServerData() {
     LOGI("=== MLBS DIAGNOSE START ===");
 
-    const char* targets[] = { "Cmd_Room_GetInfo_SC", "Cmd_Room_Enter_SC", "Cmd_Notify_StartBanTogether" };
-
-    // Variasi Argument Types untuk mengatasi namespace yang mungkin berbeda di runtime
+    const char* targets[] = { "Cmd_Room_GetInfo_SC" };
     const char* argsVariants[][2] = {
         { "MTTDProto.SdpUnpacker", "System.Boolean" },
-        { "SdpUnpacker", "System.Boolean" },
-        { "MTTDProto.SdpUnpackerImpl", "System.Boolean" }
+        { "SdpUnpacker", "System.Boolean" }
     };
 
     for (const char* className : targets) {
         bool found = false;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             const char** args = argsVariants[i];
             void* addr = Il2CppGetMethodOffset("Assembly-CSharp.dll", "MTTDProto", className, "visit", (char**)args, 2);
             if (addr) {
@@ -147,7 +246,7 @@ void DiagnoseServerData() {
             }
         }
         if (!found) {
-            LOGI("[GAGAL] Failed to find %s::visit with known arg types", className);
+            LOGI("[INFO] Diagnose: %s::visit not found (yet).", className);
         }
     }
 
@@ -160,7 +259,6 @@ void InitGameLogic() {
 
     LOGI("GameLogic Initialized. Hooking 'visit' methods...");
 
-    // Try robust lookup: 1. Full Namespace, 2. Short Name
     const char* argsFull[] = { "MTTDProto.SdpUnpacker", "System.Boolean" };
     const char* argsShort[] = { "SdpUnpacker", "System.Boolean" };
 
@@ -172,24 +270,19 @@ void InitGameLogic() {
         return addr;
     };
 
-    // 1. Room Info
     void* addr1 = findMethod("Cmd_Room_GetInfo_SC");
     if (addr1) {
         LOGI("Hooking Cmd_Room_GetInfo_SC::visit at %p", addr1);
         DobbyHook(addr1, (void*)new_Cmd_Room_GetInfo_SC_visit, (void**)&old_Cmd_Room_GetInfo_SC_visit);
-    } else LOGE("FATAL: Failed to hook Cmd_Room_GetInfo_SC::visit");
+    }
 
-    // 2. Room Enter
     void* addr2 = findMethod("Cmd_Room_Enter_SC");
     if (addr2) {
-        LOGI("Hooking Cmd_Room_Enter_SC::visit at %p", addr2);
         DobbyHook(addr2, (void*)new_Cmd_Room_Enter_SC_visit, (void**)&old_Cmd_Room_Enter_SC_visit);
     }
 
-    // 3. Ban Pick
     void* addr3 = findMethod("Cmd_Notify_StartBanTogether");
     if (addr3) {
-        LOGI("Hooking Cmd_Notify_StartBanTogether::visit at %p", addr3);
         DobbyHook(addr3, (void*)new_Cmd_Notify_StartBanTogether_visit, (void**)&old_Cmd_Notify_StartBanTogether_visit);
     }
 }
