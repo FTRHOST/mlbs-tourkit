@@ -154,7 +154,7 @@ void ProcessPlayerList(void* listPointer) {
     LOGI("JSON OUTPUT: %s", finalJson.c_str());
 
     // Broadcast via IPC
-    BroadcastToClients(finalJson);
+    BroadcastData(finalJson);
 }
 
 // Extract Player List from RoomInfo
