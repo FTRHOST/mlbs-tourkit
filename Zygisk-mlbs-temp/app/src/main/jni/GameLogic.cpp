@@ -41,8 +41,9 @@ std::atomic<bool> g_isBattleTimerRunning(false);
 void (*old_Cmd_Room_GetInfo_SC_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
 void (*old_Cmd_Room_Enter_SC_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
 void (*old_Cmd_Notify_StartBanTogether_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
-void (*old_Cmd_Room_ChangeInfo_Common_SC_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
-void (*old_Cmd_Room_Hero_Confirm_SC_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
+// Updated hooks based on correct dump analysis
+void (*old_Cmd_Notify_RoomInfoChange_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
+void (*old_Cmd_Notify_BattlePlayerInfo_visit)(void* instance, void* unpacker, bool bOpt) = nullptr;
 
 // =============================================================
 // Helper Functions
@@ -90,9 +91,9 @@ std::string SanitizeJson(const std::string& input) {
     return output;
 }
 
-// Iterate List<RoomPlayerInfo> and extract ALL fields
-void ProcessPlayerList(void* listPointer) {
-    if (!listPointer) return;
+// Helper for parsing List<T> structure (generic logic)
+bool GetListItems(void* listPointer, void** outItemsArray, int* outSize) {
+    if (!listPointer) return false;
 
     static int off_items = 0;
     static int off_size = 0;
@@ -106,50 +107,104 @@ void ProcessPlayerList(void* listPointer) {
         if (off_size == 0) off_size = 0x18;
     }
 
+    if (!read_memory_safe((void*)((uint64_t)listPointer + off_items), outItemsArray, sizeof(void*))) return false;
+    if (!read_memory_safe((void*)((uint64_t)listPointer + off_size), outSize, sizeof(int))) return false;
+
+    return true;
+}
+
+// Extract fields from MTTDProto.RoomPlayerInfo
+void ProcessRoomPlayerList(void* listPointer) {
     void* itemsArray = nullptr;
     int size = 0;
+    if (!GetListItems(listPointer, &itemsArray, &size)) return;
 
-    if (!read_memory_safe((void*)((uint64_t)listPointer + off_items), &itemsArray, sizeof(itemsArray))) return;
-    if (!read_memory_safe((void*)((uint64_t)listPointer + off_size), &size, sizeof(size))) return;
-
-    LOGI("MLBS_CORE: [PARSER] Found %d players in list.", size);
-
+    LOGI("MLBS_CORE: [ROOM] Found %d players.", size);
     if (!itemsArray || size <= 0 || size > 20) return;
 
     // Field Offsets for MTTDProto.RoomPlayerInfo
     static int off_ulUid = 0;
-    static int off_uiSvrId = 0;
     static int off_iPos = 0;
     static int off_strName = 0;
     static int off_uiLevel = 0;
-    static int off_uiFaceId = 0;
-    static int off_uiNationality = 0;
     static int off_uiRankLevel = 0;
-    static int off_uiRankLevelBig = 0;
-    static int off_iFaceBorderId = 0;
-    static int off_sFacePath = 0;
     static int off_bStarVip = 0;
-    static int off_iPingVal = 0;
-    static int off_uiPingLimit = 0;
-    static int off_bIsWhiteName = 0;
 
     // Initialize offsets (Lazy load)
     if (off_ulUid == 0) {
         off_ulUid = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("ulUid"));
-        off_uiSvrId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiSvrId"));
         off_iPos = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iPos"));
         off_strName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("strName"));
         off_uiLevel = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiLevel"));
-        off_uiFaceId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiFaceId"));
-        off_uiNationality = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiNationality"));
         off_uiRankLevel = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiRankLevel"));
-        off_uiRankLevelBig = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiRankLevelBig"));
-        off_iFaceBorderId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iFaceBorderId"));
-        off_sFacePath = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("sFacePath"));
         off_bStarVip = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("bStarVip"));
-        off_iPingVal = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iPingVal"));
-        off_uiPingLimit = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiPingLimit"));
-        off_bIsWhiteName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("bIsWhiteName"));
+    }
+
+    uint64_t arrayStart = (uint64_t)itemsArray + 0x20; // Array header offset
+
+    std::stringstream json;
+    json << "[";
+
+    for (int i = 0; i < size; i++) {
+        void* playerObj = nullptr;
+        if (!read_memory_safe((void*)(arrayStart + (i * 8)), &playerObj, sizeof(playerObj))) continue;
+
+        if (playerObj) {
+            void* namePtr = nullptr;
+            read_memory_safe((void*)((uint64_t)playerObj + off_strName), &namePtr, sizeof(namePtr));
+            std::string name = ReadMonoString(namePtr);
+
+            uint64_t uid = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_ulUid), &uid, sizeof(uid));
+
+            uint32_t pos = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_iPos), &pos, sizeof(pos));
+
+            uint32_t rankLevel = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_uiRankLevel), &rankLevel, sizeof(rankLevel));
+
+            if (i > 0) json << ",";
+            json << "{"
+                 << "\"uid\":" << uid << ","
+                 << "\"pos\":" << pos << ","
+                 << "\"name\":\"" << SanitizeJson(name) << "\","
+                 << "\"rank\":" << rankLevel
+                 << "}";
+        }
+    }
+    json << "]";
+
+    std::string finalJson = "{\"type\":\"RoomInfo\", \"data\":" + json.str() + "}";
+    BroadcastData(finalJson);
+}
+
+// Extract fields from MTTDProto.BattlePlayerInfo (Requested Feature)
+void ProcessBattlePlayerList(void* listPointer) {
+    void* itemsArray = nullptr;
+    int size = 0;
+    if (!GetListItems(listPointer, &itemsArray, &size)) return;
+
+    LOGI("MLBS_CORE: [BATTLE] Found %d players in BattlePlayerInfo.", size);
+    if (!itemsArray || size <= 0 || size > 20) return;
+
+    // Field Offsets for MTTDProto.BattlePlayerInfo
+    static int off_lUid = 0;
+    static int off_iCamp = 0;
+    static int off_iPos = 0;
+    static int off_strName = 0;
+    static int off_uiSelHero = 0;
+    static int off_uiSkinId = 0;
+    static int off_uiRankLevel = 0;
+
+    // Lazy load offsets
+    if (off_lUid == 0) {
+        off_lUid = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("lUid"));
+        off_iCamp = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("iCamp"));
+        off_iPos = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("iPos"));
+        off_strName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("strName"));
+        off_uiSelHero = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("uiSelHero"));
+        off_uiSkinId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("uiSkinId"));
+        off_uiRankLevel = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("BattlePlayerInfo"), OBFUSCATE("uiRankLevel"));
     }
 
     uint64_t arrayStart = (uint64_t)itemsArray + 0x20;
@@ -162,83 +217,45 @@ void ProcessPlayerList(void* listPointer) {
         if (!read_memory_safe((void*)(arrayStart + (i * 8)), &playerObj, sizeof(playerObj))) continue;
 
         if (playerObj) {
-            // Strings
             void* namePtr = nullptr;
             read_memory_safe((void*)((uint64_t)playerObj + off_strName), &namePtr, sizeof(namePtr));
             std::string name = ReadMonoString(namePtr);
 
-            void* facePathPtr = nullptr;
-            read_memory_safe((void*)((uint64_t)playerObj + off_sFacePath), &facePathPtr, sizeof(facePathPtr));
-            std::string facePath = ReadMonoString(facePathPtr);
-
-            // Primitives
             uint64_t uid = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_ulUid), &uid, sizeof(uid));
+            read_memory_safe((void*)((uint64_t)playerObj + off_lUid), &uid, sizeof(uid));
 
-            uint32_t svrId = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiSvrId), &svrId, sizeof(svrId));
+            uint32_t camp = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_iCamp), &camp, sizeof(camp));
 
             uint32_t pos = 0;
             read_memory_safe((void*)((uint64_t)playerObj + off_iPos), &pos, sizeof(pos));
 
-            uint32_t level = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiLevel), &level, sizeof(level));
+            uint32_t heroId = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_uiSelHero), &heroId, sizeof(heroId));
 
-            uint32_t faceId = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiFaceId), &faceId, sizeof(faceId));
-
-            uint32_t nationality = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiNationality), &nationality, sizeof(nationality));
+            uint32_t skinId = 0;
+            read_memory_safe((void*)((uint64_t)playerObj + off_uiSkinId), &skinId, sizeof(skinId));
 
             uint32_t rankLevel = 0;
             read_memory_safe((void*)((uint64_t)playerObj + off_uiRankLevel), &rankLevel, sizeof(rankLevel));
 
-            uint32_t rankLevelBig = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiRankLevelBig), &rankLevelBig, sizeof(rankLevelBig));
-
-            uint32_t faceBorderId = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_iFaceBorderId), &faceBorderId, sizeof(faceBorderId));
-
-            bool starVip = false;
-            read_memory_safe((void*)((uint64_t)playerObj + off_bStarVip), &starVip, sizeof(starVip));
-
-            uint32_t pingVal = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_iPingVal), &pingVal, sizeof(pingVal));
-
-            uint32_t pingLimit = 0;
-            read_memory_safe((void*)((uint64_t)playerObj + off_uiPingLimit), &pingLimit, sizeof(pingLimit));
-
-            bool isWhiteName = false;
-            read_memory_safe((void*)((uint64_t)playerObj + off_bIsWhiteName), &isWhiteName, sizeof(isWhiteName));
-
-            // JSON Construction
             if (i > 0) json << ",";
             json << "{"
                  << "\"uid\":" << uid << ","
-                 << "\"svrId\":" << svrId << ","
+                 << "\"camp\":" << camp << ","
                  << "\"pos\":" << pos << ","
                  << "\"name\":\"" << SanitizeJson(name) << "\","
-                 << "\"level\":" << level << ","
-                 << "\"faceId\":" << faceId << ","
-                 << "\"nationality\":" << nationality << ","
-                 << "\"rankLevel\":" << rankLevel << ","
-                 << "\"rankLevelBig\":" << rankLevelBig << ","
-                 << "\"faceBorderId\":" << faceBorderId << ","
-                 << "\"facePath\":\"" << SanitizeJson(facePath) << "\","
-                 << "\"starVip\":" << (starVip ? "true" : "false") << ","
-                 << "\"pingVal\":" << pingVal << ","
-                 << "\"pingLimit\":" << pingLimit << ","
-                 << "\"isWhiteName\":" << (isWhiteName ? "true" : "false")
+                 << "\"heroId\":" << heroId << ","
+                 << "\"skinId\":" << skinId << ","
+                 << "\"rank\":" << rankLevel
                  << "}";
 
-            LOGI(" >> Player %d Parsed: %s (UID: %lu)", i, name.c_str(), uid);
+            LOGI(" >> BattlePlayer %d: %s (Hero: %d)", i, name.c_str(), heroId);
         }
     }
     json << "]";
 
-    std::string finalJson = "{\"type\":\"RoomInfo\", \"data\":" + json.str() + "}";
-    LOGI("JSON OUTPUT: %s", finalJson.c_str());
-
+    std::string finalJson = "{\"type\":\"BattleInfo\", \"data\":" + json.str() + "}";
     BroadcastData(finalJson);
 }
 
@@ -247,16 +264,15 @@ void ParseRoomInfo(void* cmdInstance) {
 
     static int off_stRoomInfo = 0;
     if (off_stRoomInfo == 0) {
+        // Try exact name first
         off_stRoomInfo = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Room_GetInfo_SC"), OBFUSCATE("stRoomInfo"));
     }
     if (off_stRoomInfo == 0) {
+        // Fallback or alias
         off_stRoomInfo = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Room_GetInfo_SC"), OBFUSCATE("stInfo"));
     }
 
-    if (off_stRoomInfo == 0) {
-        LOGE("Failed to find offset: Cmd_Room_GetInfo_SC.stRoomInfo");
-        return;
-    }
+    if (off_stRoomInfo == 0) return;
 
     void* roomInfoObj = *(void**)((uint64_t)cmdInstance + off_stRoomInfo);
     if (!roomInfoObj) return;
@@ -266,15 +282,11 @@ void ParseRoomInfo(void* cmdInstance) {
         off_vecPlayers = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomInfo"), OBFUSCATE("vecPlayers"));
     }
 
-    if (off_vecPlayers == 0) {
-        LOGE("Failed to find offset: RoomInfo.vecPlayers");
-        return;
-    }
+    if (off_vecPlayers == 0) return;
 
     void* playerListObj = *(void**)((uint64_t)roomInfoObj + off_vecPlayers);
-
     if (playerListObj) {
-        ProcessPlayerList(playerListObj);
+        ProcessRoomPlayerList(playerListObj);
     }
 }
 
@@ -291,7 +303,8 @@ void new_Cmd_Room_GetInfo_SC_visit(void* instance, void* unpacker, bool bOpt) {
 // 2. Hook Room Enter
 void new_Cmd_Room_Enter_SC_visit(void* instance, void* unpacker, bool bOpt) {
     if(old_Cmd_Room_Enter_SC_visit) old_Cmd_Room_Enter_SC_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Room_Enter_SC::visit Selesai!");
+    LOGI("MLBS_CORE: [HOOK] Cmd_Room_Enter_SC::visit Triggered.");
+    // Usually triggers a GetInfo refresh
 }
 
 // 3. Hook Ban/Pick Timer
@@ -311,17 +324,51 @@ void new_Cmd_Notify_StartBanTogether_visit(void* instance, void* unpacker, bool 
     }
 }
 
-// 4. Hook Room Change Info
-void new_Cmd_Room_ChangeInfo_Common_SC_visit(void* instance, void* unpacker, bool bOpt) {
-    if(old_Cmd_Room_ChangeInfo_Common_SC_visit) old_Cmd_Room_ChangeInfo_Common_SC_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Room_ChangeInfo_Common_SC::visit Selesai!");
+// 4. Hook Notify Room Info Change (Alternative for Room Updates)
+void new_Cmd_Notify_RoomInfoChange_visit(void* instance, void* unpacker, bool bOpt) {
+    if(old_Cmd_Notify_RoomInfoChange_visit) old_Cmd_Notify_RoomInfoChange_visit(instance, unpacker, bOpt);
+
+    LOGI("MLBS_CORE: [HOOK] Cmd_Notify_RoomInfoChange::visit Triggered.");
+
+    static int off_stRoomInfo_Change = 0;
+    if (off_stRoomInfo_Change == 0) {
+        off_stRoomInfo_Change = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Notify_RoomInfoChange"), OBFUSCATE("stRoomInfo"));
+    }
+
+    if (off_stRoomInfo_Change > 0) {
+        void* roomInfoObj = *(void**)((uint64_t)instance + off_stRoomInfo_Change);
+        if (roomInfoObj) {
+            static int off_vecPlayers = 0;
+            if (off_vecPlayers == 0) {
+                off_vecPlayers = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomInfo"), OBFUSCATE("vecPlayers"));
+            }
+            if (off_vecPlayers > 0) {
+                void* playerListObj = *(void**)((uint64_t)roomInfoObj + off_vecPlayers);
+                if (playerListObj) ProcessRoomPlayerList(playerListObj);
+            }
+        }
+    }
 }
 
-// 5. Hook Hero Confirm
-void new_Cmd_Room_Hero_Confirm_SC_visit(void* instance, void* unpacker, bool bOpt) {
-    if(old_Cmd_Room_Hero_Confirm_SC_visit) old_Cmd_Room_Hero_Confirm_SC_visit(instance, unpacker, bOpt);
-    LOGI("MLBS_CORE: [HOOK] Cmd_Room_Hero_Confirm_SC::visit Selesai!");
+// 5. Hook Battle Player Info (Loading Screen / Final Draft Data)
+void new_Cmd_Notify_BattlePlayerInfo_visit(void* instance, void* unpacker, bool bOpt) {
+    if(old_Cmd_Notify_BattlePlayerInfo_visit) old_Cmd_Notify_BattlePlayerInfo_visit(instance, unpacker, bOpt);
+
+    LOGI("MLBS_CORE: [HOOK] Cmd_Notify_BattlePlayerInfo::visit Triggered.");
+
+    static int off_vPlayer = 0;
+    if (off_vPlayer == 0) {
+        off_vPlayer = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("Cmd_Notify_BattlePlayerInfo"), OBFUSCATE("vPlayer"));
+    }
+
+    if (off_vPlayer > 0) {
+        void* playerListObj = *(void**)((uint64_t)instance + off_vPlayer);
+        if (playerListObj) {
+            ProcessBattlePlayerList(playerListObj);
+        }
+    }
 }
+
 
 // =========================================================
 // FITUR DIAGNOSA
@@ -329,7 +376,12 @@ void new_Cmd_Room_Hero_Confirm_SC_visit(void* instance, void* unpacker, bool bOp
 void DiagnoseServerData() {
     LOGI("=== MLBS DIAGNOSE START ===");
 
-    const char* targets[] = { "Cmd_Room_GetInfo_SC" };
+    const char* targets[] = {
+        "Cmd_Room_GetInfo_SC",
+        "Cmd_Notify_RoomInfoChange",
+        "Cmd_Notify_BattlePlayerInfo"
+    };
+
     const char* argsVariants[][2] = {
         { "MTTDProto.SdpUnpacker", "System.Boolean" },
         { "SdpUnpacker", "System.Boolean" }
@@ -375,25 +427,30 @@ void InitGameLogic() {
         return addr;
     };
 
+    // 1. Room Get Info
     void* addr1 = findMethod("Cmd_Room_GetInfo_SC");
     if (addr1) DobbyHook(addr1, (void*)new_Cmd_Room_GetInfo_SC_visit, (void**)&old_Cmd_Room_GetInfo_SC_visit);
 
+    // 2. Room Enter
     void* addr2 = findMethod("Cmd_Room_Enter_SC");
     if (addr2) DobbyHook(addr2, (void*)new_Cmd_Room_Enter_SC_visit, (void**)&old_Cmd_Room_Enter_SC_visit);
 
+    // 3. Ban Timer
     void* addr3 = findMethod("Cmd_Notify_StartBanTogether");
     if (addr3) DobbyHook(addr3, (void*)new_Cmd_Notify_StartBanTogether_visit, (void**)&old_Cmd_Notify_StartBanTogether_visit);
 
-    void* addr4 = findMethod("Cmd_Room_ChangeInfo_Common_SC");
+    // 4. Room Info Change (Updates)
+    void* addr4 = findMethod("Cmd_Notify_RoomInfoChange");
     if (addr4) {
-        LOGI("Hooking Cmd_Room_ChangeInfo_Common_SC::visit at %p", addr4);
-        DobbyHook(addr4, (void*)new_Cmd_Room_ChangeInfo_Common_SC_visit, (void**)&old_Cmd_Room_ChangeInfo_Common_SC_visit);
+        LOGI("Hooking Cmd_Notify_RoomInfoChange::visit at %p", addr4);
+        DobbyHook(addr4, (void*)new_Cmd_Notify_RoomInfoChange_visit, (void**)&old_Cmd_Notify_RoomInfoChange_visit);
     }
 
-    void* addr5 = findMethod("Cmd_Room_Hero_Confirm_SC");
+    // 5. Battle Player Info (Final Draft / Loading)
+    void* addr5 = findMethod("Cmd_Notify_BattlePlayerInfo");
     if (addr5) {
-        LOGI("Hooking Cmd_Room_Hero_Confirm_SC::visit at %p", addr5);
-        DobbyHook(addr5, (void*)new_Cmd_Room_Hero_Confirm_SC_visit, (void**)&old_Cmd_Room_Hero_Confirm_SC_visit);
+        LOGI("Hooking Cmd_Notify_BattlePlayerInfo::visit at %p", addr5);
+        DobbyHook(addr5, (void*)new_Cmd_Notify_BattlePlayerInfo_visit, (void**)&old_Cmd_Notify_BattlePlayerInfo_visit);
     }
 }
 
