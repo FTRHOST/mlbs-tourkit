@@ -132,8 +132,6 @@ void ProcessPlayerList(void* listPointer) {
     static int off_iPingVal = 0;
     static int off_uiPingLimit = 0;
     static int off_bIsWhiteName = 0;
-    static int off_iHeroId = 0;
-    static int off_iScrambleHeroId = 0;
 
     // Initialize offsets (Lazy load)
     if (off_ulUid == 0) {
@@ -152,8 +150,6 @@ void ProcessPlayerList(void* listPointer) {
         off_iPingVal = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iPingVal"));
         off_uiPingLimit = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("uiPingLimit"));
         off_bIsWhiteName = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("bIsWhiteName"));
-        off_iHeroId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iHeroId"));
-        off_iScrambleHeroId = Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("MTTDProto"), OBFUSCATE("RoomPlayerInfo"), OBFUSCATE("iScrambleHeroId"));
     }
 
     uint64_t arrayStart = (uint64_t)itemsArray + 0x20;
@@ -215,12 +211,6 @@ void ProcessPlayerList(void* listPointer) {
             bool isWhiteName = false;
             read_memory_safe((void*)((uint64_t)playerObj + off_bIsWhiteName), &isWhiteName, sizeof(isWhiteName));
 
-            int32_t heroId = 0;
-            if (off_iHeroId > 0) read_memory_safe((void*)((uint64_t)playerObj + off_iHeroId), &heroId, sizeof(heroId));
-
-            uint32_t scrambleHeroId = 0;
-            if (off_iScrambleHeroId > 0) read_memory_safe((void*)((uint64_t)playerObj + off_iScrambleHeroId), &scrambleHeroId, sizeof(scrambleHeroId));
-
             // JSON Construction
             if (i > 0) json << ",";
             json << "{"
@@ -238,9 +228,7 @@ void ProcessPlayerList(void* listPointer) {
                  << "\"starVip\":" << (starVip ? "true" : "false") << ","
                  << "\"pingVal\":" << pingVal << ","
                  << "\"pingLimit\":" << pingLimit << ","
-                 << "\"isWhiteName\":" << (isWhiteName ? "true" : "false") << ","
-                 << "\"heroId\":" << heroId << ","
-                 << "\"scrambleHeroId\":" << scrambleHeroId
+                 << "\"isWhiteName\":" << (isWhiteName ? "true" : "false")
                  << "}";
 
             LOGI(" >> Player %d Parsed: %s (UID: %lu)", i, name.c_str(), uid);
